@@ -1,0 +1,4897 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAPID WEB DEVELOP - Complete Artist Website Template</title>
+
+    <!-- Meta Tags for SEO -->
+    <meta name="description" content="Independent music artist website with direct fan support, music, merch, and tour dates.">
+    <meta name="keywords" content="music, artist, independent, streaming, merch, tour, fan club">
+
+    <!-- PWA Support - Leeway Standards -->
+    <link rel="manifest" href="manifest.webmanifest">
+    <meta name="theme-color" content="#8e44ad">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Chart.js for Revenue Calculator and Admin Dashboard -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- CSS (embedded) -->
+    <style>
+        /* ===== LEEWAY STANDARDS COMPLIANT STYLES ===== */
+        /* Main Stylesheet */
+        :root {
+          --primary-color: #8e44ad;
+          --secondary-color: #3498db;
+          --accent-color: #f39c12;
+          --text-color: #333;
+          --light-text: #fff;
+          --dark-bg: #121212;
+          --light-bg: #f5f5f5;
+          --success-color: #2ecc71;
+          --error-color: #e74c3c;
+          --border-radius: 8px;
+          --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+          --transition: all 0.3s ease;
+
+          /* Admin Dashboard Variables */
+          --primary-bg: #0A192F;
+          --secondary-bg: #112240;
+          --accent-teal: #00FFD4;
+          --accent-purple: #6A0DAD;
+          --accent-coral: #FF4757;
+          --text-primary: #E6F1FF;
+          --text-secondary: #8892B0;
+          --shadow-normal: 0 10px 30px -10px rgba(2, 12, 27, 0.7);
+          --shadow-hover: 0 20px 40px rgba(0, 255, 212, 0.2);
+          --transition-standard: all 0.3s ease;
+        }
+
+        /* Base Styles */
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+
+        html {
+          scroll-behavior: smooth;
+          font-size: 16px;
+        }
+
+        body {
+          font-family: 'Roboto', sans-serif;
+          line-height: 1.6;
+          color: var(--text-color);
+          background-color: var(--light-bg);
+          overflow-x: hidden;
+        }
+
+        /* Typography */
+        h1, h2, h3, h4, h5, h6 {
+          font-family: 'Poppins', sans-serif;
+          margin-bottom: 1rem;
+          line-height: 1.2;
+        }
+
+        h1 {
+          font-size: 3.5rem;
+          font-weight: 700;
+        }
+
+        h2 {
+          font-size: 2.5rem;
+          font-weight: 600;
+        }
+
+        h3 {
+          font-size: 2rem;
+          font-weight: 600;
+        }
+
+        p {
+          margin-bottom: 1.2rem;
+        }
+
+        .subheadline {
+          font-size: 1.3rem;
+          font-weight: 300;
+          margin-bottom: 2rem;
+        }
+
+        /* Container & Section */
+        .container {
+          width: 100%;
+          max-width: 1200px;
+          padding: 0 1.5rem;
+          margin: 0 auto;
+        }
+
+        section {
+          padding: 5rem 0;
+        }
+
+        .section-title {
+          text-align: center;
+          margin-bottom: 3rem;
+          position: relative;
+        }
+
+        .section-title::after {
+          content: '';
+          display: block;
+          width: 80px;
+          height: 3px;
+          background-color: var(--accent-color);
+          margin: 1rem auto;
+        }
+
+        /* Buttons */
+        .btn {
+          display: inline-block;
+          font-weight: 600;
+          text-align: center;
+          padding: 0.75rem 1.5rem;
+          font-size: 1rem;
+          border-radius: var(--border-radius);
+          cursor: pointer;
+          transition: var(--transition);
+          text-decoration: none;
+          border: none;
+          box-shadow: var(--box-shadow);
+          margin: 0.5rem;
+        }
+
+        .btn-primary {
+          background-color: var(--primary-color);
+          color: white;
+        }
+
+        .btn-primary:hover {
+          background-color: #7d3c98;
+          transform: translateY(-3px);
+        }
+
+        .btn-secondary {
+          background-color: var(--secondary-color);
+          color: white;
+        }
+
+        .btn-secondary:hover {
+          background-color: #2980b9;
+          transform: translateY(-3px);
+        }
+
+        .btn-accent {
+          background-color: var(--accent-color);
+          color: white;
+        }
+
+        .btn-accent:hover {
+          background-color: #e67e22;
+          transform: translateY(-3px);
+        }
+
+        .btn-large {
+          padding: 1rem 2rem;
+          font-size: 1.2rem;
+        }
+
+        /* Hero Banner */
+        .hero {
+          position: relative;
+          height: 100vh;
+          width: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          overflow: hidden;
+          background-color: var(--dark-bg);
+        }
+
+        .hero-image {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          opacity: 0.7;
+        }
+
+        .hero-content {
+          position: relative;
+          z-index: 2;
+          text-align: center;
+          color: var(--light-text);
+          max-width: 800px;
+          padding: 2rem;
+        }
+
+        /* Navigation */
+        .navbar {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          padding: 1rem 0;
+          z-index: 100;
+          background-color: rgba(18, 18, 18, 0.9);
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+          transition: var(--transition);
+        }
+
+        .navbar-container {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+
+        .navbar-logo {
+          font-size: 1.5rem;
+          font-weight: 700;
+          color: var(--light-text);
+          text-decoration: none;
+        }
+
+        .navbar-menu {
+          display: flex;
+          list-style: none;
+        }
+
+        .navbar-item {
+          margin-left: 2rem;
+        }
+
+        .navbar-link {
+          color: var(--light-text);
+          text-decoration: none;
+          font-weight: 500;
+          transition: var(--transition);
+        }
+
+        .navbar-link:hover {
+          color: var(--accent-color);
+        }
+
+        .navbar-toggle {
+          display: none;
+          font-size: 1.5rem;
+          color: var(--light-text);
+          background: transparent;
+          border: none;
+          cursor: pointer;
+        }
+
+        /* Video Section - Leeway Standards */
+        .video-section {
+          background-color: var(--dark-bg);
+          color: var(--light-text);
+          padding: 5rem 0;
+        }
+
+        .video-container {
+          position: relative;
+          width: 100%;
+          padding-top: 56.25%; /* 16:9 Aspect Ratio */
+          overflow: hidden;
+          border-radius: var(--border-radius);
+          margin-bottom: 2rem;
+        }
+
+        .video-container iframe,
+        .video-container video {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          border: none;
+          object-fit: cover;
+        }
+
+        .video-overlay {
+          position: absolute;
+          bottom: 20px;
+          right: 20px;
+          background: rgba(0, 0, 0, 0.7);
+          padding: 0.5rem 1rem;
+          border-radius: var(--border-radius);
+          z-index: 3;
+        }
+
+        .video-container-second {
+          margin-top: 3rem;
+        }
+
+        .sr-only {
+          position: absolute;
+          width: 1px;
+          height: 1px;
+          padding: 0;
+          margin: -1px;
+          overflow: hidden;
+          clip: rect(0, 0, 0, 0);
+          white-space: nowrap;
+          border-width: 0;
+        }
+
+        /* Revenue Calculator - Leeway Standards */
+        .calculator-section {
+          background-color: var(--light-bg);
+          padding: 5rem 0;
+        }
+
+        .calculator {
+          background-color: white;
+          padding: 2rem;
+          border-radius: var(--border-radius);
+          box-shadow: var(--box-shadow);
+        }
+
+        .calculator-inputs {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 1.5rem;
+          margin-bottom: 2rem;
+        }
+
+        .form-control {
+          width: 100%;
+          padding: 0.75rem;
+          border: 1px solid #ddd;
+          border-radius: var(--border-radius);
+          font-size: 1rem;
+          outline: none;
+        }
+
+        .calculator-chart {
+          width: 100%;
+          height: 300px;
+          margin: 2rem 0;
+        }
+
+        .slider-container {
+          width: 100%;
+        }
+
+        .slider {
+          width: 100%;
+          height: 5px;
+          border-radius: 5px;
+          background: #ddd;
+          outline: none;
+          -webkit-appearance: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+          -webkit-appearance: none;
+          width: 20px;
+          height: 20px;
+          border-radius: 50%;
+          background: var(--primary-color);
+          cursor: pointer;
+        }
+
+        .calculator-results {
+          background-color: #f9f9f9;
+          padding: 1.5rem;
+          border-radius: var(--border-radius);
+        }
+
+        .result-item {
+          display: flex;
+          justify-content: space-between;
+          margin-bottom: 1rem;
+        }
+
+        .result-item.highlight {
+          font-weight: bold;
+          color: var(--primary-color);
+        }
+
+        .result-divider {
+          height: 1px;
+          background-color: #ddd;
+          margin: 1rem 0;
+        }
+
+        .result-difference {
+          text-align: center;
+          font-weight: bold;
+          color: var(--success-color);
+          margin-top: 1rem;
+        }
+
+        /* Merch Store - Leeway Standards */
+        .merch-section {
+          background-color: white;
+          padding: 5rem 0;
+        }
+
+        .merch-featured {
+          margin-bottom: 3rem;
+          border-radius: var(--border-radius);
+          overflow: hidden;
+          box-shadow: var(--box-shadow);
+        }
+
+        .merch-featured-bottom {
+          margin-top: 3rem;
+        }
+
+        .merch-video-container {
+          position: relative;
+          background-color: #121212;
+        }
+
+        .merch-promo-video {
+          width: 100%;
+          display: block;
+        }
+
+        .merch-video-caption {
+          padding: 1.5rem;
+          background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+          color: white;
+        }
+
+        .merch-video-caption h3 {
+          margin-bottom: 0.5rem;
+          font-size: 1.4rem;
+        }
+
+        .merch-video-caption p {
+          margin: 0;
+          opacity: 0.9;
+        }
+
+        .merch-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+          gap: 2rem;
+        }
+
+        .merch-card {
+          background-color: white;
+          border-radius: var(--border-radius);
+          overflow: hidden;
+          box-shadow: var(--box-shadow);
+          transition: var(--transition);
+          display: flex;
+          flex-direction: column;
+          height: 100%;
+        }
+
+        .merch-card:hover {
+          transform: translateY(-5px);
+          box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        }
+
+        .merch-image-container {
+          position: relative;
+          overflow: hidden;
+        }
+
+        .merch-image {
+          width: 100%;
+          height: 280px;
+          object-fit: cover;
+          transition: transform 0.5s ease;
+        }
+
+        .merch-card:hover .merch-image {
+          transform: scale(1.05);
+        }
+
+        .merch-badge {
+          position: absolute;
+          top: 10px;
+          right: 10px;
+          background-color: var(--primary-color);
+          color: white;
+          padding: 0.25rem 0.75rem;
+          border-radius: 20px;
+          font-size: 0.8rem;
+          font-weight: 600;
+          z-index: 1;
+        }
+
+        .merch-info {
+          padding: 1.5rem;
+          display: flex;
+          flex-direction: column;
+          flex-grow: 1;
+        }
+
+        .merch-title {
+          font-size: 1.3rem;
+          margin-bottom: 0.5rem;
+          font-weight: 600;
+        }
+
+        .merch-price {
+          font-size: 1.5rem;
+          font-weight: 700;
+          color: var(--primary-color);
+          margin-bottom: 1rem;
+        }
+
+        .merch-description {
+          margin-bottom: 1.5rem;
+          flex-grow: 1;
+        }
+
+        .merch-features {
+          list-style: none;
+          padding-left: 0;
+          margin-top: 0.75rem;
+        }
+
+        .merch-features li {
+          position: relative;
+          padding-left: 1.5rem;
+          margin-bottom: 0.5rem;
+          font-size: 0.9rem;
+          color: #666;
+        }
+
+        .merch-features li:before {
+          content: "✓";
+          position: absolute;
+          left: 0;
+          color: var(--primary-color);
+          font-weight: bold;
+        }
+
+        .merch-actions {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-top: auto;
+        }
+
+        .merch-quantity {
+          display: flex;
+          align-items: center;
+        }
+
+        .merch-quantity label {
+          margin-right: 0.5rem;
+          font-weight: 500;
+        }
+
+        .qty-select {
+          padding: 0.5rem;
+          border: 1px solid #ddd;
+          border-radius: var(--border-radius);
+          background-color: white;
+        }
+
+        /* Tour Calendar - Leeway Standards */
+        .tour-section {
+          background-color: var(--light-bg);
+          padding: 5rem 0;
+        }
+
+        .tour-calendar {
+          background-color: white;
+          border-radius: var(--border-radius);
+          overflow: hidden;
+          box-shadow: var(--box-shadow);
+        }
+
+        .event-list {
+          list-style: none;
+        }
+
+        .event-item {
+          padding: 1.5rem;
+          border-bottom: 1px solid #eee;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+
+        .event-details {
+          flex: 1;
+        }
+
+        .event-date {
+          font-size: 1.2rem;
+          font-weight: 700;
+          margin-bottom: 0.5rem;
+          color: var(--primary-color);
+        }
+
+        .event-location {
+          font-size: 1rem;
+        }
+
+        .countdown {
+          background-color: var(--accent-color);
+          color: white;
+          padding: 0.5rem 1rem;
+          border-radius: var(--border-radius);
+          font-weight: 700;
+          text-align: center;
+          margin: 0 1rem;
+        }
+
+        /* Fan Club Section - Leeway Standards */
+        .community-section {
+          background-color: white;
+          padding: 5rem 0;
+        }
+
+        .fan-club {
+          background-color: white;
+          border-radius: var(--border-radius);
+          overflow: hidden;
+          box-shadow: var(--box-shadow);
+          padding: 2rem;
+        }
+
+        .chat-container {
+          height: 400px;
+          overflow-y: auto;
+          margin-bottom: 1.5rem;
+          padding: 1rem;
+          background-color: var(--light-bg);
+          border-radius: var(--border-radius);
+        }
+
+        .chat-message {
+          margin-bottom: 1rem;
+          padding: 1rem;
+          border-radius: var(--border-radius);
+          max-width: 80%;
+        }
+
+        .fan-message {
+          background-color: var(--secondary-color);
+          color: var(--light-text);
+          margin-left: auto;
+        }
+
+        .artist-message {
+          background-color: var(--primary-color);
+          color: var(--light-text);
+        }
+
+        .message-input {
+          display: flex;
+        }
+
+        .message-input input {
+          flex: 1;
+          padding: 0.75rem;
+          border: 1px solid #ddd;
+          border-radius: var(--border-radius) 0 0 var(--border-radius);
+          outline: none;
+        }
+
+        .message-input button {
+          border-radius: 0 var(--border-radius) var(--border-radius) 0;
+          margin: 0;
+        }
+
+        /* About Section - Leeway Standards */
+        .about-section {
+          background-color: #121212;
+          padding: 5rem 0;
+          color: #ffffff;
+        }
+
+        .about-section .section-title {
+          color: #ffffff;
+        }
+
+        .about-content {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 2rem;
+          align-items: center;
+          background-color: rgba(255, 255, 255, 0.05);
+          border-radius: var(--border-radius);
+          padding: 2rem;
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .about-image {
+          flex: 1;
+          min-width: 300px;
+          position: relative;
+        }
+
+        .about-image:after {
+          content: '';
+          position: absolute;
+          top: -10px;
+          left: -10px;
+          right: 10px;
+          bottom: 10px;
+          border: 2px solid var(--primary-color);
+          border-radius: var(--border-radius);
+          z-index: -1;
+        }
+
+        .about-image img {
+          width: 100%;
+          border-radius: var(--border-radius);
+          box-shadow: var(--box-shadow);
+        }
+
+        .about-text {
+          flex: 2;
+          min-width: 300px;
+        }
+
+        .about-text p {
+          color: rgba(255, 255, 255, 0.8);
+          line-height: 1.8;
+          margin-bottom: 1.5rem;
+        }
+
+        .about-text p:last-child {
+          margin-bottom: 0;
+        }
+
+        .about-text strong {
+          color: var(--primary-color);
+        }
+
+        /* Testimonials - Leeway Standards */
+        .testimonials-section {
+          background-color: white;
+          padding: 5rem 0;
+        }
+
+        .testimonial-slider {
+          position: relative;
+        }
+
+        .testimonial-item {
+          background-color: white;
+          padding: 2rem;
+          border-radius: var(--border-radius);
+          box-shadow: var(--box-shadow);
+          text-align: center;
+          display: none;
+        }
+
+        .testimonial-item.active {
+          display: block;
+        }
+
+        .testimonial-quote {
+          font-style: italic;
+          font-size: 1.2rem;
+          margin-bottom: 1.5rem;
+        }
+
+        .testimonial-author {
+          font-weight: 700;
+          margin-bottom: 0.5rem;
+        }
+
+        .testimonial-dots {
+          display: flex;
+          justify-content: center;
+          margin-top: 1.5rem;
+        }
+
+        .dot {
+          width: 10px;
+          height: 10px;
+          background-color: #ddd;
+          border-radius: 50%;
+          margin: 0 0.5rem;
+          cursor: pointer;
+        }
+
+        .dot.active {
+          background-color: var(--primary-color);
+        }
+
+        /* Booking Section - Leeway Standards */
+        .booking-section {
+          background-color: var(--light-bg);
+          padding: 5rem 0;
+        }
+
+        .booking-form {
+          background-color: white;
+          padding: 2rem;
+          border-radius: var(--border-radius);
+          box-shadow: var(--box-shadow);
+          max-width: 800px;
+          margin: 0 auto;
+        }
+
+        .form-group {
+          margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+          display: block;
+          margin-bottom: 0.5rem;
+          font-weight: 500;
+        }
+
+        .form-group textarea {
+          width: 100%;
+          padding: 0.75rem;
+          border: 1px solid #ddd;
+          border-radius: var(--border-radius);
+          resize: vertical;
+          min-height: 100px;
+        }
+
+        /* Footer - Leeway Standards */
+        .footer {
+          background-color: var(--dark-bg);
+          color: var(--light-text);
+          padding: 5rem 0 2rem;
+        }
+
+        .footer-content {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+          gap: 2rem;
+          margin-bottom: 3rem;
+        }
+
+        .footer-logo h3 {
+          margin-bottom: 0.5rem;
+        }
+
+        .footer-links h4,
+        .footer-social h4,
+        .footer-newsletter h4 {
+          margin-bottom: 1rem;
+          font-size: 1.2rem;
+        }
+
+        .footer-links ul {
+          list-style: none;
+        }
+
+        .footer-links li {
+          margin-bottom: 0.5rem;
+        }
+
+        .footer-links a {
+          color: var(--light-text);
+          text-decoration: none;
+          transition: var(--transition);
+        }
+
+        .footer-links a:hover {
+          color: var(--accent-color);
+        }
+
+        .social-icons {
+          display: flex;
+          gap: 1rem;
+        }
+
+        .social-icon {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 40px;
+          height: 40px;
+          background-color: rgba(255, 255, 255, 0.1);
+          border-radius: 50%;
+          color: var(--light-text);
+          text-decoration: none;
+          transition: var(--transition);
+        }
+
+        .social-icon:hover {
+          background-color: var(--primary-color);
+          transform: translateY(-3px);
+        }
+
+        .newsletter-form {
+          display: flex;
+        }
+
+        .newsletter-form input {
+          flex: 1;
+          padding: 0.75rem;
+          border: none;
+          border-radius: var(--border-radius) 0 0 var(--border-radius);
+          outline: none;
+        }
+
+        .newsletter-form button {
+          border-radius: 0 var(--border-radius) var(--border-radius) 0;
+          margin: 0;
+        }
+
+        .footer-bottom {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding-top: 2rem;
+          border-top: 1px solid rgba(255, 255, 255, 0.1);
+          font-size: 0.9rem;
+          color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* Agent Lee - Leeway Standards */
+        .agent-lee {
+          position: fixed;
+          bottom: 2rem;
+          right: 2rem;
+          width: 60px;
+          height: 60px;
+          border-radius: 50%;
+          background-color: var(--primary-color);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          color: white;
+          font-size: 1.5rem;
+          cursor: pointer;
+          box-shadow: var(--box-shadow);
+          z-index: 99;
+          transition: var(--transition);
+        }
+
+        .agent-lee:hover {
+          transform: scale(1.1);
+        }
+
+        .agent-chat {
+          position: fixed;
+          bottom: 2rem;
+          right: 2rem;
+          width: 350px;
+          height: 450px;
+          background-color: white;
+          border-radius: var(--border-radius);
+          box-shadow: var(--box-shadow);
+          z-index: 100;
+          display: none;
+          flex-direction: column;
+          overflow: hidden;
+        }
+
+        .agent-chat.active {
+          display: flex;
+        }
+
+        .agent-header {
+          padding: 1rem;
+          background-color: var(--primary-color);
+          color: white;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+
+        .agent-close {
+          background: transparent;
+          border: none;
+          color: white;
+          font-size: 1.5rem;
+          cursor: pointer;
+        }
+
+        .agent-messages {
+          flex: 1;
+          padding: 1rem;
+          overflow-y: auto;
+        }
+
+        .agent-message {
+          background-color: var(--light-bg);
+          padding: 0.75rem;
+          border-radius: var(--border-radius);
+          margin-bottom: 1rem;
+        }
+
+        .user-message {
+          background-color: var(--secondary-color);
+          color: white;
+          margin-left: auto;
+        }
+
+        .agent-input {
+          display: flex;
+          padding: 0.5rem 1rem;
+          border-top: 1px solid #eee;
+        }
+
+        .agent-input input {
+          flex: 1;
+          padding: 0.5rem;
+          border: 1px solid #ddd;
+          border-radius: var(--border-radius) 0 0 var(--border-radius);
+          outline: none;
+        }
+
+        .agent-input button {
+          border-radius: 0 var(--border-radius) var(--border-radius) 0;
+          margin: 0;
+        }
+
+        /* Offline Message - Leeway Standards */
+        .offline-message {
+          position: fixed;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          background-color: white;
+          padding: 2rem;
+          border-radius: var(--border-radius);
+          box-shadow: var(--box-shadow);
+          text-align: center;
+          z-index: 1000;
+          display: none;
+        }
+
+        /* Music Store Styles - Leeway Standards */
+        .music-album-featured {
+          background: linear-gradient(to right, #1a1a2e, #16213e);
+          padding: 30px;
+          border-radius: 10px;
+          margin-bottom: 40px;
+          box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .music-album-container {
+          display: flex;
+          flex-wrap: wrap;
+          align-items: center;
+          gap: 30px;
+        }
+
+        .music-album-cover {
+          flex: 1;
+          min-width: 300px;
+          position: relative;
+        }
+
+        .music-album-cover img {
+          width: 100%;
+          border-radius: 5px;
+          box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .album-badge {
+          position: absolute;
+          top: 10px;
+          right: 10px;
+          background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+          color: white;
+          padding: 0.5rem 1rem;
+          border-radius: 20px;
+          font-size: 0.8rem;
+          font-weight: 700;
+          z-index: 1;
+        }
+
+        .music-album-info {
+          flex: 2;
+          min-width: 300px;
+        }
+
+        .music-album-title {
+          font-size: 2rem;
+          margin-bottom: 10px;
+          color: #fff;
+        }
+
+        .music-release-date {
+          color: var(--accent-color);
+          font-weight: 500;
+          margin-bottom: 1rem;
+        }
+
+        .music-album-description {
+          color: #aaa;
+          margin-bottom: 20px;
+          line-height: 1.6;
+        }
+
+        .music-pricing-options {
+          display: flex;
+          gap: 15px;
+          margin-bottom: 25px;
+        }
+
+        .music-pricing-option {
+          text-align: center;
+          background: rgba(255,255,255,0.05);
+          padding: 10px;
+          border-radius: 5px;
+          flex: 1;
+          transition: transform 0.3s ease;
+        }
+
+        .music-pricing-option:hover {
+          transform: translateY(-5px);
+          background: rgba(255,255,255,0.1);
+        }
+
+        .music-pricing-option-title {
+          font-weight: bold;
+          color: #fff;
+        }
+
+        .music-pricing-option-price {
+          font-size: 1.5rem;
+          color: #00FFD4;
+          margin: 5px 0;
+        }
+
+        .album-actions {
+          display: flex;
+          gap: 1rem;
+        }
+
+        /* Video Caption - Leeway Standards */
+        .video-caption {
+          background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+          padding: 1rem 1.5rem;
+          border-radius: 0 0 var(--border-radius) var(--border-radius);
+          margin-top: -5px;
+        }
+
+        .video-caption h3 {
+          margin-bottom: 0.25rem;
+          font-size: 1.2rem;
+        }
+
+        .video-caption p {
+          margin: 0;
+          opacity: 0.9;
+          font-size: 0.9rem;
+        }
+
+        /* Discography Section - Leeway Standards */
+        .discography-section {
+          margin: 4rem 0;
+          background-color: rgba(255, 255, 255, 0.05);
+          border-radius: var(--border-radius);
+          padding: 2rem;
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .discography-title {
+          font-size: 1.8rem;
+          margin-bottom: 1.5rem;
+          text-align: center;
+          position: relative;
+        }
+
+        .discography-title:after {
+          content: '';
+          position: absolute;
+          bottom: -10px;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 50px;
+          height: 3px;
+          background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+        }
+
+        .discography-tabs {
+          display: flex;
+          justify-content: center;
+          margin-bottom: 2rem;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .discography-tab {
+          background: none;
+          border: none;
+          color: rgba(255, 255, 255, 0.7);
+          padding: 0.75rem 1.5rem;
+          font-size: 1.1rem;
+          font-weight: 600;
+          cursor: pointer;
+          position: relative;
+          transition: color 0.3s ease;
+        }
+
+        .discography-tab:hover {
+          color: white;
+        }
+
+        .discography-tab.active {
+          color: var(--primary-color);
+        }
+
+        .discography-tab.active:after {
+          content: '';
+          position: absolute;
+          bottom: -1px;
+          left: 0;
+          width: 100%;
+          height: 3px;
+          background: var(--primary-color);
+        }
+
+        .discography-tab-content {
+          display: none;
+        }
+
+        .discography-tab-content.active {
+          display: block;
+        }
+
+        .album-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+          gap: 2rem;
+        }
+
+        .album-item {
+          transition: transform 0.3s ease;
+        }
+
+        .album-item:hover {
+          transform: translateY(-10px);
+        }
+
+        .album-cover {
+          position: relative;
+          margin-bottom: 1rem;
+          border-radius: var(--border-radius);
+          overflow: hidden;
+          box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .album-cover img {
+          width: 100%;
+          display: block;
+          transition: transform 0.5s ease;
+        }
+
+        .album-item:hover .album-cover img {
+          transform: scale(1.05);
+        }
+
+        .album-year {
+          position: absolute;
+          top: 10px;
+          left: 10px;
+          background-color: rgba(0, 0, 0, 0.7);
+          color: white;
+          padding: 0.25rem 0.5rem;
+          border-radius: 4px;
+          font-size: 0.8rem;
+        }
+
+        .album-details {
+          text-align: center;
+        }
+
+        .album-details h4 {
+          margin-bottom: 0.25rem;
+          font-size: 1.1rem;
+        }
+
+        .album-details p {
+          color: rgba(255, 255, 255, 0.7);
+          font-size: 0.9rem;
+          margin: 0;
+        }
+
+        /* Template-specific styles - Leeway Standards */
+        .template-banner {
+          background-color: #e74c3c;
+          color: white;
+          padding: 18px 0;
+          text-align: center;
+          font-weight: bold;
+          position: relative;
+          z-index: 1000;
+          font-size: 1.2rem;
+          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .template-banner-link {
+          margin-left: 15px;
+          background-color: #333;
+          color: white;
+          padding: 8px 15px;
+          border-radius: 4px;
+          text-decoration: none;
+          display: inline-block;
+          font-size: 1rem;
+          transition: all 0.3s ease;
+        }
+
+        .template-banner-link:hover {
+          background-color: #444;
+          transform: translateY(-2px);
+        }
+
+        .template-banner-buy {
+          margin-left: 15px;
+          background-color: #27ae60;
+          color: white;
+          padding: 8px 15px;
+          border-radius: 4px;
+          text-decoration: none;
+          display: inline-block;
+          font-size: 1rem;
+          transition: all 0.3s ease;
+        }
+
+        .template-banner-buy:hover {
+          background-color: #2ecc71;
+          transform: translateY(-2px);
+        }
+
+        .template-buy-btn {
+          background-color: #e74c3c;
+          color: white;
+        }
+
+        .admin-panel-btn {
+          background-color: #3498db;
+          color: white;
+          padding: 5px 10px;
+          border-radius: 4px;
+        }
+
+        /* Site Toggle Styles - Leeway Standards */
+        .site-toggle {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            z-index: 9999;
+            background: #8e44ad;
+            padding: 10px;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .toggle-btn {
+            background: none;
+            border: none;
+            color: white;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-weight: bold;
+            border-radius: 3px;
+            transition: background-color 0.3s;
+        }
+
+        .toggle-btn.active {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .toggle-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Admin Dashboard Styles - Leeway Standards */
+        .admin-dashboard-content {
+            display: none;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .admin-container {
+            display: flex;
+            min-height: 100vh;
+            background-color: var(--primary-bg);
+            color: var(--text-primary);
+        }
+
+        .admin-banner {
+            background: linear-gradient(135deg, var(--accent-coral), var(--accent-purple));
+            padding: 12px 20px;
+            color: white;
+            text-align: center;
+            font-weight: 600;
+            position: fixed;
+            width: 100%;
+            z-index: 1002;
+            top: 0;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.3);
+        }
+
+        .sidebar {
+            width: 280px;
+            background-color: var(--secondary-bg);
+            padding: 2rem 1.5rem;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            overflow-y: auto;
+            z-index: 1000;
+            box-shadow: var(--shadow-normal);
+            margin-top: 44px;
+        }
+
+        .sidebar-logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            color: var(--text-primary);
+        }
+
+        .logo-accent {
+            color: var(--accent-teal);
+        }
+
+        .site-status {
+            display: flex;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding: 0.5rem 1rem;
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            background-color: var(--accent-teal);
+            border-radius: 50%;
+            margin-right: 0.5rem;
+        }
+
+        .nav-section {
+            margin-bottom: 2rem;
+        }
+
+        .nav-title {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+            padding-left: 0.5rem;
+            letter-spacing: 1px;
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-item {
+            margin-bottom: 0.25rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: 4px;
+            transition: var(--transition-standard);
+        }
+
+        .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+        }
+
+        .nav-link.active {
+            background-color: rgba(0, 255, 212, 0.1);
+            color: var(--accent-teal);
+        }
+
+        .nav-icon {
+            margin-right: 0.75rem;
+            font-size: 1.1rem;
+        }
+
+        .sidebar-footer {
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-link {
+            color: var(--text-primary);
+            text-decoration: none;
+            display: block;
+            margin-bottom: 15px;
+        }
+
+        .sidebar-link.highlight {
+            color: var(--accent-teal);
+            font-weight: 600;
+        }
+
+        .main-content {
+            margin-left: 280px;
+            padding: 2rem;
+            width: calc(100% - 280px);
+            margin-top: 44px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background-color: var(--accent-purple);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin-right: 0.75rem;
+        }
+
+        .user-name {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .btn-success {
+            background-color: #2ecc71;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 4px;
+            text-decoration: none;
+            margin-right: 15px;
+        }
+
+        .site-preview-container {
+            background-color: var(--secondary-bg);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: var(--shadow-normal);
+        }
+
+        .preview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .device-selector {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .device-button {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: var(--transition-standard);
+        }
+
+        .device-button.active {
+            background-color: rgba(0, 255, 212, 0.1);
+            color: var(--accent-teal);
+        }
+
+        .preview-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .preview-button {
+            display: flex;
+            align-items: center;
+            color: var(--text-secondary);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: var(--transition-standard);
+        }
+
+        .preview-button:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+        }
+
+        .publish-button {
+            background: linear-gradient(to right, var(--accent-teal), var(--accent-purple));
+            color: var(--primary-bg);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition-standard);
+        }
+
+        .publish-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .iframe-container {
+            width: 100%;
+            height: calc(100vh - 200px);
+            overflow: hidden;
+            transition: width 0.3s ease;
+        }
+
+        .iframe-container.desktop {
+            width: 100%;
+        }
+
+        .iframe-container.tablet {
+            width: 768px;
+            margin: 0 auto;
+        }
+
+        .iframe-container.mobile {
+            width: 375px;
+            margin: 0 auto;
+        }
+
+        .site-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* Dashboard Sections - Leeway Standards */
+        .dashboard-section {
+            display: none;
+        }
+
+        .dashboard-section.active {
+            display: block;
+        }
+
+        .section-header {
+            margin-bottom: 2rem;
+        }
+
+        .section-header h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .section-header p {
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+
+        /* Dashboard Cards - Leeway Standards */
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .dashboard-card {
+            background-color: var(--secondary-bg);
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-normal);
+            transition: var(--transition-standard);
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .card-title {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            margin: 0;
+        }
+
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .card-icon.purple {
+            background-color: rgba(106, 13, 173, 0.2);
+            color: var(--accent-purple);
+        }
+
+        .card-icon.teal {
+            background-color: rgba(0, 255, 212, 0.2);
+            color: var(--accent-teal);
+        }
+
+        .card-icon.coral {
+            background-color: rgba(255, 71, 87, 0.2);
+            color: var(--accent-coral);
+        }
+
+        .card-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .card-description {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        /* Stats Chart - Leeway Standards */
+        .stats-chart {
+            background-color: var(--secondary-bg);
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-normal);
+            margin-bottom: 2rem;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .chart-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .chart-period {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .period-button {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: var(--transition-standard);
+        }
+
+        .period-button.active {
+            background-color: rgba(0, 255, 212, 0.1);
+            color: var(--accent-teal);
+        }
+
+        .chart-container {
+            height: 300px;
+        }
+
+        /* Row Container - Leeway Standards */
+        .row-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .half-width {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .full-width {
+            width: 100%;
+        }
+
+        /* Content Cards - Leeway Standards */
+        .content-card {
+            background-color: var(--secondary-bg);
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-normal);
+            height: 100%;
+        }
+
+        /* Activity List - Leeway Standards */
+        .activity-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: rgba(0, 255, 212, 0.1);
+            color: var(--accent-teal);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-title {
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .activity-time {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        /* Top Content List - Leeway Standards */
+        .top-content-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .top-content-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .top-content-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .content-thumbnail {
+            width: 60px;
+            height: 60px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .content-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .content-details {
+            flex: 1;
+        }
+
+        .content-title {
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .content-stats {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        /* Analytics Styles - Leeway Standards */
+        .analytics-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            background-color: var(--secondary-bg);
+            padding: 1rem;
+            border-radius: 8px;
+            align-items: center;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .filter-group label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .filter-select {
+            background-color: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: var(--text-primary);
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            min-width: 150px;
+        }
+
+        .filter-button {
+            background-color: var(--accent-teal);
+            color: var(--primary-bg);
+            border: none;
+            padding: 0.5rem 1.5rem;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-left: auto;
+        }
+
+        .analytics-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .analytics-card {
+            background-color: var(--secondary-bg);
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-normal);
+            text-align: center;
+        }
+
+        .analytics-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .analytics-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .analytics-change {
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .analytics-change.positive {
+            color: var(--accent-teal);
+        }
+
+        .analytics-change.negative {
+            color: var(--accent-coral);
+        }
+
+        .analytics-charts {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .analytics-tables {
+            margin-bottom: 2rem;
+        }
+
+        .table-container {
+            background-color: var(--secondary-bg);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: var(--shadow-normal);
+        }
+
+        .table-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .table-header h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .analytics-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .analytics-table th,
+        .analytics-table td {
+            padding: 1rem 1.5rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .analytics-table th {
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .analytics-table td {
+            color: var(--text-primary);
+        }
+
+        .analytics-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* User Behavior Section - Leeway Standards */
+        .user-behavior-section {
+            margin-top: 3rem;
+        }
+
+        .behavior-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .behavior-card {
+            background-color: var(--secondary-bg);
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-normal);
+        }
+
+        .behavior-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .behavior-header h4 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .behavior-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: rgba(0, 255, 212, 0.1);
+            color: var(--accent-teal);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .behavior-content {
+            height: 200px;
+        }
+
+        .behavior-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .behavior-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .behavior-label {
+            color: var(--text-secondary);
+        }
+
+        .behavior-value {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        /* Action Buttons - Leeway Standards */
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .action-button {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: var(--transition-standard);
+        }
+
+        .action-button.primary {
+            background-color: var(--accent-teal);
+            color: var(--primary-bg);
+        }
+
+        .action-button.secondary {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+        }
+
+        .action-button:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Content Message - Leeway Standards */
+        .content-message {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 3rem;
+            background-color: var(--secondary-bg);
+            border-radius: 8px;
+            box-shadow: var(--shadow-normal);
+        }
+
+        .message-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background-color: rgba(0, 255, 212, 0.1);
+            color: var(--accent-teal);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .message-content h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .message-content p {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            max-width: 500px;
+        }
+
+        /* Fan Stats - Leeway Standards */
+        .fan-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .fan-stat-card {
+            background-color: var(--secondary-bg);
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-normal);
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        /* Social Media Accounts - Leeway Standards */
+        .social-accounts {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .social-account-card {
+            background-color: var(--secondary-bg);
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-normal);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .social-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .social-icon.instagram {
+            background: linear-gradient(45deg, #405DE6, #5851DB, #833AB4, #C13584, #E1306C, #FD1D1D);
+            color: white;
+        }
+
+        .social-icon.twitter {
+            background-color: #1DA1F2;
+            color: white;
+        }
+
+        .social-icon.facebook {
+            background-color: #4267B2;
+            color: white;
+        }
+
+        .social-icon.youtube {
+            background-color: #FF0000;
+            color: white;
+        }
+
+        .social-icon.spotify {
+            background-color: #1DB954;
+            color: white;
+        }
+
+        .social-account-info {
+            flex: 1;
+        }
+
+        .social-account-info h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .status {
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status.connected {
+            color: var(--accent-teal);
+        }
+
+        .status.not-connected {
+            color: var(--accent-coral);
+        }
+
+        .connect-button {
+            background-color: var(--accent-teal);
+            color: var(--primary-bg);
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* Profile Form - Leeway Standards */
+        .profile-form {
+            background-color: var(--secondary-bg);
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: var(--shadow-normal);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            color: var(--text-primary);
+        }
+
+        .form-control::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .upload-container {
+            border: 2px dashed rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .upload-text {
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .upload-subtext {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        /* Settings Tabs - Leeway Standards */
+        .settings-tabs {
+            background-color: var(--secondary-bg);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: var(--shadow-normal);
+            margin-bottom: 2rem;
+        }
+
+        .tab-buttons {
+            display: flex;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .tab-button {
+            padding: 1rem 1.5rem;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition-standard);
+        }
+
+        .tab-button.active {
+            color: var(--accent-teal);
+            border-bottom: 2px solid var(--accent-teal);
+        }
+
+        .tab-content {
+            padding: 2rem;
+        }
+
+        .tab-pane {
+            display: none;
+        }
+
+        .tab-pane.active {
+            display: block;
+        }
+
+        /* Integrations - Leeway Standards */
+        .integrations-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .integration-card {
+            background-color: var(--secondary-bg);
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-normal);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .integration-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            background-color: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--text-primary);
+        }
+
+        .integration-info {
+            flex: 1;
+        }
+
+        .integration-info h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .integration-info p {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Modal - Leeway Standards */
+        .edit-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: var(--secondary-bg);
+            border-radius: 8px;
+            box-shadow: var(--shadow-normal);
+            width: 90%;
+            max-width: 800px;
+            z-index: 1001;
+            display: none;
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .modal-footer {
+            padding: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+        }
+
+        .backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            display: none;
+        }
+
+        /* Responsive Styles - Leeway Standards */
+        @media screen and (max-width: 768px) {
+          h1 {
+            font-size: 2.5rem;
+          }
+
+          h2 {
+            font-size: 2rem;
+          }
+
+          h3 {
+            font-size: 1.5rem;
+          }
+
+          .navbar-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            background-color: rgba(18, 18, 18, 0.95);
+            flex-direction: column;
+            align-items: center;
+            padding: 1rem 0;
+            clip-path: polygon(0 0, 100% 0, 100% 0, 0 0);
+            transition: var(--transition);
+          }
+
+          .navbar-menu.active {
+            clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+          }
+
+          .navbar-item {
+            margin: 0.5rem 0;
+          }
+
+          .navbar-toggle {
+            display: block;
+          }
+
+          .agent-chat {
+            width: 300px;
+            height: 400px;
+          }
+
+          .music-album-container,
+          .about-content {
+            flex-direction: column;
+          }
+
+          .event-item {
+            flex-direction: column;
+            align-items: flex-start;
+          }
+
+          .event-item .btn {
+            margin-top: 1rem;
+          }
+
+          .countdown {
+            margin: 1rem 0;
+          }
+
+          .footer-content {
+            grid-template-columns: 1fr;
+          }
+
+          .footer-bottom {
+            flex-direction: column;
+            text-align: center;
+            gap: 1rem;
+          }
+
+          .main-content {
+            margin-left: 0;
+            width: 100%;
+            padding: 1rem;
+          }
+
+          .sidebar {
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+          }
+
+          .sidebar.active {
+            transform: translateX(0);
+          }
+        }
+    </style>
+</head>
+<body>
+    <!-- Main Website / Admin Dashboard Toggle -->
+    <div id="site-toggle" class="site-toggle">
+        <button type="button" id="toggle-main" class="toggle-btn active" onclick="showMainSite()">Main Website</button>
+        <button type="button" id="toggle-admin" class="toggle-btn" onclick="showAdminDashboard()">Admin Dashboard</button>
+    </div>
+
+    <!-- MAIN WEBSITE CONTENT -->
+    <div id="main-site-content">
+        <!-- Template Banner -->
+        <div class="template-banner">
+            🚀 THIS IS A TEMPLATE - THE JUMP-OFF TEMPLATE - $500 ONE-TIME PURCHASE
+            <a href="#" class="template-banner-link" onclick="showAdminDashboard(); return false;">View Rapid Web Development Dashboard</a>
+            <a href="#buy-template" class="template-banner-buy">Buy This Template</a>
+        </div>
+
+        <!-- Navigation Bar -->
+        <nav class="navbar">
+            <div class="container navbar-container">
+                <a href="#" class="navbar-logo">Artist Template</a>
+
+                <button type="button" class="navbar-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+
+                <ul class="navbar-menu">
+                    <li class="navbar-item"><a href="#home" class="navbar-link">Home</a></li>
+                    <li class="navbar-item"><a href="#videos" class="navbar-link">Music</a></li>
+                    <li class="navbar-item"><a href="#calculator" class="navbar-link">Biography</a></li>
+                    <li class="navbar-item"><a href="#merch" class="navbar-link">Merch</a></li>
+                    <li class="navbar-item"><a href="#tour" class="navbar-link">Tour</a></li>
+                    <li class="navbar-item"><a href="#community" class="navbar-link">Community</a></li>
+                    <li class="navbar-item"><a href="#about" class="navbar-link">About</a></li>
+                    <li class="navbar-item"><a href="#booking" class="navbar-link">Booking</a></li>
+                    <li class="navbar-item"><a href="#" onclick="showAdminDashboard(); return false;" class="navbar-link admin-panel-btn">Admin Panel</a></li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- 1. Hero Banner Section - Leeway Standards -->
+        <section id="home" class="hero">
+            <img src="6fksuyoo93.png" alt="The Jump-Off Template" class="hero-image">
+            <div class="hero-content">
+                <h1>Your Music. Your Rules.</h1>
+                <p class="subheadline">THE JUMP-OFF TEMPLATE - Complete artist website solution</p>
+                <div class="hero-buttons">
+                    <a href="#videos" class="btn btn-primary btn-large">Stream Now</a>
+                    <a href="#merch" class="btn btn-secondary btn-large">Buy Merch</a>
+                    <a href="#buy-template" class="btn btn-accent btn-large template-buy-btn">BUY THIS TEMPLATE - $500</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. Music Section - Leeway Standards -->
+        <section id="videos" class="video-section">
+            <div class="container">
+                <h2 class="section-title">Latest Music</h2>
+
+                <!-- Featured Music Video - Leeway Standards -->
+                <div class="video-container">
+                    <video controls>
+                        <source src="add1.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                    <div class="video-caption">
+                        <h3>"Summer Vibes" - Official Music Video</h3>
+                        <p>Directed by John Smith | Released June 2023</p>
+                    </div>
+                </div>
+
+                <!-- Featured Album - Leeway Standards -->
+                <div class="music-album-featured">
+                    <div class="music-album-container">
+                        <div class="music-album-cover">
+                            <img src="6fksuyoo93.png" alt="Album Cover">
+                            <div class="album-badge">NEW RELEASE</div>
+                        </div>
+                        <div class="music-album-info">
+                            <h3 class="music-album-title">Midnight Dreams</h3>
+                            <p class="music-release-date">Released: May 15, 2023</p>
+                            <p class="music-album-description">The highly anticipated sophomore album featuring 12 tracks that blend electronic beats with soulful vocals. Produced by Grammy-winning producer James Wilson and recorded at Sunset Studios in Los Angeles.</p>
+                            <div class="music-pricing-options">
+                                <div class="music-pricing-option">
+                                    <div class="music-pricing-option-title">STREAMING</div>
+                                    <div class="music-pricing-option-price">FREE</div>
+                                    <div>All platforms</div>
+                                </div>
+                                <div class="music-pricing-option">
+                                    <div class="music-pricing-option-title">DOWNLOAD</div>
+                                    <div class="music-pricing-option-price">$9.99</div>
+                                    <div>High quality</div>
+                                </div>
+                                <div class="music-pricing-option">
+                                    <div class="music-pricing-option-title">VINYL</div>
+                                    <div class="music-pricing-option-price">$24.99</div>
+                                    <div>Limited edition</div>
+                                </div>
+                            </div>
+                            <div class="album-actions">
+                                <a href="#" class="btn btn-primary">Stream Now</a>
+                                <a href="#" class="btn btn-secondary">Buy Album</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Discography Section - Leeway Standards -->
+                <div class="discography-section">
+                    <h3 class="discography-title">Discography</h3>
+
+                    <div class="discography-tabs">
+                        <button type="button" class="discography-tab active" data-tab="albums">Albums</button>
+                        <button type="button" class="discography-tab" data-tab="singles">Singles</button>
+                        <button type="button" class="discography-tab" data-tab="eps">EPs</button>
+                    </div>
+
+                    <div class="discography-content">
+                        <!-- Albums Tab -->
+                        <div class="discography-tab-content active" id="albums-content">
+                            <div class="album-grid">
+                                <div class="album-item">
+                                    <div class="album-cover">
+                                        <img src="6fksuyoo93.png" alt="Midnight Dreams Album">
+                                        <div class="album-year">2023</div>
+                                    </div>
+                                    <div class="album-details">
+                                        <h4>Midnight Dreams</h4>
+                                        <p>12 Tracks</p>
+                                    </div>
+                                </div>
+
+                                <div class="album-item">
+                                    <div class="album-cover">
+                                        <img src="6fksuyoo93.png" alt="First Light Album">
+                                        <div class="album-year">2021</div>
+                                    </div>
+                                    <div class="album-details">
+                                        <h4>First Light</h4>
+                                        <p>10 Tracks</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Singles Tab -->
+                        <div class="discography-tab-content" id="singles-content">
+                            <div class="album-grid">
+                                <div class="album-item">
+                                    <div class="album-cover">
+                                        <img src="6fksuyoo93.png" alt="Summer Vibes Single">
+                                        <div class="album-year">2023</div>
+                                    </div>
+                                    <div class="album-details">
+                                        <h4>Summer Vibes</h4>
+                                        <p>Single</p>
+                                    </div>
+                                </div>
+
+                                <div class="album-item">
+                                    <div class="album-cover">
+                                        <img src="6fksuyoo93.png" alt="Neon Lights Single">
+                                        <div class="album-year">2022</div>
+                                    </div>
+                                    <div class="album-details">
+                                        <h4>Neon Lights</h4>
+                                        <p>Single</p>
+                                    </div>
+                                </div>
+
+                                <div class="album-item">
+                                    <div class="album-cover">
+                                        <img src="6fksuyoo93.png" alt="Echoes Single">
+                                        <div class="album-year">2022</div>
+                                    </div>
+                                    <div class="album-details">
+                                        <h4>Echoes</h4>
+                                        <p>Single</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- EPs Tab -->
+                        <div class="discography-tab-content" id="eps-content">
+                            <div class="album-grid">
+                                <div class="album-item">
+                                    <div class="album-cover">
+                                        <img src="6fksuyoo93.png" alt="Acoustic Sessions EP">
+                                        <div class="album-year">2022</div>
+                                    </div>
+                                    <div class="album-details">
+                                        <h4>Acoustic Sessions</h4>
+                                        <p>5 Tracks</p>
+                                    </div>
+                                </div>
+
+                                <div class="album-item">
+                                    <div class="album-cover">
+                                        <img src="6fksuyoo93.png" alt="Remixed EP">
+                                        <div class="album-year">2021</div>
+                                    </div>
+                                    <div class="album-details">
+                                        <h4>Remixed</h4>
+                                        <p>4 Tracks</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Second Music Video - Leeway Standards -->
+                <div class="video-container video-container-second">
+                    <video controls>
+                        <source src="add2.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                    <div class="video-caption">
+                        <h3>"Neon Lights" - Official Lyric Video</h3>
+                        <p>Animation by Creative Studios | Released December 2022</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Featured Promotional Video Before Biography -->
+        <section class="video-section">
+            <div class="container">
+                <h2 class="section-title">Featured Artist Video</h2>
+
+                <!-- Featured Promo Video -->
+                <div class="video-container">
+                    <video controls>
+                        <source src="add1.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                    <div class="video-caption">
+                        <h3>Artist Spotlight: Behind the Music</h3>
+                        <p>An exclusive look at the creative process and journey</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. Revenue Calculator Section - Leeway Standards -->
+        <section id="calculator" class="calculator-section">
+            <div class="container">
+                <h2 class="section-title">Artist Revenue Calculator</h2>
+                <p class="section-description text-center">See how much more you can earn by selling direct to fans vs streaming platforms.</p>
+
+                <div class="calculator">
+                    <div class="calculator-inputs">
+                        <div>
+                            <label for="platform">Streaming Platform:</label>
+                            <select id="platform" class="form-control">
+                                <option value="spotify">Spotify</option>
+                                <option value="apple">Apple Music</option>
+                                <option value="youtube">YouTube</option>
+                                <option value="bandcamp">Bandcamp</option>
+                                <option value="direct">Direct Sales</option>
+                            </select>
+                        </div>
+
+                        <div class="slider-container">
+                            <label for="stream-count">Monthly Streams: <span id="stream-value">10000</span></label>
+                            <input type="range" id="stream-count" class="slider" min="1000" max="1000000" step="1000" value="10000">
+                        </div>
+
+                        <div class="calculator-results">
+                            <div class="result-item">
+                                <div class="result-label">Platform Takes:</div>
+                                <div class="result-value" id="platform-revenue">$27.00</div>
+                            </div>
+                            <div class="result-item">
+                                <div class="result-label">You Earn:</div>
+                                <div class="result-value" id="artist-revenue">$3.00</div>
+                            </div>
+                            <div class="result-divider"></div>
+                            <div class="result-item highlight">
+                                <div class="result-label">Direct Sales Comparison (<span id="direct-sales-value">100</span> sales):</div>
+                                <div class="result-value" id="compare-revenue">$47.50</div>
+                            </div>
+                            <div class="result-difference" id="revenue-difference">That's 1583% more revenue by supporting the artist directly!</div>
+                        </div>
+                    </div>
+
+                    <div class="calculator-chart">
+                        <canvas id="revenue-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- 4. Merch Store Section - Leeway Standards -->
+        <section id="merch" class="merch-section">
+            <div class="container">
+                <h2 class="section-title">Merch Store</h2>
+
+                <!-- Featured Merch Video -->
+                <div class="merch-featured">
+                    <div class="merch-video-container">
+                        <video controls class="merch-promo-video">
+                            <source src="add1.mp4" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                        <div class="merch-video-caption">
+                            <h3>New Collection Promo</h3>
+                            <p>Check out our latest merch collection in this exclusive video!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="merch-grid">
+                    <div class="merch-card">
+                        <div class="merch-image-container">
+                            <img src="6fksuyoo93.png" alt="Tour T-Shirt" class="merch-image">
+                            <div class="merch-badge">Bestseller</div>
+                        </div>
+                        <div class="merch-info">
+                            <h3 class="merch-title">Tour T-Shirt</h3>
+                            <div class="merch-price">$24.99</div>
+                            <div class="merch-description">
+                                <p>Official tour t-shirt featuring artwork from the latest album. Available in sizes S-XXL.</p>
+                                <ul class="merch-features">
+                                    <li>100% premium cotton</li>
+                                    <li>Pre-shrunk fabric</li>
+                                    <li>Unisex fit</li>
+                                </ul>
+                            </div>
+                            <div class="merch-actions">
+                                <div class="merch-quantity">
+                                    <label for="qty-tshirt">Qty:</label>
+                                    <select id="qty-tshirt" class="qty-select">
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                    </select>
+                                </div>
+                                <a href="#" class="btn btn-primary">Add to Cart</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="merch-card">
+                        <div class="merch-image-container">
+                            <img src="6fksuyoo93.png" alt="Artist Hoodie" class="merch-image">
+                            <div class="merch-badge">New</div>
+                        </div>
+                        <div class="merch-info">
+                            <h3 class="merch-title">Artist Hoodie</h3>
+                            <div class="merch-price">$49.99</div>
+                            <div class="merch-description">
+                                <p>Premium quality hoodie with embroidered logo on front and album artwork on back.</p>
+                                <ul class="merch-features">
+                                    <li>80% cotton, 20% polyester</li>
+                                    <li>Heavyweight fleece</li>
+                                    <li>Front pouch pocket</li>
+                                </ul>
+                            </div>
+                            <div class="merch-actions">
+                                <div class="merch-quantity">
+                                    <label for="qty-hoodie">Qty:</label>
+                                    <select id="qty-hoodie" class="qty-select">
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                    </select>
+                                </div>
+                                <a href="#" class="btn btn-primary">Add to Cart</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="merch-card">
+                        <div class="merch-image-container">
+                            <img src="6fksuyoo93.png" alt="Limited Edition Vinyl" class="merch-image">
+                            <div class="merch-badge">Limited</div>
+                        </div>
+                        <div class="merch-info">
+                            <h3 class="merch-title">Limited Edition Vinyl</h3>
+                            <div class="merch-price">$29.99</div>
+                            <div class="merch-description">
+                                <p>Limited edition colored vinyl with exclusive artwork and bonus tracks.</p>
+                                <ul class="merch-features">
+                                    <li>180g heavyweight vinyl</li>
+                                    <li>Gatefold sleeve</li>
+                                    <li>Includes digital download code</li>
+                                </ul>
+                            </div>
+                            <div class="merch-actions">
+                                <div class="merch-quantity">
+                                    <label for="qty-vinyl">Qty:</label>
+                                    <select id="qty-vinyl" class="qty-select">
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                    </select>
+                                </div>
+                                <a href="#" class="btn btn-primary">Add to Cart</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="merch-card">
+                        <div class="merch-image-container">
+                            <img src="6fksuyoo93.png" alt="Artist Hat/Cap" class="merch-image">
+                        </div>
+                        <div class="merch-info">
+                            <h3 class="merch-title">Artist Hat/Cap</h3>
+                            <div class="merch-price">$19.99</div>
+                            <div class="merch-description">
+                                <p>Stylish snapback cap with embroidered artist logo.</p>
+                                <ul class="merch-features">
+                                    <li>Adjustable snapback</li>
+                                    <li>Flat brim</li>
+                                    <li>One size fits most</li>
+                                </ul>
+                            </div>
+                            <div class="merch-actions">
+                                <div class="merch-quantity">
+                                    <label for="qty-cap">Qty:</label>
+                                    <select id="qty-cap" class="qty-select">
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                    </select>
+                                </div>
+                                <a href="#" class="btn btn-primary">Add to Cart</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Second Merch Promo Video -->
+                <div class="merch-featured merch-featured-bottom">
+                    <div class="merch-video-container">
+                        <video controls class="merch-promo-video">
+                            <source src="add2.mp4" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                        <div class="merch-video-caption">
+                            <h3>Behind the Scenes: Merch Photoshoot</h3>
+                            <p>Get a glimpse of how we created our latest merch collection!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. Tour Dates Section - Leeway Standards -->
+        <section id="tour" class="tour-section">
+            <div class="container">
+                <h2 class="section-title">Upcoming Tour Dates</h2>
+                <div class="tour-calendar">
+                    <ul class="event-list">
+                        <li class="event-item">
+                            <div class="event-details">
+                                <div class="event-date">June 15, 2023</div>
+                                <div class="event-location">The Venue, New York, NY</div>
+                            </div>
+                            <div class="countdown" data-date="2023-06-15T20:00:00">10d 5h</div>
+                            <a href="#" class="btn btn-primary">Get Tickets</a>
+                        </li>
+                        <li class="event-item">
+                            <div class="event-details">
+                                <div class="event-date">June 18, 2023</div>
+                                <div class="event-location">Music Hall, Boston, MA</div>
+                            </div>
+                            <div class="countdown" data-date="2023-06-18T19:30:00">13d 4h</div>
+                            <a href="#" class="btn btn-primary">Get Tickets</a>
+                        </li>
+                        <li class="event-item">
+                            <div class="event-details">
+                                <div class="event-date">June 22, 2023</div>
+                                <div class="event-location">The Club, Chicago, IL</div>
+                            </div>
+                            <div class="countdown" data-date="2023-06-22T21:00:00">17d 6h</div>
+                            <a href="#" class="btn btn-primary">Get Tickets</a>
+                        </li>
+                        <li class="event-item">
+                            <div class="event-details">
+                                <div class="event-date">June 25, 2023</div>
+                                <div class="event-location">Concert Hall, Los Angeles, CA</div>
+                            </div>
+                            <div class="countdown" data-date="2023-06-25T20:00:00">20d 5h</div>
+                            <a href="#" class="btn btn-primary">Get Tickets</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. Fan Community Section - Leeway Standards -->
+        <section id="community" class="community-section">
+            <div class="container">
+                <h2 class="section-title">Fan Community</h2>
+                <div class="fan-club">
+                    <div class="chat-container">
+                        <div class="chat-message artist-message">
+                            <strong>Artist:</strong> Hey everyone! Thanks for joining the community. I'll be sharing exclusive content here.
+                        </div>
+                        <div class="chat-message fan-message">
+                            <strong>Fan1:</strong> Love the new album! When's the next tour?
+                        </div>
+                        <div class="chat-message artist-message">
+                            <strong>Artist:</strong> Tour dates are up now! Check the Tour section for details.
+                        </div>
+                        <div class="chat-message fan-message">
+                            <strong>Fan2:</strong> Just got my merch! The quality is amazing.
+                        </div>
+                        <div class="chat-message fan-message">
+                            <strong>Fan3:</strong> Will you be adding more tour dates?
+                        </div>
+                        <div class="chat-message artist-message">
+                            <strong>Artist:</strong> Yes! More dates coming soon. Stay tuned!
+                        </div>
+                    </div>
+                    <div class="message-input">
+                        <input type="text" placeholder="Type your message..." aria-label="Message to community">
+                        <button type="button" class="btn btn-primary">Send</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 7. About Section - Leeway Standards -->
+        <section id="about" class="about-section">
+            <div class="container">
+                <h2 class="section-title">About the Artist</h2>
+                <div class="about-content">
+                    <div class="about-image">
+                        <img src="6fksuyoo93.png" alt="Artist Photo">
+                    </div>
+                    <div class="about-text">
+                        <p><strong>THE JOURNEY</strong> - This artist's story began in the streets of Brooklyn, where the rhythms of the city became the backdrop for a musical journey that would eventually captivate audiences worldwide. From humble beginnings performing at local venues to headlining major festivals, the path has been defined by passion, perseverance, and an unwavering commitment to authentic expression.</p>
+
+                        <p>Drawing inspiration from a diverse range of influences—from classic soul and jazz to contemporary hip-hop and electronic music—this artist has crafted a signature sound that defies easy categorization. Each album represents a chapter in an evolving story, with lyrics that explore themes of personal growth, social justice, and the human experience.</p>
+
+                        <p>With multiple chart-topping releases, sold-out tours across five continents, and collaborations with some of the industry's most respected names, the journey continues to unfold. Yet despite the accolades, the focus remains on creating music that resonates, connects, and inspires—music that speaks to the heart while moving the body.</p>
+
+                        <p><strong>THE MISSION</strong> - Beyond the music, there's a commitment to giving back through various charitable initiatives and mentorship programs for young artists. Because at the end of the day, it's not just about making great music—it's about making a difference.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 8. Testimonials Section - Leeway Standards -->
+        <section id="testimonials" class="testimonials-section">
+            <div class="container">
+                <h2 class="section-title">What Fans Are Saying</h2>
+                <div class="testimonial-slider">
+                    <div class="testimonial-item active">
+                        <div class="testimonial-quote">"This artist's music has changed my life. The lyrics speak to me on a deep level and the melodies are unforgettable."</div>
+                        <div class="testimonial-author">Jane Doe</div>
+                        <div class="testimonial-location">New York, NY</div>
+                    </div>
+                    <div class="testimonial-item">
+                        <div class="testimonial-quote">"I've been to every tour for the past 5 years. The live shows are an experience like no other!"</div>
+                        <div class="testimonial-author">John Smith</div>
+                        <div class="testimonial-location">Los Angeles, CA</div>
+                    </div>
+                    <div class="testimonial-item">
+                        <div class="testimonial-quote">"The new album is a masterpiece. Every song tells a story and the production quality is top-notch."</div>
+                        <div class="testimonial-author">Sarah Johnson</div>
+                        <div class="testimonial-location">Chicago, IL</div>
+                    </div>
+                    <div class="testimonial-dots">
+                        <span class="dot active"></span>
+                        <span class="dot"></span>
+                        <span class="dot"></span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 9. Booking Section - Leeway Standards -->
+        <section id="booking" class="booking-section">
+            <div class="container">
+                <h2 class="section-title">Book the Artist</h2>
+                <div class="booking-form">
+                    <form>
+                        <div class="form-group">
+                            <label for="name">Your Name</label>
+                            <input type="text" id="name" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email Address</label>
+                            <input type="email" id="email" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="event-type">Event Type</label>
+                            <select id="event-type" class="form-control">
+                                <option value="concert">Concert</option>
+                                <option value="festival">Festival</option>
+                                <option value="private">Private Event</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="event-date">Event Date</label>
+                            <input type="date" id="event-date" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="message">Additional Details</label>
+                            <textarea id="message" class="form-control" rows="5"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-large">Submit Booking Request</button>
+                    </form>
+                </div>
+
+                <!-- Commercial/Ad Section -->
+                <div style="margin-top: 40px; background-color: rgba(0,0,0,0.05); padding: 20px; border-radius: 8px; text-align: center;">
+                    <h3 style="margin-bottom: 15px; color: #e74c3c;">Upgrade to Premium for Ad-Free Experience</h3>
+                    <p style="margin-bottom: 20px;">Enjoy our platform without interruptions by upgrading to our premium plan.</p>
+
+                    <div class="video-container" style="max-width: 600px; margin: 0 auto;">
+                        <video controls>
+                            <source src="add1.mp4" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                        <div class="video-caption">
+                            <h3>Premium Membership Benefits</h3>
+                            <p>See why artists choose our premium services</p>
+                        </div>
+                    </div>
+
+                    <a href="#" class="btn btn-accent" style="margin-top: 20px;">Upgrade Now</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- 10. Footer Section - Leeway Standards -->
+        <footer class="footer">
+            <div class="container">
+                <div class="footer-content">
+                    <div class="footer-logo">
+                        <h3>Artist Name</h3>
+                        <p>Independent Music Artist</p>
+                    </div>
+                    <div class="footer-links">
+                        <h4>Quick Links</h4>
+                        <ul>
+                            <li><a href="#home">Home</a></li>
+                            <li><a href="#videos">Music</a></li>
+                            <li><a href="#merch">Merch</a></li>
+                            <li><a href="#tour">Tour</a></li>
+                            <li><a href="#about">About</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-social">
+                        <h4>Connect</h4>
+                        <div class="social-icons">
+                            <a href="#" class="social-icon" title="Instagram" aria-label="Instagram"><i class="fab fa-instagram"></i><span class="sr-only">Instagram</span></a>
+                            <a href="#" class="social-icon" title="Twitter" aria-label="Twitter"><i class="fab fa-twitter"></i><span class="sr-only">Twitter</span></a>
+                            <a href="#" class="social-icon" title="YouTube" aria-label="YouTube"><i class="fab fa-youtube"></i><span class="sr-only">YouTube</span></a>
+                            <a href="#" class="social-icon" title="Spotify" aria-label="Spotify"><i class="fab fa-spotify"></i><span class="sr-only">Spotify</span></a>
+                            <a href="#" class="social-icon" title="Apple Music" aria-label="Apple Music"><i class="fab fa-apple"></i><span class="sr-only">Apple Music</span></a>
+                        </div>
+                    </div>
+                    <div class="footer-newsletter">
+                        <h4>Join the Mailing List</h4>
+                        <form class="newsletter-form">
+                            <input type="email" placeholder="Your email address" aria-label="Email for newsletter">
+                            <button type="submit" class="btn btn-primary">Subscribe</button>
+                        </form>
+                    </div>
+                </div>
+                <div class="footer-bottom">
+                    <p>&copy; 2023 Artist Name. All rights reserved.</p>
+                    <p class="template-credit">RAPID WEB DEVELOP TEMPLATE - $500 One-time Purchase</p>
+                </div>
+            </div>
+        </footer>
+
+        <!-- Agent Lee Chat Assistant - Leeway Standards -->
+        <div class="agent-lee">
+            <i class="fas fa-comment"></i>
+        </div>
+
+        <div class="agent-chat">
+            <div class="agent-header">
+                <h3>Agent Lee</h3>
+                <button type="button" class="agent-close">&times;</button>
+            </div>
+            <div class="agent-messages"></div>
+            <div class="agent-input">
+                <input type="text" placeholder="Ask me anything..." aria-label="Message to Agent Lee">
+                <button type="button" class="btn btn-primary">Send</button>
+            </div>
+        </div>
+
+        <!-- Offline Message - Leeway Standards -->
+        <div class="offline-message">
+            <h3>You're Offline</h3>
+            <p>Please check your internet connection and try again.</p>
+            <button type="button" class="btn btn-primary" id="retry-connection">Retry</button>
+        </div>
+    </div>
+
+    <!-- ADMIN DASHBOARD CONTENT - Leeway Standards -->
+    <div id="admin-dashboard-content" class="admin-dashboard-content">
+        <div class="admin-banner">
+            RAPID WEB DEVELOP - Admin Dashboard Preview - $500 One-time Purchase
+        </div>
+
+        <div class="admin-container">
+            <!-- Sidebar Navigation -->
+            <div class="sidebar">
+                <div class="sidebar-logo">
+                    <span class="logo-accent">Artist</span>Dashboard
+                </div>
+
+                <div class="site-status">
+                    <div class="status-indicator"></div>
+                    <span>Site Online</span>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-title">DASHBOARD</div>
+                    <ul class="nav-menu">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link active" data-section="overview-section">
+                                <i class="fas fa-home nav-icon"></i>
+                                Overview
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-section="analytics-section">
+                                <i class="fas fa-chart-line nav-icon"></i>
+                                Analytics
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-title">CONTENT</div>
+                    <ul class="nav-menu">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-section="music-section">
+                                <i class="fas fa-music nav-icon"></i>
+                                Music
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-section="videos-section">
+                                <i class="fas fa-video nav-icon"></i>
+                                Videos
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-section="merch-section">
+                                <i class="fas fa-tshirt nav-icon"></i>
+                                Merch
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-section="tour-section">
+                                <i class="fas fa-calendar-alt nav-icon"></i>
+                                Tour Dates
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-section="fanclub-section">
+                                <i class="fas fa-users nav-icon"></i>
+                                Fan Club
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-title">SOCIAL MEDIA</div>
+                    <ul class="nav-menu">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-section="social-connect-section">
+                                <i class="fas fa-plug nav-icon"></i>
+                                Connect Accounts
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-section="social-publish-section">
+                                <i class="fas fa-paper-plane nav-icon"></i>
+                                Publish Content
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-section="social-metrics-section">
+                                <i class="fas fa-chart-pie nav-icon"></i>
+                                Social Metrics
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-title">SETTINGS</div>
+                    <ul class="nav-menu">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-section="profile-section">
+                                <i class="fas fa-user nav-icon"></i>
+                                Profile
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-section="settings-section">
+                                <i class="fas fa-cog nav-icon"></i>
+                                Settings
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-section="integrations-section">
+                                <i class="fas fa-link nav-icon"></i>
+                                Integrations
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="sidebar-footer">
+                    <a href="#" class="sidebar-link">Help Center</a>
+                    <a href="#" class="sidebar-link">Documentation</a>
+                    <a href="#" class="sidebar-link highlight">Buy Template - $500</a>
+                </div>
+            </div>
+
+            <!-- Main Content Area -->
+            <div class="main-content">
+                <div class="page-header">
+                    <h1 class="page-title">Dashboard Overview</h1>
+                    <div class="user-menu">
+                        <div class="user-avatar">A</div>
+                        <div class="user-name">Admin User</div>
+                    </div>
+                </div>
+
+                <!-- Dashboard Sections - Each section will be shown/hidden based on navigation -->
+
+                <!-- Overview Section -->
+                <div id="overview-section" class="dashboard-section active">
+                    <div class="dashboard-cards">
+                        <div class="dashboard-card">
+                            <div class="card-header">
+                                <h3 class="card-title">Total Fans</h3>
+                                <div class="card-icon purple">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                            </div>
+                            <div class="card-value">1,254</div>
+                            <div class="card-description">+12% from last month</div>
+                        </div>
+
+                        <div class="dashboard-card">
+                            <div class="card-header">
+                                <h3 class="card-title">Music Streams</h3>
+                                <div class="card-icon teal">
+                                    <i class="fas fa-music"></i>
+                                </div>
+                            </div>
+                            <div class="card-value">45,823</div>
+                            <div class="card-description">+8% from last month</div>
+                        </div>
+
+                        <div class="dashboard-card">
+                            <div class="card-header">
+                                <h3 class="card-title">Merch Sales</h3>
+                                <div class="card-icon coral">
+                                    <i class="fas fa-shopping-cart"></i>
+                                </div>
+                            </div>
+                            <div class="card-value">$3,842</div>
+                            <div class="card-description">+15% from last month</div>
+                        </div>
+
+                        <div class="dashboard-card">
+                            <div class="card-header">
+                                <h3 class="card-title">Social Reach</h3>
+                                <div class="card-icon purple">
+                                    <i class="fas fa-share-alt"></i>
+                                </div>
+                            </div>
+                            <div class="card-value">28.5K</div>
+                            <div class="card-description">+5% from last month</div>
+                        </div>
+                    </div>
+
+                    <div class="stats-chart">
+                        <div class="chart-header">
+                            <h3 class="chart-title">Performance Overview</h3>
+                            <div class="chart-period">
+                                <button type="button" class="period-button active">Week</button>
+                                <button type="button" class="period-button">Month</button>
+                                <button type="button" class="period-button">Year</button>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="overviewChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="row-container">
+                        <div class="half-width">
+                            <div class="content-card">
+                                <div class="card-header">
+                                    <h3 class="card-title">Recent Activity</h3>
+                                </div>
+                                <div class="activity-list">
+                                    <div class="activity-item">
+                                        <div class="activity-icon"><i class="fas fa-music"></i></div>
+                                        <div class="activity-content">
+                                            <div class="activity-title">New track uploaded</div>
+                                            <div class="activity-time">2 hours ago</div>
+                                        </div>
+                                    </div>
+                                    <div class="activity-item">
+                                        <div class="activity-icon"><i class="fas fa-user"></i></div>
+                                        <div class="activity-content">
+                                            <div class="activity-title">New fan registered</div>
+                                            <div class="activity-time">5 hours ago</div>
+                                        </div>
+                                    </div>
+                                    <div class="activity-item">
+                                        <div class="activity-icon"><i class="fas fa-shopping-cart"></i></div>
+                                        <div class="activity-content">
+                                            <div class="activity-title">New merch order</div>
+                                            <div class="activity-time">Yesterday</div>
+                                        </div>
+                                    </div>
+                                    <div class="activity-item">
+                                        <div class="activity-icon"><i class="fas fa-comment"></i></div>
+                                        <div class="activity-content">
+                                            <div class="activity-title">New comment on your post</div>
+                                            <div class="activity-time">2 days ago</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="half-width">
+                            <div class="content-card">
+                                <div class="card-header">
+                                    <h3 class="card-title">Top Content</h3>
+                                </div>
+                                <div class="top-content-list">
+                                    <div class="top-content-item">
+                                        <div class="content-thumbnail">
+                                            <img src="6fksuyoo93.png" alt="Content thumbnail">
+                                        </div>
+                                        <div class="content-details">
+                                            <div class="content-title">Summer Vibes (Official Video)</div>
+                                            <div class="content-stats">15.2K views</div>
+                                        </div>
+                                    </div>
+                                    <div class="top-content-item">
+                                        <div class="content-thumbnail">
+                                            <img src="6fksuyoo93.png" alt="Content thumbnail">
+                                        </div>
+                                        <div class="content-details">
+                                            <div class="content-title">Midnight Dreams (Audio)</div>
+                                            <div class="content-stats">12.8K streams</div>
+                                        </div>
+                                    </div>
+                                    <div class="top-content-item">
+                                        <div class="content-thumbnail">
+                                            <img src="6fksuyoo93.png" alt="Content thumbnail">
+                                        </div>
+                                        <div class="content-details">
+                                            <div class="content-title">Tour Announcement</div>
+                                            <div class="content-stats">8.5K views</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Analytics Section -->
+                <div id="analytics-section" class="dashboard-section">
+                    <div class="section-header">
+                        <h2>Analytics Dashboard</h2>
+                        <p>Track your performance metrics and audience engagement</p>
+                    </div>
+
+                    <div class="analytics-filters">
+                        <div class="filter-group">
+                            <label for="date-range">Date Range:</label>
+                            <select id="date-range" class="filter-select">
+                                <option value="7">Last 7 days</option>
+                                <option value="30" selected>Last 30 days</option>
+                                <option value="90">Last 90 days</option>
+                                <option value="365">Last year</option>
+                                <option value="custom">Custom range</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="data-source">Data Source:</label>
+                            <select id="data-source" class="filter-select">
+                                <option value="all" selected>All Sources</option>
+                                <option value="website">Website</option>
+                                <option value="social">Social Media</option>
+                                <option value="streaming">Streaming Platforms</option>
+                            </select>
+                        </div>
+                        <button type="button" class="filter-button">Apply Filters</button>
+                    </div>
+
+                    <div class="analytics-overview">
+                        <div class="analytics-card">
+                            <div class="analytics-value">24,892</div>
+                            <div class="analytics-label">Total Page Views</div>
+                            <div class="analytics-change positive">+18.2%</div>
+                        </div>
+                        <div class="analytics-card">
+                            <div class="analytics-value">5,432</div>
+                            <div class="analytics-label">Unique Visitors</div>
+                            <div class="analytics-change positive">+12.5%</div>
+                        </div>
+                        <div class="analytics-card">
+                            <div class="analytics-value">3:42</div>
+                            <div class="analytics-label">Avg. Time on Site</div>
+                            <div class="analytics-change positive">+0:22</div>
+                        </div>
+                        <div class="analytics-card">
+                            <div class="analytics-value">42.8%</div>
+                            <div class="analytics-label">Returning Visitors</div>
+                            <div class="analytics-change positive">+5.3%</div>
+                        </div>
+                    </div>
+
+                    <div class="analytics-charts">
+                        <div class="chart-container full-width">
+                            <div class="chart-header">
+                                <h3>Traffic Overview</h3>
+                            </div>
+                            <canvas id="trafficChart"></canvas>
+                        </div>
+
+                        <div class="chart-container half-width">
+                            <div class="chart-header">
+                                <h3>Traffic Sources</h3>
+                            </div>
+                            <canvas id="sourcesChart"></canvas>
+                        </div>
+
+                        <div class="chart-container half-width">
+                            <div class="chart-header">
+                                <h3>Device Breakdown</h3>
+                            </div>
+                            <canvas id="devicesChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="analytics-tables">
+                        <div class="table-container">
+                            <div class="table-header">
+                                <h3>Top Pages</h3>
+                            </div>
+                            <table class="analytics-table">
+                                <thead>
+                                    <tr>
+                                        <th>Page</th>
+                                        <th>Views</th>
+                                        <th>Avg. Time</th>
+                                        <th>Bounce Rate</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Homepage</td>
+                                        <td>12,458</td>
+                                        <td>2:34</td>
+                                        <td>32%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Music Page</td>
+                                        <td>5,872</td>
+                                        <td>4:12</td>
+                                        <td>18%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Tour Dates</td>
+                                        <td>3,241</td>
+                                        <td>1:45</td>
+                                        <td>25%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Merch Store</td>
+                                        <td>2,985</td>
+                                        <td>3:22</td>
+                                        <td>22%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>About</td>
+                                        <td>1,236</td>
+                                        <td>1:18</td>
+                                        <td>40%</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="user-behavior-section">
+                        <div class="section-header">
+                            <h3>User Behavior Tracking</h3>
+                            <p>See how users interact with your site</p>
+                        </div>
+
+                        <div class="behavior-cards">
+                            <div class="behavior-card">
+                                <div class="behavior-header">
+                                    <h4>Button Clicks</h4>
+                                    <div class="behavior-icon">
+                                        <i class="fas fa-mouse-pointer"></i>
+                                    </div>
+                                </div>
+                                <div class="behavior-content">
+                                    <div class="behavior-item">
+                                        <div class="behavior-label">"Stream Now" Button</div>
+                                        <div class="behavior-value">1,245 clicks</div>
+                                    </div>
+                                    <div class="behavior-item">
+                                        <div class="behavior-label">"Buy Merch" Button</div>
+                                        <div class="behavior-value">876 clicks</div>
+                                    </div>
+                                    <div class="behavior-item">
+                                        <div class="behavior-label">"Tour Dates" Button</div>
+                                        <div class="behavior-value">542 clicks</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="behavior-card">
+                                <div class="behavior-header">
+                                    <h4>Time of Day Activity</h4>
+                                    <div class="behavior-icon">
+                                        <i class="fas fa-clock"></i>
+                                    </div>
+                                </div>
+                                <div class="behavior-content">
+                                    <canvas id="timeOfDayChart"></canvas>
+                                </div>
+                            </div>
+
+                            <div class="behavior-card">
+                                <div class="behavior-header">
+                                    <h4>Return Frequency</h4>
+                                    <div class="behavior-icon">
+                                        <i class="fas fa-redo"></i>
+                                    </div>
+                                </div>
+                                <div class="behavior-content">
+                                    <div class="behavior-item">
+                                        <div class="behavior-label">Daily Visitors</div>
+                                        <div class="behavior-value">15%</div>
+                                    </div>
+                                    <div class="behavior-item">
+                                        <div class="behavior-label">Weekly Visitors</div>
+                                        <div class="behavior-value">35%</div>
+                                    </div>
+                                    <div class="behavior-item">
+                                        <div class="behavior-label">Monthly Visitors</div>
+                                        <div class="behavior-value">50%</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Music Section Placeholder -->
+                <div id="music-section" class="dashboard-section">
+                    <div class="section-header">
+                        <h2>Music Management</h2>
+                        <p>Upload, manage, and track your music</p>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button type="button" class="action-button primary">
+                            <i class="fas fa-plus"></i> Upload New Track
+                        </button>
+                        <button type="button" class="action-button secondary">
+                            <i class="fas fa-folder-plus"></i> Create Album
+                        </button>
+                    </div>
+
+                    <div class="content-message">
+                        <div class="message-icon">
+                            <i class="fas fa-music"></i>
+                        </div>
+                        <div class="message-content">
+                            <h3>No music tracks uploaded yet</h3>
+                            <p>Upload your first track to get started with your music management.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Videos Section Placeholder -->
+                <div id="videos-section" class="dashboard-section">
+                    <div class="section-header">
+                        <h2>Video Management</h2>
+                        <p>Upload, manage, and track your videos</p>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button type="button" class="action-button primary">
+                            <i class="fas fa-plus"></i> Upload New Video
+                        </button>
+                        <button type="button" class="action-button secondary">
+                            <i class="fas fa-link"></i> Link YouTube Video
+                        </button>
+                    </div>
+
+                    <div class="content-message">
+                        <div class="message-icon">
+                            <i class="fas fa-video"></i>
+                        </div>
+                        <div class="message-content">
+                            <h3>No videos uploaded yet</h3>
+                            <p>Upload your first video or link from YouTube to get started with your video management.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Merch Section -->
+                <div id="merch-section" class="dashboard-section">
+                    <div class="section-header">
+                        <h2>Merchandise Management</h2>
+                        <p>Manage your merchandise inventory and sales</p>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button type="button" class="action-button primary">
+                            <i class="fas fa-plus"></i> Add New Product
+                        </button>
+                        <button type="button" class="action-button secondary">
+                            <i class="fas fa-tags"></i> Manage Categories
+                        </button>
+                    </div>
+
+                    <div class="content-message">
+                        <div class="message-icon">
+                            <i class="fas fa-tshirt"></i>
+                        </div>
+                        <div class="message-content">
+                            <h3>No merchandise added yet</h3>
+                            <p>Add your first product to start selling merchandise to your fans.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tour Section -->
+                <div id="tour-section" class="dashboard-section">
+                    <div class="section-header">
+                        <h2>Tour Management</h2>
+                        <p>Manage your tour dates and ticket sales</p>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button type="button" class="action-button primary">
+                            <i class="fas fa-plus"></i> Add Tour Date
+                        </button>
+                        <button type="button" class="action-button secondary">
+                            <i class="fas fa-ticket-alt"></i> Manage Ticket Sales
+                        </button>
+                    </div>
+
+                    <div class="content-message">
+                        <div class="message-icon">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <div class="message-content">
+                            <h3>No tour dates added yet</h3>
+                            <p>Add your first tour date to start promoting your shows to fans.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fan Club Section -->
+                <div id="fanclub-section" class="dashboard-section">
+                    <div class="section-header">
+                        <h2>Fan Club Management</h2>
+                        <p>Manage your fan community and engagement</p>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button type="button" class="action-button primary">
+                            <i class="fas fa-envelope"></i> Send Newsletter
+                        </button>
+                        <button type="button" class="action-button secondary">
+                            <i class="fas fa-gift"></i> Create Fan Offer
+                        </button>
+                    </div>
+
+                    <div class="fan-stats">
+                        <div class="fan-stat-card">
+                            <div class="stat-value">0</div>
+                            <div class="stat-label">Registered Fans</div>
+                        </div>
+                        <div class="fan-stat-card">
+                            <div class="stat-value">0</div>
+                            <div class="stat-label">Newsletter Subscribers</div>
+                        </div>
+                        <div class="fan-stat-card">
+                            <div class="stat-value">0%</div>
+                            <div class="stat-label">Email Open Rate</div>
+                        </div>
+                        <div class="fan-stat-card">
+                            <div class="stat-value">0</div>
+                            <div class="stat-label">Fan Messages</div>
+                        </div>
+                    </div>
+
+                    <div class="content-message">
+                        <div class="message-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="message-content">
+                            <h3>No fans registered yet</h3>
+                            <p>Once fans register on your site, you'll be able to manage your fan community here.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Social Media Connect Section -->
+                <div id="social-connect-section" class="dashboard-section">
+                    <div class="section-header">
+                        <h2>Connect Social Media Accounts</h2>
+                        <p>Link your social media accounts to manage them from one place</p>
+                    </div>
+
+                    <div class="social-accounts">
+                        <div class="social-account-card">
+                            <div class="social-icon instagram">
+                                <i class="fab fa-instagram"></i>
+                            </div>
+                            <div class="social-account-info">
+                                <h3>Instagram</h3>
+                                <p class="status not-connected">Not Connected</p>
+                            </div>
+                            <button type="button" class="connect-button">Connect</button>
+                        </div>
+
+                        <div class="social-account-card">
+                            <div class="social-icon twitter">
+                                <i class="fab fa-twitter"></i>
+                            </div>
+                            <div class="social-account-info">
+                                <h3>Twitter</h3>
+                                <p class="status not-connected">Not Connected</p>
+                            </div>
+                            <button type="button" class="connect-button">Connect</button>
+                        </div>
+
+                        <div class="social-account-card">
+                            <div class="social-icon facebook">
+                                <i class="fab fa-facebook"></i>
+                            </div>
+                            <div class="social-account-info">
+                                <h3>Facebook</h3>
+                                <p class="status not-connected">Not Connected</p>
+                            </div>
+                            <button type="button" class="connect-button">Connect</button>
+                        </div>
+
+                        <div class="social-account-card">
+                            <div class="social-icon youtube">
+                                <i class="fab fa-youtube"></i>
+                            </div>
+                            <div class="social-account-info">
+                                <h3>YouTube</h3>
+                                <p class="status not-connected">Not Connected</p>
+                            </div>
+                            <button type="button" class="connect-button">Connect</button>
+                        </div>
+
+                        <div class="social-account-card">
+                            <div class="social-icon spotify">
+                                <i class="fab fa-spotify"></i>
+                            </div>
+                            <div class="social-account-info">
+                                <h3>Spotify</h3>
+                                <p class="status not-connected">Not Connected</p>
+                            </div>
+                            <button type="button" class="connect-button">Connect</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Social Media Publish Section -->
+                <div id="social-publish-section" class="dashboard-section">
+                    <div class="section-header">
+                        <h2>Publish to Social Media</h2>
+                        <p>Create and schedule posts across all your social platforms</p>
+                    </div>
+
+                    <div class="content-message">
+                        <div class="message-icon">
+                            <i class="fas fa-paper-plane"></i>
+                        </div>
+                        <div class="message-content">
+                            <h3>Connect your social accounts first</h3>
+                            <p>You need to connect your social media accounts before you can publish content.</p>
+                            <button type="button" class="action-button primary" data-section="social-connect-section">
+                                <i class="fas fa-plug"></i> Connect Accounts
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Social Media Metrics Section -->
+                <div id="social-metrics-section" class="dashboard-section">
+                    <div class="section-header">
+                        <h2>Social Media Metrics</h2>
+                        <p>Track your performance across all social platforms</p>
+                    </div>
+
+                    <div class="content-message">
+                        <div class="message-icon">
+                            <i class="fas fa-chart-pie"></i>
+                        </div>
+                        <div class="message-content">
+                            <h3>Connect your social accounts first</h3>
+                            <p>You need to connect your social media accounts to view metrics and analytics.</p>
+                            <button type="button" class="action-button primary" data-section="social-connect-section">
+                                <i class="fas fa-plug"></i> Connect Accounts
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Profile Section -->
+                <div id="profile-section" class="dashboard-section">
+                    <div class="section-header">
+                        <h2>Artist Profile</h2>
+                        <p>Manage your artist information and biography</p>
+                    </div>
+
+                    <div class="profile-form">
+                        <div class="form-group">
+                            <label for="artist-name">Artist Name</label>
+                            <input type="text" id="artist-name" class="form-control" placeholder="Enter your artist name">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="artist-email">Email Address</label>
+                            <input type="email" id="artist-email" class="form-control" placeholder="Enter your email address">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="artist-bio">Biography</label>
+                            <textarea id="artist-bio" class="form-control" rows="5" placeholder="Write your artist biography"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="artist-genre">Music Genre</label>
+                            <select id="artist-genre" class="form-control">
+                                <option value="">Select a genre</option>
+                                <option value="pop">Pop</option>
+                                <option value="rock">Rock</option>
+                                <option value="hiphop">Hip Hop</option>
+                                <option value="rnb">R&B</option>
+                                <option value="electronic">Electronic</option>
+                                <option value="country">Country</option>
+                                <option value="jazz">Jazz</option>
+                                <option value="classical">Classical</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Profile Image</label>
+                            <div class="upload-container">
+                                <div class="upload-icon">
+                                    <i class="fas fa-user-circle"></i>
+                                </div>
+                                <div class="upload-text">Drag &amp; drop an image or click to browse</div>
+                                <div class="upload-subtext">Recommended size: 500x500px</div>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="button" class="action-button secondary">Cancel</button>
+                            <button type="button" class="action-button primary">Save Profile</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Settings Section -->
+                <div id="settings-section" class="dashboard-section">
+                    <div class="section-header">
+                        <h2>Site Settings</h2>
+                        <p>Configure your website settings and preferences</p>
+                    </div>
+
+                    <div class="settings-tabs">
+                        <div class="tab-buttons">
+                            <button type="button" class="tab-button active" data-tab="general">General</button>
+                            <button type="button" class="tab-button" data-tab="appearance">Appearance</button>
+                            <button type="button" class="tab-button" data-tab="notifications">Notifications</button>
+                            <button type="button" class="tab-button" data-tab="privacy">Privacy</button>
+                        </div>
+
+                        <div class="tab-content">
+                            <div class="tab-pane active" id="general-tab">
+                                <div class="form-group">
+                                    <label for="site-title">Site Title</label>
+                                    <input type="text" id="site-title" class="form-control" placeholder="Enter your site title">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="site-description">Site Description</label>
+                                    <textarea id="site-description" class="form-control" rows="3" placeholder="Enter a brief description of your site"></textarea>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="timezone">Timezone</label>
+                                    <select id="timezone" class="form-control">
+                                        <option value="utc">UTC</option>
+                                        <option value="est">Eastern Time (EST)</option>
+                                        <option value="cst">Central Time (CST)</option>
+                                        <option value="mst">Mountain Time (MST)</option>
+                                        <option value="pst">Pacific Time (PST)</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="language">Language</label>
+                                    <select id="language" class="form-control">
+                                        <option value="en">English</option>
+                                        <option value="es">Spanish</option>
+                                        <option value="fr">French</option>
+                                        <option value="de">German</option>
+                                        <option value="ja">Japanese</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="action-button secondary">Reset to Default</button>
+                        <button type="button" class="action-button primary">Save Settings</button>
+                    </div>
+                </div>
+
+                <!-- Integrations Section -->
+                <div id="integrations-section" class="dashboard-section">
+                    <div class="section-header">
+                        <h2>Integrations</h2>
+                        <p>Connect third-party services and platforms</p>
+                    </div>
+
+                    <div class="integrations-list">
+                        <div class="integration-card">
+                            <div class="integration-icon">
+                                <i class="fab fa-paypal"></i>
+                            </div>
+                            <div class="integration-info">
+                                <h3>PayPal</h3>
+                                <p>Accept payments through PayPal</p>
+                                <p class="status not-connected">Not Connected</p>
+                            </div>
+                            <button type="button" class="connect-button">Connect</button>
+                        </div>
+
+                        <div class="integration-card">
+                            <div class="integration-icon">
+                                <i class="fab fa-stripe"></i>
+                            </div>
+                            <div class="integration-info">
+                                <h3>Stripe</h3>
+                                <p>Process credit card payments</p>
+                                <p class="status not-connected">Not Connected</p>
+                            </div>
+                            <button type="button" class="connect-button">Connect</button>
+                        </div>
+
+                        <div class="integration-card">
+                            <div class="integration-icon">
+                                <i class="fab fa-mailchimp"></i>
+                            </div>
+                            <div class="integration-info">
+                                <h3>Mailchimp</h3>
+                                <p>Email marketing automation</p>
+                                <p class="status not-connected">Not Connected</p>
+                            </div>
+                            <button type="button" class="connect-button">Connect</button>
+                        </div>
+
+                        <div class="integration-card">
+                            <div class="integration-icon">
+                                <i class="fab fa-google"></i>
+                            </div>
+                            <div class="integration-info">
+                                <h3>Google Analytics</h3>
+                                <p>Track website traffic and user behavior</p>
+                                <p class="status not-connected">Not Connected</p>
+                            </div>
+                            <button type="button" class="connect-button">Connect</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Content Editor Modal -->
+                <div class="edit-modal" id="contentEditModal">
+                    <div class="modal-header">
+                        <h2 class="modal-title">Edit Content</h2>
+                        <button type="button" class="close-modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="edit-title">Title</label>
+                            <input type="text" id="edit-title" class="form-control" value="">
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-content">Content</label>
+                            <textarea id="edit-content" class="form-control" rows="10"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Media</label>
+                            <div class="upload-container">
+                                <div class="upload-icon">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                </div>
+                                <div class="upload-text">Drag &amp; drop files or click to browse</div>
+                                <div class="upload-subtext">Supports images, videos, and audio files</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="action-button secondary">Cancel</button>
+                        <button type="button" class="action-button primary">Save Changes</button>
+                    </div>
+                </div>
+
+                <!-- Backdrop Overlay -->
+                <div class="backdrop" id="modalBackdrop"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript - Leeway Standards -->
+    <script>
+        // Toggle between main site and admin dashboard
+        function showMainSite() {
+            document.getElementById('main-site-content').style.display = 'block';
+            document.getElementById('admin-dashboard-content').style.display = 'none';
+            document.getElementById('toggle-main').classList.add('active');
+            document.getElementById('toggle-admin').classList.remove('active');
+            document.body.style.backgroundColor = 'var(--light-bg)';
+            document.body.style.color = 'var(--text-color)';
+        }
+
+        function showAdminDashboard() {
+            document.getElementById('main-site-content').style.display = 'none';
+            document.getElementById('admin-dashboard-content').style.display = 'block';
+            document.getElementById('toggle-main').classList.remove('active');
+            document.getElementById('toggle-admin').classList.add('active');
+            document.body.style.backgroundColor = 'var(--primary-bg)';
+            document.body.style.color = 'var(--text-primary)';
+        }
+
+        // Admin Dashboard Navigation
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize admin dashboard navigation
+            initAdminNavigation();
+
+            // Initialize charts if they exist
+            if (document.getElementById('overviewChart')) {
+                initOverviewChart();
+            }
+            if (document.getElementById('trafficChart')) {
+                initTrafficChart();
+            }
+            if (document.getElementById('sourcesChart')) {
+                initSourcesChart();
+            }
+            if (document.getElementById('devicesChart')) {
+                initDevicesChart();
+            }
+            if (document.getElementById('timeOfDayChart')) {
+                initTimeOfDayChart();
+            }
+        });
+
+        function initAdminNavigation() {
+            // Get all navigation links
+            const navLinks = document.querySelectorAll('.nav-link');
+
+            // Add click event to each navigation link
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+
+                    // Remove active class from all links
+                    navLinks.forEach(l => l.classList.remove('active'));
+
+                    // Add active class to clicked link
+                    this.classList.add('active');
+
+                    // Get the section to show
+                    const sectionId = this.getAttribute('data-section');
+
+                    // Hide all sections
+                    const sections = document.querySelectorAll('.dashboard-section');
+                    sections.forEach(section => section.classList.remove('active'));
+
+                    // Show the selected section
+                    document.getElementById(sectionId).classList.add('active');
+
+                    // Update page title
+                    const pageTitle = document.querySelector('.page-title');
+                    pageTitle.textContent = this.textContent.trim();
+                });
+            });
+
+            // Add click event to section buttons that navigate to other sections
+            const sectionButtons = document.querySelectorAll('button[data-section]');
+            sectionButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const sectionId = this.getAttribute('data-section');
+                    const targetLink = document.querySelector(`.nav-link[data-section="${sectionId}"]`);
+                    if (targetLink) {
+                        targetLink.click();
+                    }
+                });
+            });
+
+            // Initialize tab navigation
+            const tabButtons = document.querySelectorAll('.tab-button');
+            tabButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Remove active class from all tab buttons
+                    tabButtons.forEach(b => b.classList.remove('active'));
+
+                    // Add active class to clicked button
+                    this.classList.add('active');
+
+                    // Get the tab to show
+                    const tabId = this.getAttribute('data-tab');
+
+                    // Hide all tab panes
+                    const tabPanes = document.querySelectorAll('.tab-pane');
+                    tabPanes.forEach(pane => pane.classList.remove('active'));
+
+                    // Show the selected tab pane
+                    document.getElementById(tabId + '-tab').classList.add('active');
+                });
+            });
+
+            // Initialize modal functionality
+            const editButtons = document.querySelectorAll('.edit-button');
+            const closeModal = document.querySelector('.close-modal');
+            const modalBackdrop = document.getElementById('modalBackdrop');
+            const contentEditModal = document.getElementById('contentEditModal');
+
+            editButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    contentEditModal.style.display = 'block';
+                    modalBackdrop.style.display = 'block';
+                });
+            });
+
+            if (closeModal) {
+                closeModal.addEventListener('click', function() {
+                    contentEditModal.style.display = 'none';
+                    modalBackdrop.style.display = 'none';
+                });
+            }
+
+            if (modalBackdrop) {
+                modalBackdrop.addEventListener('click', function() {
+                    contentEditModal.style.display = 'none';
+                    modalBackdrop.style.display = 'none';
+                });
+            }
+        }
+
+        // Chart Initialization Functions
+        function initOverviewChart() {
+            const ctx = document.getElementById('overviewChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                    datasets: [
+                        {
+                            label: 'Fans',
+                            data: [500, 600, 750, 800, 950, 1000, 1100, 1150, 1200, 1250, 1300, 1350],
+                            borderColor: '#6A0DAD',
+                            backgroundColor: 'rgba(106, 13, 173, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        },
+                        {
+                            label: 'Streams',
+                            data: [10000, 15000, 20000, 25000, 30000, 32000, 35000, 38000, 40000, 42000, 44000, 45000],
+                            borderColor: '#00FFD4',
+                            backgroundColor: 'rgba(0, 255, 212, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        },
+                        {
+                            label: 'Revenue',
+                            data: [1000, 1200, 1500, 1800, 2000, 2200, 2500, 2800, 3000, 3200, 3500, 3800],
+                            borderColor: '#FF4757',
+                            backgroundColor: 'rgba(255, 71, 87, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: 'rgba(255, 255, 255, 0.7)'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: 'rgba(255, 255, 255, 0.7)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: 'rgba(255, 255, 255, 0.7)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function initTrafficChart() {
+            const ctx = document.getElementById('trafficChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+                    datasets: [
+                        {
+                            label: 'Page Views',
+                            data: [5000, 7500, 6000, 8000],
+                            borderColor: '#00FFD4',
+                            backgroundColor: 'rgba(0, 255, 212, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        },
+                        {
+                            label: 'Unique Visitors',
+                            data: [1200, 1500, 1300, 1800],
+                            borderColor: '#6A0DAD',
+                            backgroundColor: 'rgba(106, 13, 173, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: 'rgba(255, 255, 255, 0.7)'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: 'rgba(255, 255, 255, 0.7)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: 'rgba(255, 255, 255, 0.7)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function initSourcesChart() {
+            const ctx = document.getElementById('sourcesChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Direct', 'Social Media', 'Search', 'Referral'],
+                    datasets: [
+                        {
+                            data: [30, 40, 20, 10],
+                            backgroundColor: ['#00FFD4', '#6A0DAD', '#FF4757', '#FFC107'],
+                            borderWidth: 0
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: 'rgba(255, 255, 255, 0.7)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function initDevicesChart() {
+            const ctx = document.getElementById('devicesChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: ['Desktop', 'Mobile', 'Tablet'],
+                    datasets: [
+                        {
+                            data: [35, 55, 10],
+                            backgroundColor: ['#00FFD4', '#6A0DAD', '#FF4757'],
+                            borderWidth: 0
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: 'rgba(255, 255, 255, 0.7)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function initTimeOfDayChart() {
+            const ctx = document.getElementById('timeOfDayChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['12am', '3am', '6am', '9am', '12pm', '3pm', '6pm', '9pm'],
+                    datasets: [
+                        {
+                            label: 'User Activity',
+                            data: [5, 2, 3, 15, 20, 25, 30, 20],
+                            backgroundColor: '#00FFD4'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: 'rgba(255, 255, 255, 0.7)'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: 'rgba(255, 255, 255, 0.7)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: 'rgba(255, 255, 255, 0.7)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Revenue Calculator - Leeway Standards
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize revenue calculator if elements exist
+            if (document.getElementById('revenue-chart')) {
+                initRevenueCalculator();
+            }
+
+            // Initialize Agent Lee chat if elements exist
+            if (document.querySelector('.agent-lee')) {
+                initAgentLee();
+            }
+
+            // Initialize device selector for admin dashboard
+            if (document.querySelector('.device-selector')) {
+                initDeviceSelector();
+            }
+
+            // Initialize discography tabs
+            if (document.querySelector('.discography-tabs')) {
+                initDiscographyTabs();
+            }
+        });
+
+        // Discography Tabs - Leeway Standards
+        function initDiscographyTabs() {
+            const tabs = document.querySelectorAll('.discography-tab');
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // Remove active class from all tabs
+                    tabs.forEach(t => t.classList.remove('active'));
+
+                    // Add active class to clicked tab
+                    this.classList.add('active');
+
+                    // Hide all tab content
+                    const tabContents = document.querySelectorAll('.discography-tab-content');
+                    tabContents.forEach(content => content.classList.remove('active'));
+
+                    // Show the selected tab content
+                    const tabType = this.getAttribute('data-tab');
+                    document.getElementById(tabType + '-content').classList.add('active');
+                });
+            });
+        }
+
+        function initRevenueCalculator() {
+            const streamCountSlider = document.getElementById('stream-count');
+            const streamValue = document.getElementById('stream-value');
+            const platformSelect = document.getElementById('platform');
+            const platformRevenue = document.getElementById('platform-revenue');
+            const artistRevenue = document.getElementById('artist-revenue');
+            const compareRevenue = document.getElementById('compare-revenue');
+            const directSalesValue = document.getElementById('direct-sales-value');
+            const revenueDifference = document.getElementById('revenue-difference');
+            const revenueChart = document.getElementById('revenue-chart').getContext('2d');
+
+            let chart;
+
+            // Platform rates (per stream)
+            const rates = {
+                spotify: 0.003,
+                apple: 0.005,
+                youtube: 0.001,
+                bandcamp: 0.01,
+                direct: 0.5
+            };
+
+            // Update calculations
+            function updateCalculations() {
+                const streams = parseInt(streamCountSlider.value);
+                const platform = platformSelect.value;
+                const rate = rates[platform];
+
+                // Calculate revenues
+                const totalRevenue = streams * rate;
+                const platformShare = totalRevenue * 0.9;
+                const artistShare = totalRevenue * 0.1;
+
+                // Calculate direct sales comparison (1% of stream count)
+                const directSales = Math.round(streams * 0.01);
+                const directRevenue = directSales * 5;
+
+                // Calculate percentage difference
+                const percentDifference = Math.round((directRevenue / artistShare - 1) * 100);
+
+                // Update UI
+                streamValue.textContent = streams.toLocaleString();
+                platformRevenue.textContent = '$' + platformShare.toFixed(2);
+                artistRevenue.textContent = '$' + artistShare.toFixed(2);
+                directSalesValue.textContent = directSales.toLocaleString();
+                compareRevenue.textContent = '$' + directRevenue.toFixed(2);
+                revenueDifference.textContent = `That's ${percentDifference}% more revenue by supporting the artist directly!`;
+
+                // Update chart
+                updateChart(platformShare, artistShare, directRevenue);
+            }
+
+            // Initialize and update chart
+            function updateChart(platformShare, artistShare, directRevenue) {
+                const data = {
+                    labels: ['Platform Takes', 'You Earn', 'Direct Sales'],
+                    datasets: [{
+                        data: [platformShare, artistShare, directRevenue],
+                        backgroundColor: ['#e74c3c', '#3498db', '#2ecc71'],
+                        hoverBackgroundColor: ['#c0392b', '#2980b9', '#27ae60']
+                    }]
+                };
+
+                const options = {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    legend: {
+                        position: 'bottom'
+                    }
+                };
+
+                if (chart) {
+                    chart.data = data;
+                    chart.update();
+                } else {
+                    chart = new Chart(revenueChart, {
+                        type: 'pie',
+                        data: data,
+                        options: options
+                    });
+                }
+            }
+
+            // Event listeners
+            streamCountSlider.addEventListener('input', updateCalculations);
+            platformSelect.addEventListener('change', updateCalculations);
+
+            // Initial calculation
+            updateCalculations();
+        }
+
+        // Agent Lee Chat - Leeway Standards
+        function initAgentLee() {
+            const agentLee = document.querySelector('.agent-lee');
+            const agentChat = document.querySelector('.agent-chat');
+            const agentClose = document.querySelector('.agent-close');
+            const agentMessages = document.querySelector('.agent-messages');
+            const agentInput = document.querySelector('.agent-input input');
+            const agentSend = document.querySelector('.agent-input button');
+
+            // Predefined responses
+            const responses = {
+                'hello': 'Hi there! How can I help you today?',
+                'hi': 'Hello! What can I assist you with?',
+                'help': 'I can help you with information about the artist, music, merch, tour dates, and more. What would you like to know?',
+                'music': 'You can check out the latest music in the Music section. The artist has just released a new album!',
+                'merch': 'Check out the Merch section for t-shirts, hoodies, vinyl records, and more!',
+                'tour': 'The artist is currently on tour! Check the Tour section for dates and tickets.',
+                'contact': 'You can contact the artist through the Booking section or via social media.',
+                'price': 'The template costs $500 for a one-time purchase. It includes all features you see here!',
+                'template': 'This is RAPID WEB DEVELOP TEMPLATE, a complete artist website solution for $500. It includes music player, merch store, tour calendar, fan community, and admin dashboard.'
+            };
+
+            // Default response for unknown queries
+            const defaultResponse = "I'm not sure about that. Can you try asking something else about the artist, music, merch, or tour dates?";
+
+            // Open chat
+            agentLee.addEventListener('click', function() {
+                agentChat.classList.add('active');
+                agentLee.style.display = 'none';
+
+                // Add welcome message if chat is empty
+                if (agentMessages.children.length === 0) {
+                    addMessage('Hello! I\'m Agent Lee, your virtual assistant. How can I help you today?', 'agent');
+                }
+            });
+
+            // Close chat
+            agentClose.addEventListener('click', function() {
+                agentChat.classList.remove('active');
+                agentLee.style.display = 'flex';
+            });
+
+            // Send message
+            function sendMessage() {
+                const message = agentInput.value.trim();
+                if (message) {
+                    addMessage(message, 'user');
+                    setTimeout(function() {
+                        respondToMessage(message);
+                    }, 500);
+                    agentInput.value = '';
+                }
+            }
+
+            // Add message to chat
+            function addMessage(message, sender) {
+                const messageElement = document.createElement('div');
+                messageElement.classList.add('agent-message');
+                if (sender === 'user') {
+                    messageElement.classList.add('user-message');
+                }
+                messageElement.textContent = message;
+                agentMessages.appendChild(messageElement);
+                agentMessages.scrollTop = agentMessages.scrollHeight;
+            }
+
+            // Respond to user message
+            function respondToMessage(message) {
+                message = message.toLowerCase();
+                let response = defaultResponse;
+
+                // Check for keywords in the message
+                for (const keyword in responses) {
+                    if (message.includes(keyword)) {
+                        response = responses[keyword];
+                        break;
+                    }
+                }
+
+                addMessage(response, 'agent');
+            }
+
+            // Event listeners
+            agentSend.addEventListener('click', sendMessage);
+            agentInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    sendMessage();
+                }
+            });
+        }
+
+        // Device Selector for Admin Dashboard - Leeway Standards
+        function initDeviceSelector() {
+            const deviceButtons = document.querySelectorAll('.device-button');
+            const iframeContainer = document.querySelector('.iframe-container');
+
+            deviceButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Remove active class from all buttons
+                    deviceButtons.forEach(btn => btn.classList.remove('active'));
+
+                    // Add active class to clicked button
+                    this.classList.add('active');
+
+                    // Update iframe container class
+                    const device = this.getAttribute('data-device');
+                    iframeContainer.className = 'iframe-container ' + device;
+                });
+            });
+        }
+    </script>
+</body>
+</html>

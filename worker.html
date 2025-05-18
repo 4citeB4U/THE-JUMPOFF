@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Worker Module</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #e8f5e9;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    header {
+      background-color: #4a6fa5;
+      color: white;
+      padding: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    h2 {
+      margin: 0;
+      font-size: 1.2rem;
+    }
+    
+    .status-badge {
+      font-size: 0.8rem;
+      background-color: #45b69c;
+      color: white;
+      padding: 3px 8px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+    }
+    
+    .status-badge:before {
+      content: "";
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: white;
+      margin-right: 5px;
+    }
+    
+    .worker-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 10px;
+      overflow: hidden;
+    }
+    
+    .worker-stats {
+      background-color: white;
+      border-radius: 5px;
+      padding: 10px;
+      margin-bottom: 10px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+    
+    .stat-card {
+      background-color: #f9f9f9;
+      padding: 10px;
+      border-radius: 5px;
+      text-align: center;
+    }
+    
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #4a6fa5;
+    }
+    
+    .stat-label {
+      font-size: 0.8rem;
+      color: #666;
+    }
+    
+    .task-list {
+      flex: 1;
+      background-color: white;
+      border-radius: 5px;
+      padding: 10px;
+      overflow-y: auto;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    
+    .task-item {
+      padding: 10px;
+      margin-bottom: 10px;
+      border-left: 4px solid #4a6fa5;
+      background-color: #f9f9f9;
+      border-radius: 0 5px 5px 0;
+    }
+    
+    .task-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 5px;
+    }
+    
+    .task-id {
+      font-size: 0.8rem;
+      color: #666;
+    }
+    
+    .task-status {
+      font-size: 0.8rem;
+      color: white;
+      padding: 2px 6px;
+      border-radius: 10px;
+      background-color: #999;
+    }
+    
+    .status-pending {
+      background-color: #f39c12;
+    }
+    
+    .status-processing {
+      background-color: #3498db;
+    }
+    
+    .status-completed {
+      background-color: #2ecc71;
+    }
+    
+    .status-failed {
+      background-color: #e74c3c;
+    }
+    
+    .task-content {
+      margin: 5px 0;
+    }
+    
+    .task-time {
+      font-size: 0.8rem;
+      color: #666;
+      text-align: right;
+    }
+    
+    .controls {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 10px;
+    }
+    
+    button {
+      padding: 8px 15px;
+      border: none;
+      border-radius: 3px;
+      background-color: #4a6fa5;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    
+    button:hover {
+      background-color: #3d5d8a;
+    }
+    
+    .worker-console {
+      background-color: #1b5e20;
+      color: #a5d6a7;
+      font-family: monospace;
+      padding: 10px;
+      border-radius: 5px;
+      margin-top: 10px;
+      height: 100px;
+      overflow-y: auto;
+    }
+    
+    .console-line {
+      margin: 2px 0;
+    }
+    
+    .console-time {
+      color: #95a5a6;
+      margin-right: 5px;
+    }
+    
+    .console-error {
+      color: #ff6b6b;
+    }
+    
+    .console-warning {
+      color: #feca57;
+    }
+    
+    .console-success {
+      color: #1dd1a1;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h2>Worker Module</h2>
+    <div id="status-badge" class="status-badge">Ready</div>
+  </header>
+  
+  <div class="worker-container">
+    <div class="worker-stats">
+      <h3>Worker Stats</h3>
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div id="tasks-completed" class="stat-value">0</div>
+          <div class="stat-label">Tasks Completed</div>
+        </div>
+        <div class="stat-card">
+          <div id="tasks-pending" class="stat-value">0</div>
+          <div class="stat-label">Tasks Pending</div>
+        </div>
+        <div class="stat-card">
+          <div id="avg-process-time" class="stat-value">0ms</div>
+          <div class="stat-label">Avg. Process Time</div>
+        </div>
+        <div class="stat-card">
+          <div id="encryption-status" class="stat-value">Off</div>
+          <div class="stat-label">Encryption</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="task-list" id="task-list">
+      <!-- Tasks will be dynamically added here -->
+    </div>
+    
+    <div class="worker-console" id="worker-console">
+      <div class="console-line"><span class="console-time">[00:00:00]</span> Worker module initialized.</div>
+    </div>
+    
+    <div class="controls">
+      <button id="spawn-child-btn">Spawn Child Worker</button>
+      <button id="task-test-btn">Run Test Task</button>
+      <button id="toggle-encryption-btn">Toggle Encryption</button>
+      <button id="run-stress-test-btn">Run Stress Test</button>
+    </div>
+  </div>
+  
+  <script>
+    // State management
+    const state = {
+      active: true,
+      tasks: [],
+      childWorkers: [],
+      taskCounter: 0,
+      completedTasks: 0,
+      processTimes: [],
+      status: 'ready',
+      encryptionEnabled: false,
+      encryptionKey: null,
+      cpuLoad: 0,
+      lastHeartbeatSent: 0,
+      workerInitTime: Date.now()
+    };
+    
+    // DOM Elements
+    const statusBadge = document.getElementById('status-badge');
+    const tasksCompleted = document.getElementById('tasks-completed');
+    const tasksPending = document.getElementById('tasks-pending');
+    const avgProcessTime = document.getElementById('avg-process-time');
+    const encryptionStatusElement = document.getElementById('encryption-status');
+    const taskList = document.getElementById('task-list');
+    const workerConsole = document.getElementById('worker-console');
+    const spawnChildBtn = document.getElementById('spawn-child-btn');
+    const taskTestBtn = document.getElementById('task-test-btn');
+    const toggleEncryptionBtn = document.getElementById('toggle-encryption-btn');
+    const runStressTestBtn = document.getElementById('run-stress-test-btn');
+    
+    // Initialize the worker
+    function initialize() {
+      consoleLog('Worker module starting initialization');
+      
+      // Simulate some initialization tasks
+      setTimeout(() => {
+        consoleLog('Loading dependencies');
+      }, 200);
+      
+      setTimeout(() => {
+        consoleLog('Initializing task queue');
+      }, 400);
+      
+      setTimeout(() => {
+        consoleLog('Setting up encryption system');
+      }, 600);
+      
+      setTimeout(() => {
+        consoleLog('Setting up communication channels');
+        
+        // Start sending heartbeats
+        startHeartbeat();
+        
+        // Initialize CPU load simulation
+        updateLoadSimulation();
+        
+        consoleLog('Worker module initialized successfully', 'success');
+        
+        // Send initialization message to parent
+        window.parent.postMessage({
+          type: 'MODULE_INIT',
+          module: 'worker',
+          status: 'active',
+          capabilities: ['task_processing', 'data_analysis', 'encryption', 'web_workers'],
+          timestamp: Date.now()
+        }, '*');
+      }, 800);
+    }
+    
+    // Create encryption key
+    function generateEncryptionKey() {
+      const array = new Uint8Array(32);
+      window.crypto.getRandomValues(array);
+      return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
+    }
+    
+    // Toggle encryption
+    function toggleEncryption() {
+      state.encryptionEnabled = !state.encryptionEnabled;
+      
+      if (state.encryptionEnabled) {
+        state.encryptionKey = generateEncryptionKey();
+        consoleLog(`Encryption enabled with key: ${state.encryptionKey.substring(0, 6)}...`);
+        encryptionStatusElement.textContent = 'On';
+      } else {
+        state.encryptionKey = null;
+        consoleLog('Encryption disabled');
+        encryptionStatusElement.textContent = 'Off';
+      }
+    }
+    
+    // Encrypt data
+    function encryptData(data) {
+      if (!state.encryptionEnabled || !state.encryptionKey) {
+        return data;
+      }
+      
+      // This is a simulation - in a real system, use proper encryption
+      try {
+        // Simple XOR "encryption" just for simulation
+        const jsonStr = typeof data === 'object' ? JSON.stringify(data) : String(data);
+        let result = '';
+        for (let i = 0; i < jsonStr.length; i++) {
+          result += String.fromCharCode(jsonStr.charCodeAt(i) ^ state.encryptionKey.charCodeAt(i % state.encryptionKey.length));
+        }
+        return btoa(result); // Base64 encode
+      } catch (error) {
+        consoleLog(`Encryption error: ${error.message}`, 'error');
+        return data;
+      }
+    }
+    
+    // Decrypt data
+    function decryptData(data) {
+      if (!state.encryptionEnabled || !state.encryptionKey) {
+        return data;
+      }
+      
+      // This is a simulation - in a real system, use proper decryption
+      try {
+        const decodedData = atob(data); // Base64 decode
+        let result = '';
+        for (let i = 0; i < decodedData.length; i++) {
+          result += String.fromCharCode(decodedData.charCodeAt(i) ^ state.encryptionKey.charCodeAt(i % state.encryptionKey.length));
+        }
+        return JSON.parse(result);
+      } catch (error) {
+        consoleLog(`Decryption error: ${error.message}`, 'error');
+        return data;
+      }
+    }
+    
+    // Add a task to the worker
+    function addTask(task) {
+      // Generate a task ID if not provided
+      const taskId = task.id || `task-${++state.taskCounter}`;
+      
+      // Create task object
+      const newTask = {
+        id: taskId,
+        description: task.description || task.text || 'Unknown task',
+        source: task.source || 'system',
+        status: 'pending',
+        createdAt: Date.now(),
+        startedAt: null,
+        completedAt: null,
+        duration: null,
+        error: null,
+        instructionId: task.instructionId || null,
+        data: task.data || {},
+        encrypted: state.encryptionEnabled
+      };
+      
+      // Add to tasks array
+      state.tasks.push(newTask);
+      
+      // Update UI
+      createTaskElement(newTask);
+      updateStats();
+      
+      // Log
+      consoleLog(`New task received: ${newTask.description}`);
+      
+      // Process the task (with a slight delay to simulate task queue)
+      setTimeout(() => {
+        processTask(taskId);
+      }, 500);
+      
+      return taskId;
+    }
+    
+    // Process a task
+    function processTask(taskId) {
+      // Find the task
+      const taskIndex = state.tasks.findIndex(t => t.id === taskId);
+      
+      if (taskIndex === -1) {
+        consoleLog(`Task ${taskId} not found`, 'error');
+        return;
+      }
+      
+      const task = state.tasks[taskIndex];
+      
+      // Update task status
+      task.status = 'processing';
+      task.startedAt = Date.now();
+      
+      // Update UI
+      updateTaskElement(task);
+      updateStats();
+      
+      // Log
+      consoleLog(`Processing task ${taskId}: ${task.description}`);
+      
+      // Set worker status to busy
+      setStatus('busy');
+      
+      // Increase simulated CPU load
+      state.cpuLoad = Math.min(95, state.cpuLoad + 20);
+      
+      // Check if we have child workers to assign to
+      if (state.childWorkers.length > 0) {
+        // Find least busy worker
+        const workerIndex = Math.floor(Math.random() * state.childWorkers.length);
+        const worker = state.childWorkers[workerIndex];
+        
+        // Encrypt task data if encryption is enabled
+        const taskData = task.encrypted ? encryptData(task.data) : task.data;
+        
+        // Send to worker
+        worker.instance.postMessage({
+          type: 'PROCESS_TASK',
+          task: {
+            id: task.id,
+            description: task.description,
+            data: taskData,
+            encrypted: task.encrypted
+          }
+        });
+        
+        consoleLog(`Assigned task ${taskId} to child worker ${worker.id}`);
+      } else {
+        // Process locally with timeout
+        const processingTime = Math.random() * 3000 + 2000;
+        
+        // Determine if task will succeed (90% chance of success)
+        const willSucceed = Math.random() < 0.9;
+        
+        setTimeout(() => {
+          if (willSucceed) {
+            completeTask(taskId);
+          } else {
+            failTask(taskId, 'Random task failure for demonstration');
+          }
+        }, processingTime);
+      }
+    }
+    
+    // Complete a task successfully
+    function completeTask(taskId) {
+      // Find the task
+      const taskIndex = state.tasks.findIndex(t => t.id === taskId);
+      
+      if (taskIndex === -1) {
+        consoleLog(`Task ${taskId} not found`, 'error');
+        return;
+      }
+      
+      const task = state.tasks[taskIndex];
+      
+      // Update task
+      task.status = 'completed';
+      task.completedAt = Date.now();
+      task.duration = task.completedAt - task.startedAt;
+      
+      // Track process time for average calculation
+      state.processTimes.push(task.duration);
+      state.completedTasks++;
+      
+      // Update UI
+      updateTaskElement(task);
+      updateStats();
+      
+      // Reduce CPU load
+      state.cpuLoad = Math.max(0, state.cpuLoad - 20);
+      
+      // Log
+      consoleLog(`Task ${taskId} completed in ${task.duration}ms`, 'success');
+      
+      // If task was from an instruction, send response
+      if (task.instructionId) {
+        sendTaskResponse(task, true);
+      }
+      
+      // Set worker status back to ready if no more processing tasks
+      if (!state.tasks.some(t => t.status === 'processing')) {
+        setStatus('ready');
+      }
+    }
+    
+    // Fail a task
+    function failTask(taskId, error) {
+      // Find the task
+      const taskIndex = state.tasks.findIndex(t => t.id === taskId);
+      
+      if (taskIndex === -1) {
+        consoleLog(`Task ${taskId} not found`, 'error');
+        return;
+      }
+      
+      const task = state.tasks[taskIndex];
+      
+      // Update task
+      task.status = 'failed';
+      task.completedAt = Date.now();
+      task.duration = task.completedAt - task.startedAt;
+      task.error = error;
+      
+      // Update UI
+      updateTaskElement(task);
+      updateStats();
+      
+      // Reduce CPU load
+      state.cpuLoad = Math.max(0, state.cpuLoad - 15);
+      
+      // Log
+      consoleLog(`Task ${taskId} failed: ${error}`, 'error');
+      
+      // If task was from an instruction, send response
+      if (task.instructionId) {
+        sendTaskResponse(task, false);
+      }
+      
+      // Set worker status back to ready if no more processing tasks
+      if (!state.tasks.some(t => t.status === 'processing')) {
+        setStatus('ready');
+      }
+    }
+    
+    // Send a task response back to the LLM
+    function sendTaskResponse(task, success) {
+      // Create response
+      const response = {
+        type: 'AGENT_RESPONSE',
+        instructionId: task.instructionId,
+        taskId: task.id,
+        source: 'worker',
+        success,
+        timestamp: Date.now(),
+        response: {
+          duration: task.duration,
+          result: success ? `Processed ${task.description}` : null
+        }
+      };
+      
+      if (!success) {
+        response.error = task.error;
+      }
+      
+      // Send to parent window
+      window.parent.postMessage(response, '*');
+      
+      // Log
+      consoleLog(`Sent ${success ? 'success' : 'failure'} response for task ${task.id}`);
+    }
+    
+    // Create a task element in the UI
+    function createTaskElement(task) {
+      const taskElement = document.createElement('div');
+      taskElement.className = 'task-item';
+      taskElement.id = `task-element-${task.id}`;
+      
+      // Encrypt flag display
+      const encryptedTag = task.encrypted ? ' 🔒' : '';
+      
+      // Create task content
+      taskElement.innerHTML = `
+        <div class="task-header">
+          <span class="task-id">${task.id}${encryptedTag}</span>
+          <span class="task-status status-${task.status}">${capitalizeFirstLetter(task.status)}</span>
+        </div>
+        <div class="task-content">${task.description}</div>
+        <div class="task-time">Created: ${formatTime(task.createdAt)}</div>
+      `;
+      
+      // Add to list
+      taskList.prepend(taskElement);
+    }
+    
+    // Update an existing task element
+    function updateTaskElement(task) {
+      const taskElement = document.getElementById(`task-element-${task.id}`);
+      
+      if (!taskElement) return;
+      
+      // Update status
+      const statusElement = taskElement.querySelector('.task-status');
+      statusElement.className = `task-status status-${task.status}`;
+      statusElement.textContent = capitalizeFirstLetter(task.status);
+      
+      // Update time info
+      const timeElement = taskElement.querySelector('.task-time');
+      
+      if (task.status === 'pending') {
+        timeElement.textContent = `Created: ${formatTime(task.createdAt)}`;
+      } else if (task.status === 'processing') {
+        timeElement.textContent = `Started: ${formatTime(task.startedAt)}`;
+      } else {
+        // Completed or failed
+        const duration = task.duration ? `${task.duration}ms` : 'N/A';
+        timeElement.textContent = `${capitalizeFirstLetter(task.status)} in ${duration}`;
+        
+        // Add error message for failed tasks
+        if (task.status === 'failed' && task.error) {
+          const contentElement = taskElement.querySelector('.task-content');
+          contentElement.innerHTML = `${task.description}<br><span class="console-error">Error: ${task.error}</span>`;
+        }
+      }
+    }
+    
+    // Update statistics
+    function updateStats() {
+      // Count tasks by status
+      const pending = state.tasks.filter(t => t.status === 'pending').length;
+      const processing = state.tasks.filter(t => t.status === 'processing').length;
+      
+      // Update completed tasks
+      tasksCompleted.textContent = state.completedTasks;
+      
+      // Update pending tasks (including processing ones)
+      tasksPending.textContent = pending + processing;
+      
+      // Calculate average processing time
+      if (state.processTimes.length > 0) {
+        const totalTime = state.processTimes.reduce((sum, time) => sum + time, 0);
+        const avgTime = Math.round(totalTime / state.processTimes.length);
+        avgProcessTime.textContent = `${avgTime}ms`;
+      }
+    }
+    
+    // Update load simulation
+    function updateLoadSimulation() {
+      // Simulate random fluctuations in CPU load
+      setInterval(() => {
+        if (state.tasks.filter(t => t.status === 'processing').length === 0) {
+          // No active tasks, gradually reduce load
+          state.cpuLoad = Math.max(0, state.cpuLoad - 2);
+        } else {
+          // Active tasks, fluctuate load
+          state.cpuLoad = Math.max(0, Math.min(95, state.cpuLoad + (Math.random() > 0.5 ? 1 : -1) * Math.random() * 5));
+        }
+      }, 2000);
+    }
+    
+    // Set worker status
+    function setStatus(newStatus) {
+      state.status = newStatus;
+      
+      // Update the UI
+      statusBadge.textContent = capitalizeFirstLetter(newStatus);
+      
+      // Add appropriate styling
+      statusBadge.style.backgroundColor = (
+        newStatus === 'ready' ? '#45b69c' : 
+        newStatus === 'busy' ? '#f39c12' : 
+        newStatus === 'error' ? '#e74c3c' : '#95a5a6'
+      );
+    }
+    
+    // Add a log message to the console
+    function consoleLog(message, type = 'info') {
+      const line = document.createElement('div');
+      line.className = `console-line${type !== 'info' ? ` console-${type}` : ''}`;
+      
+      const time = new Date().toLocaleTimeString();
+      
+      line.innerHTML = `<span class="console-time">[${time}]</span> ${message}`;
+      
+      workerConsole.appendChild(line);
+      workerConsole.scrollTop = workerConsole.scrollHeight;
+      
+      // Also send to logger module
+      log(message, type);
+    }
+    
+    // Send a log message to the logger module
+    function log(message, level = 'info') {
+      window.parent.postMessage({
+        type: 'DIAG_LOG',
+        level: level.toUpperCase(),
+        message,
+        source: 'worker',
+        timestamp: Date.now()
+      }, '*');
+    }
+    
+    // Send heartbeat to parent window
+    function sendHeartbeat() {
+      lastHeartbeatSent = Date.now();
+      
+      window.parent.postMessage({
+        type: 'HEARTBEAT',
+        module: 'worker',
+        status,
+        metrics: {
+          uptime: Math.floor((Date.now() - state.workerInitTime) / 1000),
+          tasksCompleted: state.completedTasks,
+          tasksPending: state.tasks.filter(t => t.status === 'pending').length,
+          tasksProcessing: state.tasks.filter(t => t.status === 'processing').length,
+          avgProcessTime: state.processTimes.length > 0 ? 
+            Math.round(state.processTimes.reduce((sum, time) => sum + time, 0) / state.processTimes.length) : 0,
+          childWorkers: state.childWorkers.length
+        },
+        timestamp: Date.now()
+      }, '*');
+    }
+    
+    // Start sending regular heartbeats
+    function startHeartbeat() {
+      sendHeartbeat();
+      
+      // Send heartbeat every 5 seconds
+      setInterval(sendHeartbeat, 5000);
+    }
+    
+    // Format time for display
+    function formatTime(timestamp) {
+      return new Date(timestamp).toLocaleTimeString();
+    }
+    
+    // Capitalize first letter of a string
+    function capitalizeFirstLetter(string) {
+      return string.charAt(0).toUpperCase() + string.slice(1);
+    }
+    
+    // Spawn a child worker
+    function spawnChildWorker() {
+      consoleLog('Spawning child worker');
+      
+      try {
+        // Create a Blob containing the worker code
+        const workerCode = `
+          // Web Worker for task processing
+          self.onmessage = function(e) {
+            const data = e.data;
+            
+            if (data.type === 'PROCESS_TASK') {
+              // Process the task
+              console.log('Processing task:', data.task.id);
+              
+              // Simulate processing time
+              setTimeout(() => {
+                // Send result back to main thread
+                self.postMessage({
+                  type: 'TASK_COMPLETED',
+                  taskId: data.task.id,
+                  result: 'Processed by web worker'
+                });
+              }, Math.random() * 3000 + 1000);
+            }
+          };
+          
+          // Notify main thread that worker is ready
+          self.postMessage({
+            type: 'WORKER_READY',
+            timestamp: Date.now()
+          });
+        `;
+        
+        // Create a URL for the Blob
+        const blobUrl = URL.createObjectURL(new Blob([workerCode], { type: 'application/javascript' }));
+        
+        // Create a Web Worker
+        const worker = new Worker(blobUrl);
+        
+        // Generate a unique ID for this worker
+        const workerId = `child-worker-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+        
+        // Set up message event listener
+        worker.onmessage = function(e) {
+          const data = e.data;
+          
+          if (data.type === 'WORKER_READY') {
+            consoleLog(`Child worker ${workerId} is ready`);
+          } else if (data.type === 'TASK_COMPLETED') {
+            // Find the task
+            const taskId = data.taskId;
+            completeTask(taskId);
+            
+            consoleLog(`Child worker ${workerId} completed task ${taskId}`);
+          }
+        };
+        
+        // Set up error event listener
+        worker.onerror = function(error) {
+          consoleLog(`Child worker ${workerId} error: ${error.message}`, 'error');
+        };
+        
+        // Store the worker in state
+        state.childWorkers.push({
+          id: workerId,
+          instance: worker,
+          createdAt: Date.now(),
+          status: 'active'
+        });
+        
+        consoleLog(`Spawned child worker ${workerId} successfully`, 'success');
+        
+        return workerId;
+      } catch (error) {
+        consoleLog(`Failed to spawn child worker: ${error.message}`, 'error');
+        return null;
+      }
+    }
+    
+    // Run a test task
+    function runTestTask() {
+      const testTask = {
+        description: 'Test task with simulated processing',
+        source: 'user-initiated'
+      };
+      
+      addTask(testTask);
+    }
+    
+    // Run a stress test
+    function runStressTest() {
+      consoleLog('Starting stress test...', 'warning');
+      
+      // Add multiple tasks in quick succession
+      for (let i = 0; i < 10; i++) {
+        setTimeout(() => {
+          addTask({
+            description: `Stress test task #${i+1}`,
+            source: 'stress-test'
+          });
+        }, i * 200);
+      }
+    }
+    
+    // Simulate a failure
+    function simulateFailure(payload) {
+      consoleLog(`Simulating worker failure: ${payload.failureType}`, 'error');
+      
+      setStatus('error');
+      
+      // Fail any processing tasks
+      state.tasks.forEach(task => {
+        if (task.status === 'processing') {
+          failTask(task.id, 'Worker failure during processing');
+        }
+      });
+      
+      // Disable buttons
+      spawnChildBtn.disabled = true;
+      taskTestBtn.disabled = true;
+      runStressTestBtn.disabled = true;
+      toggleEncryptionBtn.disabled = true;
+      
+      // Set a timeout to recover
+      setTimeout(() => {
+        // Re-enable buttons
+        spawnChildBtn.disabled = false;
+        taskTestBtn.disabled = false;
+        runStressTestBtn.disabled = false;
+        toggleEncryptionBtn.disabled = false;
+        
+        // Restore status
+        setStatus('ready');
+        
+        // Send recovery notification
+        window.parent.postMessage({
+          type: 'DISASTER_RECOVERY',
+          module: 'worker',
+          status: 'recovered',
+          success: true,
+          message: 'Worker module recovered from simulated failure',
+          timestamp: Date.now()
+        }, '*');
+        
+        consoleLog('Recovered from simulated failure', 'success');
+      }, payload.duration || 5000);
+    }

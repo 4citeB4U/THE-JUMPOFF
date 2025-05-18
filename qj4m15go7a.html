@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RapidWebDevelop - Admin Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* Base variables from index.html */
+        :root {
+            --primary-bg: #0A192F;
+            --secondary-bg: #112240;
+            --accent-teal: #00FFD4;
+            --accent-purple: #6A0DAD;
+            --accent-coral: #FF4757;
+            --text-primary: #E6F1FF;
+            --text-secondary: #8892B0;
+            --shadow-normal: 0 10px 30px -10px rgba(2, 12, 27, 0.7);
+            --shadow-hover: 0 20px 40px rgba(0, 255, 212, 0.2);
+            --transition-standard: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background-color: var(--primary-bg);
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Admin Dashboard Specific Styles */
+        .admin-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar navigation */
+        .sidebar {
+            width: 280px;
+            background-color: var(--secondary-bg);
+            box-shadow: var(--shadow-normal);
+            padding: 2rem 0;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 100;
+        }
+
+        .sidebar-logo {
+            font-size: 1.5rem;
+            font-weight: 900;
+            margin-bottom: 2.5rem;
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-accent {
+            background: linear-gradient(to right, var(--accent-teal), var(--accent-purple));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            padding-right: 5px;
+        }
+
+        .site-status {
+            display: inline-flex;
+            align-items: center;
+            margin: 0 2rem 2rem;
+            padding: 0.5rem 1rem;
+            background: rgba(0, 255, 212, 0.1);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            background-color: var(--accent-teal);
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .nav-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .nav-title {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            padding: 0 2rem;
+            margin-bottom: 0.8rem;
+            letter-spacing: 1px;
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-item {
+            margin-bottom: 0.2rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.8rem 2rem;
+            color: var(--text-primary);
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: var(--transition-standard);
+            position: relative;
+        }
+
+        .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: var(--accent-teal);
+        }
+
+        .nav-link.active {
+            background-color: rgba(0, 255, 212, 0.1);
+            border-left: 3px solid var(--accent-teal);
+            padding-left: calc(2rem - 3px);
+        }
+
+        .nav-link.active::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 3px;
+            background-color: var(--accent-teal);
+        }
+
+        .nav-icon {
+            margin-right: 12px;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0.8;
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+            padding: 1.5rem 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        /* Main content area */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 2rem;
+            position: relative;
+        }
+
+        /* Header */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(to right, var(--accent-teal), var(--accent-purple));
+            margin-right: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: var(--primary-bg);
+        }
+
+        .user-name {
+            font-weight: 600;
+            margin-right: 8px;
+        }
+
+        /* Preview iframe container */
+        .site-preview-container {
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow-normal);
+            height: calc(100vh - 160px);
+            background-color: #fff;
+        }
+
+        .preview-header {
+            background-color: var(--secondary-bg);
+            padding: 0.8rem 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .device-selector {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .device-button {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: var(--transition-standard);
+        }
+
+        .device-button.active {
+            color: var(--accent-teal);
+        }
+
+        .preview-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        .preview-button {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: var(--transition-standard);
+            padding: 5px 10px;
+            border-radius: 4px;
+        }
+
+        .preview-button:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: var(--accent-teal);
+        }
+
+        .publish-button {
+            background: linear-gradient(to right, var(--accent-teal), var(--accent-purple));
+            color: var(--primary-bg);
+            font-weight: 600;
+            border: none;
+            padding: 0.5rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: var(--transition-standard);
+        }
+
+        .publish-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 255, 212, 0.3);
+        }
+
+        .iframe-container {
+            width: 100%;
+            height: calc(100% - 54px);
+            position: relative;
+            transition: width 0.3s ease, margin 0.3s ease;
+        }
+
+        .iframe-container.desktop {
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .iframe-container.tablet {
+            width: 768px;
+            margin: 0 auto;
+        }
+
+        .iframe-container.mobile {
+            width: 375px;
+            margin: 0 auto;
+        }
+
+        .site-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* Edit overlay elements */
+        .element-overlay {
+            position: absolute;
+            border: 2px dashed var(--accent-teal);
+            background-color: rgba(0, 255, 212, 0.05);
+            pointer-events: none;
+            z-index: 10;
+            border-radius: 4px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .element-overlay.visible {
+            opacity: 1;
+        }
+
+        .edit-button {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            background-color: var(--accent-teal);
+            color: var(--primary-bg);
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 11;
+            opacity: 0;
+            transform: scale(0.8);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .edit-button.visible {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* Edit modal */
+        .edit-modal {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 400px;
+            height: 100vh;
+            background-color: var(--secondary-bg);
+            box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            transform: translateX(100%);
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .edit-modal.active {
+            transform: translateX(0);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 1.5rem;
+            transition: color 0.3s ease;
+        }
+
+        .close-modal:hover {
+            color: var(--accent-coral);
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+            flex-grow: 1;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            transition: var(--transition-standard);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent-teal);
+            box-shadow: 0 0 0 2px rgba(0, 255, 212, 0.2);
+        }
+
+        textarea.form-input {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .upload-container {
+            border: 2px dashed rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            background-color: rgba(255, 255, 255, 0.02);
+            transition: var(--transition-standard);
+            cursor: pointer;
+            margin-bottom: 1rem;
+        }
+
+        .upload-container:hover {
+            border-color: var(--accent-teal);
+            background-color: rgba(0, 255, 212, 0.05);
+        }
+
+        .upload-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--text-secondary);
+        }
+
+        .upload-text {
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .upload-subtext {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .selected-file {
+            margin-top: 1rem;
+            display: flex;
+            align-items: center;
+            padding: 0.5rem;
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+        }
+
+        .file-preview {
+            width: 40px;
+            height: 40px;
+            border-radius: 4px;
+            margin-right: 10px;
+            object-fit: cover;
+            background-color: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+        }
+
+        .file-name {
+            flex: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .file-remove {
+            background: none;
+            border: none;
+            color: var(--accent-coral);
+            cursor: pointer;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            padding: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .cancel-button {
+            padding: 0.8rem 1.5rem;
+            background: none;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--text-secondary);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: var(--transition-standard);
+        }
+
+        .cancel-button:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .save-button {
+            padding: 0.8rem 1.5rem;
+            background: linear-gradient(to right, var(--accent-teal), var(--accent-purple));
+            color: var(--primary-bg);
+            border: none;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition-standard);
+        }
+
+        .save-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 255, 212, 0.3);
+        }
+
+        /* Component selector/editor */
+        .add-component-button {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--accent-purple);
+            color: white;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 11;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .component-palette {
+            position: absolute;
+            left: 50%;
+            top: 50px;
+            transform: translateX(-50%);
+            width: 300px;
+            background-color: var(--secondary-bg);
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            padding: 1rem;
+            z-index: 12;
+            display: none;
+        }
+
+        .component-palette.active {
+            display: block;
+        }
+
+        .palette-title {
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            text-align: center;
+        }
+
+        .component-list {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.8rem;
+        }
+
+        .component-option {
+            padding: 0.8rem;
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: var(--transition-standard);
+            text-align: center;
+        }
+
+        .component-option:hover {
+            background-color: rgba(0, 255, 212, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .component-icon {
+            margin-bottom: 0.5rem;
+            font-size: 1.5rem;
+            color: var(--accent-teal);
+        }
+
+        .component-name {
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        /* Overlay */
+        .backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(3px);
+            z-index: 999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .backdrop.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        /* Indicators for drag and drop */
+        .drag-indicator {
+            position: absolute;
+            left: 10px;
+            top: 10px;
+            width: 24px;
+            height: 24px;
+            background-color: rgba(0, 0, 0, 0.3);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: move;
+            opacity: 0;
+            z-index: 11;
+            transition: opacity 0.3s ease;
+        }
+
+        .drag-indicator.visible {
+            opacity: 1;
+        }
+
+        .delete-indicator {
+            position: absolute;
+            right: 52px;
+            top: 10px;
+            width: 32px;
+            height: 32px;
+            background-color: var(--accent-coral);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            z-index: 11;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .delete-indicator.visible {
+            opacity: 1;
+        }
+
+        .delete-indicator:hover {
+            transform: scale(1.1);
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .sidebar {
+                width: 250px;
+            }
+            
+            .main-content {
+                margin-left: 250px;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .mobile-toggle {
+                display: block;
+                position: fixed;
+                top: 20px;
+                left: 20px;
+                z-index: 1001;
+                background-color: var(--secondary-bg);
+                color: var(--text-primary);
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border: none;
+                cursor: pointer;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            }
+            
+            .page-header {
+                margin-top: 40px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .edit-modal {
+                width: 100%;
+            }
+            
+            .iframe-container.tablet {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-logo">
+                <span class="logo-accent">Rapid</span>WebDevelop
+            </div>
+            
+            <div class="site-status">
+                <span class="status-indicator"></span>
+                <span>Site Live</span>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-title">Main</div>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <span class="nav-icon">📊</span>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link active">
+                            <span class="nav-icon">✏️</span>
+                            Edit Site
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <span class="nav-icon">📁</span>
+                            Media Library
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-title">Analytics</div>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <span class="nav-icon">👥</span>
+                            Visitors
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <span class="nav-icon">💰</span>
+                            Revenue
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <span class="nav-icon">🎵</span>
+                            Streams
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-title">Settings</div>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <span class="nav-icon">🔍</span>
+                            SEO
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <span class="nav-icon">👤</span>
+                            Profile
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <span class="nav-icon">⚙️</span>
+                            Settings
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="sidebar-footer">
+                <a href="#" style="color: var(--text-secondary); text-decoration: none;">
+                    <span class="nav-icon">↩️</span>
+                    Logout
+                </a>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="page-header">
+                <h1 class="page-title">Edit Site</h1>
+                <div class="user-menu">
+                    <div class="user-avatar">A</div>
+                    <span class="user-name">Artist Name</span>
+                </div>
+            </div>
+            
+            <div class="site-preview-container">
+                <div class="preview-header">
+                    <div class="device-selector">
+                        <button class="device-button active" data-device="desktop">💻 Desktop</button>
+                        <button class="device-button" data-device="tablet">📱 Tablet</button>
+                        <button class="device-button" data-device="mobile">📱 Mobile</button>
+                    </div>
+                    <div class="preview-actions">
+                        <button class="preview-button">
+                            <span>👁️</span> Preview
+                        </button>
+                        <button class="publish-button">Publish Changes</button>
+                    </div>
+                </div>
+                <div class="iframe-container desktop">
+                    <iframe src="index.html" class="site-iframe" id="sitePreview"></iframe>
+                </div>
+            </div>
+            
+            <!-- Edit button and overlay (these will be dynamically positioned) -->
+            <div class="element-overlay" id="elementOverlay"></div>
+            <button class="edit-button" id="editButton">
+                <span>✏️</span>
+            </button>
+            <button class="delete-indicator" id="deleteButton">
+                <span>🗑️</span>
+            </button>
+            <div class="drag-indicator" id="dragIndicator">
+                <span>≡</span>
+            </div>
+            
+            <!-- Add Component Button -->
+            <button class="add-component-button" id="addComponentButton">+</button>
+            <div class="component-palette" id="componentPalette">
+                <div class="palette-title">Add a new component</div>
+                <div class="component-list">
+                    <div class="component-option" data-type="hero_section">
+                        <div class="component-icon">🏆</div>
+                        <div class="component-name">Hero Section</div>
+                    </div>
+                    <div class="component-option" data-type="text_block">
+                        <div class="component-icon">📝</div>
+                        <div class="component-name">Text Block</div>
+                    </div>
+                    <div class="component-option" data-type="image">
+                        <div class="component-icon">🖼️</div>
+                        <div class="component-name">Image</div>
+                    </div>
+                    <div class="component-option" data-type="video_player">
+                        <div class="component-icon">🎬</div>
+                        <div class="component-name">Video Player</div>
+                    </div>
+                    <div class="component-option" data-type="cta_section">
+                        <div class="component-icon">🔔</div>
+                        <div class="component-name">CTA Section</div>
+                    </div>
+                    <div class="component-option" data-type="feature_cards">
+                        <div class="component-icon">🃏</div>
+                        <div class="component-name">Feature Cards</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Edit Modal -->
+        <div class="edit-modal" id="editModal">
+            <div class="modal-header">
+                <h2 class="modal-title">Edit Hero Section</h2>
+                <button class="close-modal" id="closeModal">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Title</label>
+                    <input type="text" class="form-input" value="The Harsh Reality of Streaming Revenue" id="heroTitle">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Subtitle</label>
+                    <textarea class="form-input" id="heroSubtitle">See the stark difference between what streaming platforms pay you versus what you could earn with your own platform. Take control of your music and your income.</textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Background Image</label>
+                    <div class="upload-container" id="uploadContainer">
+                        <div class="upload-icon">📷</div>
+                        <div class="upload-text">Drag & drop an image or click to browse</div>
+                        <div class="upload-subtext">Recommended size: 1920x1080px (16:9 ratio)</div>
+                    </div>
+                    <div class="selected-file">
+                        <div class="file-preview">
+                            <span>📷</span>
+                        </div>
+                        <div class="file-name">background-wave.jpg</div>
+                        <button class="file-remove">×</button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="cancel-button" id="cancelEdit">Cancel</button>
+                <button class="save-button" id="saveEdit">Save Changes</button>
+            </div>
+        </div>
+        
+        <!-- Video Editor Modal (Hidden by default, similar structure to Hero Edit) -->
+        <div class="edit-modal" id="videoModal" style="transform: translateX(100%);">
+            <div class="modal-header">
+                <h2 class="modal-title">Edit Video Player</h2>
+                <button class="close-modal">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Video Title</label>
+                    <input type="text" class="form-input" value="Artist Platform Tutorial">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Video URL</label>
+                    <input type="text" class="form-input" placeholder="https://www.youtube.com/...">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Upload Video</label>
+                    <div class="upload-container">
+                        <div class="upload-icon">🎬</div>
+                        <div class="upload-text">Drag & drop a video or click to browse</div>
+                        <div class="upload-subtext">Maximum size: 100MB (MP4, MOV, WebM)</div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Upload Thumbnail</label>
+                    <div class="upload-container">
+                        <div class="upload-icon">🖼️</div>
+                        <div class="upload-text">Drag & drop a thumbnail or click to browse</div>
+                        <div class="upload-subtext">Recommended size: 1280x720px (16:9 ratio)</div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="cancel-button">Cancel</button>
+                <button class="save-button">Save Changes</button>
+            </div>
+        </div>
+        
+        <!-- Backdrop overlay -->
+        <div class="backdrop" id="backdrop"></div>
+    </div>
+    
+    <script>
+        // Device selector
+        const deviceButtons = document.querySelectorAll('.device-button');
+        const iframeContainer = document.querySelector('.iframe-container');
+        
+        deviceButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                deviceButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                
+                const device = button.getAttribute('data-device');
+                iframeContainer.className = `iframe-container ${device}`;
+            });
+        });
+        
+        // Modal control
+        const editButton = document.getElementById('editButton');
+        const editModal = document.getElementById('editModal');
+        const closeModal = document.getElementById('closeModal');
+        const cancelEdit = document.getElementById('cancelEdit');
+        const backdrop = document.getElementById('backdrop');
+        
+        function openModal() {
+            editModal.classList.add('active');
+            backdrop.classList.add('active');
+        }
+        
+        function closeModalFunc() {
+            editModal.classList.remove('active');
+            backdrop.classList.remove('active');
+        }
+        
+        editButton.addEventListener('click', openModal);
+        closeModal.addEventListener('click', closeModalFunc);
+        cancelEdit.addEventListener('click', closeModalFunc);
+        backdrop.addEventListener('click', closeModalFunc);
+        
+        // Component Palette
+        const addComponentButton = document.getElementById('addComponentButton');
+        const componentPalette = document.getElementById('componentPalette');
+        
+        addComponentButton.addEventListener('click', () => {
+            componentPalette.classList.toggle('active');
+        });
+        
+        // Hide palette when clicking elsewhere
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('#componentPalette') && 
+                !e.target.closest('#addComponentButton')) {
+                componentPalette.classList.remove('active');
+            }
+        });
+        
+        // Simulate iframe interaction
+        window.addEventListener('load', function() {
+            // Position the add component button between sections (demo)
+            setTimeout(() => {
+                const iframe = document.getElementById('sitePreview');
+                const iframeRect = iframe.getBoundingClientRect();
+                
+                // Position at a good spot for demo
+                addComponentButton.style.top = (iframeRect.top + 500) + 'px';
+                
+                // Setup edit button for demonstration
+                const elementOverlay = document.getElementById('elementOverlay');
+                const dragIndicator = document.getElementById('dragIndicator');
+                const deleteButton = document.getElementById('deleteButton');
+                
+                // Simulate hovering over hero section
+                elementOverlay.style.left = iframeRect.left + 'px';
+                elementOverlay.style.top = (iframeRect.top + 200) + 'px';
+                elementOverlay.style.width = iframeRect.width + 'px';
+                elementOverlay.style.height = '300px';
+                
+                editButton.style.top = (iframeRect.top + 210) + 'px';
+                editButton.style.right = (window.innerWidth - iframeRect.right + 10) + 'px';
+                
+                dragIndicator.style.top = (iframeRect.top + 210) + 'px';
+                dragIndicator.style.left = (iframeRect.left + 10) + 'px';
+                
+                deleteButton.style.top = (iframeRect.top + 210) + 'px';
+                deleteButton.style.right = (window.innerWidth - iframeRect.right + 52) + 'px';
+                
+                // Show the overlay on mouseover for demo
+                iframe.addEventListener('mouseover', function() {
+                    elementOverlay.classList.add('visible');
+                    editButton.classList.add('visible');
+                    dragIndicator.classList.add('visible');
+                    deleteButton.classList.add('visible');
+                });
+                
+                iframe.addEventListener('mouseout', function() {
+                    // Keep visible for demo purposes
+                });
+            }, 1000);
+        });
+        
+        // Save button functionality (demo)
+        document.getElementById('saveEdit').addEventListener('click', function() {
+            // Get the updated title
+            const newTitle = document.getElementById('heroTitle').value;
+            const newSubtitle = document.getElementById('heroSubtitle').value;
+            
+            // Show a success message
+            alert(`Changes saved successfully!\nUpdated title: ${newTitle}`);
+            
+            // Close the modal
+            closeModalFunc();
+        });
+    </script>
+</body>
+</html>

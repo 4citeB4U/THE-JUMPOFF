@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CRM Logger Module</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    :root {
+      --info-color: #3498db;
+      --success-color: #2ecc71;
+      --warning-color: #f39c12;
+      --error-color: #e74c3c;
+      --debug-color: #9b59b6;
+    }
+    
+    body {
+      font-family: monospace;
+      margin: 0;
+      padding: 10px;
+      background: #f8f9fa;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    h2 {
+      margin-top: 0;
+      color: #2c3e50;
+    }
+    
+    .controls {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-bottom: 10px;
+    }
+    
+    .filter-btn {
+      border: none;
+      border-radius: 3px;
+      padding: 3px 8px;
+      cursor: pointer;
+      font-size: 0.8em;
+      opacity: 0.6;
+    }
+    
+    .filter-btn.active {
+      opacity: 1;
+    }
+    
+    .filter-info { background-color: var(--info-color); color: white; }
+    .filter-success { background-color: var(--success-color); color: white; }
+    .filter-warning { background-color: var(--warning-color); color: white; }
+    .filter-error { background-color: var(--error-color); color: white; }
+    .filter-debug { background-color: var(--debug-color); color: white; }
+    
+    button {
+      background: #3498db;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+    
+    #log-container {
+      flex: 1;
+      overflow-y: auto;
+      border: 1px solid #ddd;
+      background: white;
+      padding: 10px;
+      font-size: 0.9em;
+      box-shadow: inset 0 0 5px rgba(0,0,0,0.1);
+    }
+    
+    .log-entry {
+      margin: 2px 0;
+      padding: 3px 5px;
+      border-left: 3px solid #ccc;
+    }
+    
+    .log-info { border-left-color: var(--info-color); }
+    .log-success { border-left-color: var(--success-color); }
+    .log-warning { border-left-color: var(--warning-color); }
+    .log-error { border-left-color: var(--error-color); }
+    .log-debug { border-left-color: var(--debug-color); }
+    
+    .timestamp {
+      color: #7f8c8d;
+      margin-right: 5px;
+    }
+    
+    .module-name {
+      font-weight: bold;
+      margin-right: 5px;
+    }
+    
+    .log-level {
+      display: inline-block;
+      padding: 0 4px;
+      border-radius: 3px;
+      color: white;
+      font-size: 0.8em;
+      width: 55px;
+      text-align: center;
+      margin-right: 5px;
+    }
+    
+    .level-info { background-color: var(--info-color); }
+    .level-success { background-color: var(--success-color); }
+    .level-warning { background-color: var(--warning-color); }
+    .level-error { background-color: var(--error-color); }
+    .level-debug { background-color: var(--debug-color); }
+    
+    .status-bar {
+      margin-top: 10px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8em;
+      color: #7f8c8d;
+    }
+  </style>
+</head>
+<body>
+  <h2>CRM Logging Service</h2>
+  
+  <div class="controls">
+    <button id="clear-logs-btn">Clear Logs</button>
+    <button id="export-logs-btn">Export Logs</button>
+    <button id="test-log-btn">Generate Test Log</button>
+  </div>
+  
+  <div class="filters">
+    <span>Filter by level:</span>
+    <button class="filter-btn filter-info active" data-level="INFO">INFO</button>
+    <button class="filter-btn filter-success active" data-level="SUCCESS">SUCCESS</button>
+    <button class="filter-btn filter-warning active" data-level="WARNING">WARNING</button>
+    <button class="filter-btn filter-error active" data-level="ERROR">ERROR</button>
+    <button class="filter-btn filter-debug active" data-level="DEBUG">DEBUG</button>
+  </div>
+  
+  <div id="log-container"></div>
+  
+  <div class="status-bar">
+    <div id="log-count">Logs: 0</div>
+    <div id="logger-status">Logger Active</div>
+  </div>
+  
+  <script>
+    // Initialize state
+    const state = {
+      logs: [],
+      filters: {
+        INFO: true,
+        SUCCESS: true,
+        WARNING: true,
+        ERROR: true,
+        DEBUG: true
+      },
+      maxLogs: 1000 // Maximum logs to keep in memory
+    };
+    
+    // DOM References
+    const logContainer = document.getElementById('log-container');
+    const logCountElement = document.getElementById('log-count');
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    
+    // Add log entry to the UI
+    function renderLog(logEntry) {
+      const container = document.getElementById('log-container');
+      
+      // Create log element
+      const entryDiv = document.createElement('div');
+      entryDiv.className = `log-entry log-${logEntry.level.toLowerCase()}`;
+      entryDiv.dataset.level = logEntry.level;
+      entryDiv.dataset.module = logEntry.module;
+      
+      // Format timestamp
+      const timestamp = new Date(logEntry.timestamp).toLocaleTimeString();
+      
+      // Create log content
+      entryDiv.innerHTML = `
+        <span class="timestamp">[${timestamp}]</span>
+        <span class="module-name">[${logEntry.module}]</span>
+        <span class="log-level level-${logEntry.level.toLowerCase()}">${logEntry.level}</span>
+        <span class="log-message">${logEntry.message}</span>
+      `;
+      
+      // Add to container
+      container.appendChild(entryDiv);
+      
+      // Scroll to bottom
+      container.scrollTop = container.scrollHeight;
+      
+      // Update log count
+      updateLogCount();
+    }
+    
+    // Add a new log entry
+    function addLogEntry(entry) {
+      // Ensure entry has all required fields
+      const logEntry = {
+        module: entry.module || 'Unknown',
+        level: entry.level || 'INFO',
+        message: entry.message || 'No message',
+        timestamp: entry.timestamp || Date.now()
+      };
+      
+      // Add to logs array
+      state.logs.push(logEntry);
+      
+      // Trim logs if exceeding max
+      if (state.logs.length > state.maxLogs) {
+        state.logs = state.logs.slice(-state.maxLogs);
+        
+        // Also remove excessive DOM elements to prevent memory issues
+        while (logContainer.children.length > state.maxLogs) {
+          logContainer.removeChild(logContainer.firstChild);
+        }
+      }
+      
+      // Render if the filter allows it
+      if (state.filters[logEntry.level]) {
+        renderLog(logEntry);
+      }
+      
+      // Return message ID for potential reference
+      return state.logs.length - 1;
+    }
+    
+    // Update log count display
+    function updateLogCount() {
+      logCountElement.textContent = `Logs: ${state.logs.length}`;
+    }
+    
+    // Clear all logs
+    function clearLogs() {
+      state.logs = [];
+      logContainer.innerHTML = '';
+      updateLogCount();
+      
+      // Log the clearing
+      addLogEntry({
+        module: 'Logger',
+        level: 'INFO',
+        message: 'Logs cleared by user'
+      });
+    }
+    
+    // Export logs to JSON file
+    function exportLogs() {
+      const logsJson = JSON.stringify(state.logs, null, 2);
+      const blob = new Blob([logsJson], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `crm-logs-${new Date().toISOString().slice(0,19).replace(/:/g, '-')}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      
+      // Log the export
+      addLogEntry({
+        module: 'Logger',
+        level: 'INFO',
+        message: `Logs exported to file: ${a.download}`
+      });
+    }
+    
+    // Generate a test log entry
+    function generateTestLog() {
+      const levels = ['INFO', 'SUCCESS', 'WARNING', 'ERROR', 'DEBUG'];
+      const modules = ['Dashboard', 'LLM', 'Agent', 'Worker', 'Database', 'Logger'];
+      
+      const randomLevel = levels[Math.floor(Math.random() * levels.length)];
+      const randomModule = modules[Math.floor(Math.random() * modules.length)];
+      
+      addLogEntry({
+        module: randomModule,
+        level: randomLevel,
+        message: `Test log entry generated at ${new Date().toLocaleTimeString()}`
+      });
+    }
+    
+    // Apply filters to logs
+    function applyFilters() {
+      // Hide all log entries
+      const entries = logContainer.querySelectorAll('.log-entry');
+      entries.forEach(entry => {
+        const level = entry.dataset.level;
+        if (state.filters[level]) {
+          entry.style.display = '';
+        } else {
+          entry.style.display = 'none';
+        }
+      });
+    }
+    
+    // Toggle filter state
+    function toggleFilter(level) {
+      state.filters[level] = !state.filters[level];
+      applyFilters();
+      
+      // Update button appearance
+      const button = document.querySelector(`.filter-btn[data-level="${level}"]`);
+      if (state.filters[level]) {
+        button.classList.add('active');
+      } else {
+        button.classList.remove('active');
+      }
+    }
+    
+    // Event listeners
+    document.getElementById('clear-logs-btn').addEventListener('click', clearLogs);
+    document.getElementById('export-logs-btn').addEventListener('click', exportLogs);
+    document.getElementById('test-log-btn').addEventListener('click', generateTestLog);
+    
+    // Filter buttons
+    filterButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        const level = button.dataset.level;
+        toggleFilter(level);
+      });
+    });
+    
+    // Listen for log messages via postMessage
+    window.addEventListener('message', (event) => {
+      const data = event.data;
+      
+      // Handle diagnostic log messages
+      if (data && data.type === 'DIAG_LOG') {
+        addLogEntry({
+          module: data.module,
+          level: data.level || 'INFO',
+          message: data.message,
+          timestamp: data.timestamp || Date.now()
+        });
+      }
+      
+      // Handle PING messages
+      if (data && data.type === 'PING') {
+        // Send a PONG response
+        window.parent.postMessage({
+          type: 'PONG',
+          source: 'logger',
+          timestamp: Date.now()
+        }, '*');
+        
+        // Also log the ping
+        addLogEntry({
+          module: 'Logger',
+          level: 'DEBUG',
+          message: `Received PING from ${data.source || 'unknown'}`
+        });
+      }
+      
+      // Handle export logs request
+      if (data && data.type === 'EXPORT_LOGS') {
+        exportLogs();
+      }
+    });
+    
+    // Send periodic heartbeats to parent
+    setInterval(() => {
+      window.parent.postMessage({
+        type: 'HEARTBEAT',
+        module: 'logger',
+        timestamp: Date.now()
+      }, '*');
+    }, 5000);
+    
+    // Initial log entry
+    window.addEventListener('load', () => {
+      addLogEntry({
+        module: 'Logger',
+        level: 'INFO',
+        message: 'Logging service initialized'
+      });
+      
+      // Send initialization message to parent
+      window.parent.postMessage({
+        type: 'MODULE_INIT',
+        module: 'logger',
+        status: 'active',
+        timestamp: Date.now()
+      }, '*');
+    });
+  </script>
+</body>
+</html>

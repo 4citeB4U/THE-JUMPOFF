@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>LLM Brain Module</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #1a1a2e;
+      color: #e2e2e2;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    header {
+      background-color: #16213e;
+      padding: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #0f3460;
+    }
+    
+    h2 {
+      margin: 0;
+      font-size: 1.2rem;
+      color: #4cc9f0;
+    }
+    
+    .status-indicator {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: #4cc9f0;
+      box-shadow: 0 0 5px #4cc9f0;
+    }
+    
+    .status-indicator.thinking {
+      animation: pulse 1.5s infinite;
+    }
+    
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.3; }
+      100% { opacity: 1; }
+    }
+    
+    .brain-interface {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 10px;
+      overflow: hidden;
+    }
+    
+    .thought-stream {
+      flex: 1;
+      background-color: #0f3460;
+      border-radius: 5px;
+      padding: 10px;
+      margin-bottom: 10px;
+      overflow-y: auto;
+      font-family: monospace;
+      font-size: 0.9rem;
+      line-height: 1.4;
+    }
+    
+    .thought {
+      margin-bottom: 8px;
+      padding: 5px;
+      border-bottom: 1px solid #16213e;
+      word-wrap: break-word;
+    }
+    
+    .instruction {
+      background-color: #16213e;
+      border-left: 3px solid #4cc9f0;
+      padding: 10px;
+      margin: 5px 0;
+    }
+    
+    .agent-actions {
+      background-color: #0f3460;
+      border-radius: 5px;
+      padding: 10px;
+    }
+    
+    .action-list {
+      list-style-type: none;
+      padding: 0;
+      margin: 0;
+    }
+    
+    .action-item {
+      padding: 8px;
+      margin: 5px 0;
+      background-color: #16213e;
+      border-radius: 3px;
+      border-left: 3px solid #e94560;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .action-status {
+      font-size: 0.8rem;
+      padding: 3px 6px;
+      border-radius: 10px;
+      background-color: #0f3460;
+    }
+    
+    .status-pending {
+      color: #f1c40f;
+    }
+    
+    .status-completed {
+      color: #2ecc71;
+    }
+    
+    .status-failed {
+      color: #e74c3c;
+    }
+    
+    .controls {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 10px;
+    }
+    
+    button {
+      background-color: #0f3460;
+      color: #e2e2e2;
+      border: 1px solid #4cc9f0;
+      padding: 5px 10px;
+      border-radius: 3px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    button:hover {
+      background-color: #16213e;
+      box-shadow: 0 0 5px #4cc9f0;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h2>LLM Brain Module</h2>
+    <div id="status-indicator" class="status-indicator"></div>
+  </header>
+  
+  <div class="brain-interface">
+    <div id="thought-stream" class="thought-stream">
+      <div class="thought">Initializing LLM brain module...</div>
+      <div class="thought">Loading core knowledge database...</div>
+      <div class="thought">Establishing connections with agent and worker modules...</div>
+    </div>
+    
+    <div class="agent-actions">
+      <h3>Agent Instructions</h3>
+      <ul id="action-list" class="action-list">
+        <!-- Agent instructions will appear here -->
+      </ul>
+    </div>
+    
+    <div class="controls">
+      <button id="analyze-btn">Analyze System</button>
+      <button id="generate-btn">Generate Task</button>
+    </div>
+  </div>
+  
+  <script>
+    // DOM Elements
+    const thoughtStream = document.getElementById('thought-stream');
+    const actionList = document.getElementById('action-list');
+    const statusIndicator = document.getElementById('status-indicator');
+    const analyzeBtn = document.getElementById('analyze-btn');
+    const generateBtn = document.getElementById('generate-btn');
+    
+    // State
+    let agentInstructions = [];
+    let pendingAgentResponses = {};
+    let thinking = false;
+    let systemHealthy = true;
+    let initialized = false;
+    let lastHeartbeatSent = 0;
+    
+    // Encryption utilities (simplified for demo)
+    const ENCRYPTION_KEY = 'llm-brain-secure-key';
+    
+    function encryptMessage(message) {
+      // In a real implementation, use a proper encryption library
+      // This is just a simple obfuscation for demonstration
+      return btoa(JSON.stringify(message));
+    }
+    
+    function decryptMessage(encryptedMessage) {
+      // In a real implementation, use a proper decryption library
+      try {
+        return JSON.parse(atob(encryptedMessage));
+      } catch (error) {
+        log('Failed to decrypt message', 'error');
+        return null;
+      }
+    }
+    
+    // Initialize the LLM brain
+    function initialize() {
+      // Add initial thoughts
+      addThought('Starting LLM brain initialization sequence');
+      
+      // Simulate loading process
+      setTimeout(() => {
+        addThought('Loading pre-trained embeddings and models');
+      }, 500);
+      
+      setTimeout(() => {
+        addThought('Initializing pattern recognition systems');
+      }, 1000);
+      
+      setTimeout(() => {
+        addThought('Connecting to agent coordination system');
+      }, 1500);
+      
+      setTimeout(() => {
+        addThought('Ready to process instructions and coordinate agents');
+        initialized = true;
+        log('LLM brain initialized successfully', 'info');
+        
+        // Generate an initial instruction for demo purposes
+        generateInstruction();
+        
+        // Start the heartbeat system
+        startHeartbeat();
+      }, 2000);
+    }
+    
+    // Add a thought to the thought stream
+    function addThought(text) {
+      const thought = document.createElement('div');
+      thought.className = 'thought';
+      thought.textContent = text;
+      
+      thoughtStream.appendChild(thought);
+      thoughtStream.scrollTop = thoughtStream.scrollHeight;
+    }
+    
+    // Add an instruction to the action list
+    function addInstruction(instruction) {
+      // Create a unique ID for this instruction
+      const instructionId = Date.now() + '-' + Math.random().toString(36).slice(2);
+      
+      // Create the instruction element
+      const li = document.createElement('li');
+      li.className = 'action-item';
+      li.dataset.id = instructionId;
+      
+      // Create instruction text
+      const instructionText = document.createElement('span');
+      instructionText.textContent = instruction.text;
+      
+      // Create status element
+      const statusSpan = document.createElement('span');
+      statusSpan.className = 'action-status status-pending';
+      statusSpan.textContent = 'Pending';
+      
+      li.appendChild(instructionText);
+      li.appendChild(statusSpan);
+      
+      actionList.appendChild(li);
+      
+      // Store instruction in state
+      agentInstructions.push({
+        id: instructionId,
+        text: instruction.text,
+        target: instruction.target,
+        status: 'pending',
+        timestamp: Date.now()
+      });
+      
+      // Send instruction to target
+      sendInstruction(instructionId, instruction);
+      
+      // Log the instruction
+      log(`Sent instruction to ${instruction.target}: ${instruction.text}`, 'info');
+      
+      // Simulate thinking
+      startThinking();
+    }
+    
+    // Send an instruction to a target module
+    function sendInstruction(id, instruction) {
+      // Create a secure message payload
+      const message = {
+        type: 'INSTRUCTION',
+        instructionId: id,
+        target: instruction.target,
+        text: instruction.text,
+        params: instruction.params || {},
+        source: 'llm',
+        timestamp: Date.now()
+      };
+      
+      // Encrypt sensitive parts of the message
+      const encryptedPayload = encryptMessage({
+        text: instruction.text,
+        params: instruction.params || {}
+      });
+      
+      // Replace sensitive data with encrypted version
+      message.encryptedData = encryptedPayload;
+      
+      // Remove sensitive data from plain text
+      delete message.text;
+      delete message.params;
+      
+      // Add to pending responses
+      pendingAgentResponses[id] = {
+        target: instruction.target,
+        sentTime: Date.now(),
+        timeout: setTimeout(() => {
+          handleInstructionTimeout(id);
+        }, 10000) // 10 second timeout
+      };
+      
+      // Send to parent window to forward to target
+      window.parent.postMessage(message, '*');
+    }
+    
+    // Handle instruction timeout
+    function handleInstructionTimeout(instructionId) {
+      // Find the instruction in the list
+      const instructionElement = document.querySelector(`.action-item[data-id="${instructionId}"]`);
+      
+      if (instructionElement) {
+        // Update the UI
+        const statusSpan = instructionElement.querySelector('.action-status');
+        statusSpan.className = 'action-status status-failed';
+        statusSpan.textContent = 'Timeout';
+        
+        // Update the instruction in state
+        const instruction = agentInstructions.find(i => i.id === instructionId);
+        
+        if (instruction) {
+          instruction.status = 'failed';
+          instruction.error = 'Timeout waiting for response';
+        }
+        
+        // Clean up the pending response
+        if (pendingAgentResponses[instructionId]) {
+          clearTimeout(pendingAgentResponses[instructionId].timeout);
+          delete pendingAgentResponses[instructionId];
+        }
+        
+        // Log the timeout
+        log(`Instruction to ${instruction.target} timed out: ${instruction.text}`, 'error');
+        
+        // Take recovery action
+        recoverFromFailure(instruction.target);
+      }
+    }
+    
+    // Generate a new instruction
+    function generateInstruction() {
+      // Simulate the LLM generating a thought
+      startThinking();
+      
+      setTimeout(() => {
+        const targets = ['agent', 'worker', 'db'];
+        const randomTarget = targets[Math.floor(Math.random() * targets.length)];
+        const taskTypes = [
+          'Process customer data for insights',
+          'Analyze recent transaction patterns',
+          'Retrieve contact history and summarize',
+          'Generate response to customer inquiry',
+          'Update client relationship status',
+          'Schedule follow-up reminder',
+          'Identify sales opportunities in dataset'
+        ];
+        const randomTask = taskTypes[Math.floor(Math.random() * taskTypes.length)];
+        
+        addThought(`Generating task for ${randomTarget} module: ${randomTask}`);
+        
+        stopThinking();
+        
+        addInstruction({
+          text: randomTask,
+          target: randomTarget,
+          params: {
+            priority: Math.floor(Math.random() * 3) + 1,
+            deadline: Date.now() + (Math.floor(Math.random() * 60) + 30) * 1000
+          }
+        });
+      }, 1500);
+    }
+    
+    // Analyze the system
+    function analyzeSystem() {
+      log('Starting system analysis', 'info');
+      
+      startThinking();
+      
+      addThought('Analyzing system health and performance...');
+      
+      setTimeout(() => {
+        addThought('Checking agent response times and task completion rates');
+      }, 500);
+      
+      setTimeout(() => {
+        addThought('Evaluating database integrity and query performance');
+      }, 1000);
+      
+      setTimeout(() => {
+        addThought('Assessing worker load distribution and task queue depths');
+      }, 1500);
+      
+      setTimeout(() => {
+        // Generate analysis results
+        const healthStatus = systemHealthy ? 'optimal' : 'degraded';
+        
+        const completedTasks = agentInstructions.filter(i => i.status === 'completed').length;
+        const failedTasks = agentInstructions.filter(i => i.status === 'failed').length;
+        const pendingTasks = agentInstructions.filter(i => i.status === 'pending').length;
+        
+        const completionRate = agentInstructions.length > 0 
+          ? Math.round((completedTasks / agentInstructions.length) * 100) 
+          : 100;
+        
+        addThought(`Analysis complete. System health is ${healthStatus}.`);
+        addThought(`Task statistics: ${completedTasks} completed, ${failedTasks} failed, ${pendingTasks} pending (${completionRate}% completion rate).`);
+        
+        // Add an instruction to log the analysis results
+        addInstruction({
+          text: 'Log system analysis results',
+          target: 'logger',
+          params: {
+            analysisResults: {
+              health: healthStatus,
+              taskStats: {
+                completed: completedTasks,
+                failed: failedTasks,
+                pending: pendingTasks,
+                completionRate: completionRate
+              }
+            }
+          }
+        });
+        
+        stopThinking();
+        
+        log('System analysis completed', 'info');
+      }, 2000);
+    }
+    
+    // Handle response from an agent/worker
+    function handleAgentResponse(message) {
+      const instructionId = message.instructionId;
+      
+      // Find the instruction
+      const instruction = agentInstructions.find(i => i.id === instructionId);
+      
+      if (instruction) {
+        // Update the instruction status
+        instruction.status = message.success ? 'completed' : 'failed';
+        instruction.response = message.response;
+        
+        if (!message.success) {
+          instruction.error = message.error;
+        }
+        
+        // Update the UI
+        const instructionElement = document.querySelector(`.action-item[data-id="${instructionId}"]`);
+        
+        if (instructionElement) {
+          const statusSpan = instructionElement.querySelector('.action-status');
+          statusSpan.className = `action-status status-${instruction.status}`;
+          statusSpan.textContent = instruction.status === 'completed' ? 'Completed' : 'Failed';
+        }
+        
+        // Clean up the pending response
+        if (pendingAgentResponses[instructionId]) {
+          clearTimeout(pendingAgentResponses[instructionId].timeout);
+          delete pendingAgentResponses[instructionId];
+        }
+        
+        // Log the response
+        log(`Received ${instruction.status} response from ${instruction.target} for instruction: ${instruction.text}`, 
+            instruction.status === 'completed' ? 'info' : 'error');
+        
+        // Add thought about the response
+        addThought(`${instruction.target} ${instruction.status} task: ${instruction.text}`);
+        
+        if (instruction.status === 'failed') {
+          addThought(`Error: ${instruction.error}`);
+        }
+      }
+    }
+    
+    // Start "thinking" animation
+    function startThinking() {
+      thinking = true;
+      statusIndicator.classList.add('thinking');
+    }
+    
+    // Stop "thinking" animation
+    function stopThinking() {
+      thinking = false;
+      statusIndicator.classList.remove('thinking');
+    }
+    
+    // Send a log message to the logger module
+    function log(message, level = 'info') {
+      window.parent.postMessage({
+        type: 'LOG',
+        level,
+        message,
+        source: 'llm',
+        timestamp: Date.now()
+      }, '*');
+    }
+    
+    // Send heartbeat to parent window
+    function sendHeartbeat() {
+      lastHeartbeatSent = Date.now();
+      
+      window.parent.postMessage({
+        type: 'HEARTBEAT',
+        module: 'llm',
+        health: systemHealthy ? 'healthy' : 'degraded',
+        thinking,
+        timestamp: Date.now()
+      }, '*');
+    }
+    
+    // Start sending regular heartbeats
+    function startHeartbeat() {
+      sendHeartbeat();
+      
+      // Send heartbeat every 5 seconds
+      setInterval(sendHeartbeat, 5000);
+    }
+    
+    // Recover from a module failure
+    function recoverFromFailure(moduleName) {
+      log(`Initiating recovery for ${moduleName} module failure`, 'warning');
+      
+      // Find all pending instructions for the failed module
+      const pendingInstructions = agentInstructions.filter(
+        i => i.target === moduleName && i.status === 'pending'
+      );
+      
+      // Mark them as failed
+      pendingInstructions.forEach(instruction => {
+        // Update the instruction status
+        instruction.status = 'failed';
+        instruction.error = `${moduleName} module unavailable`;
+        
+        // Update the UI
+        const instructionElement = document.querySelector(`.action-item[data-id="${instruction.id}"]`);
+        
+        if (instructionElement) {
+          const statusSpan = instructionElement.querySelector('.action-status');
+          statusSpan.className = 'action-status status-failed';
+          statusSpan.textContent = 'Failed';
+        }
+        
+        // Clean up the pending response
+        if (pendingAgentResponses[instruction.id]) {
+          clearTimeout(pendingAgentResponses[instruction.id].timeout);
+          delete pendingAgentResponses[instruction.id];
+        }
+      });
+      
+      // Send a recovery instruction to the parent
+      window.parent.postMessage({
+        type: 'DISASTER_RECOVERY',
+        module: 'llm',
+        target: moduleName,
+        action: 'restart_module',
+        requiresAction: true,
+        status: 'initiated',
+        message: `LLM initiated recovery for ${moduleName} module`,
+        timestamp: Date.now()
+      }, '*');
+      
+      // Update system health
+      systemHealthy = false;
+    }
+    
+    // Simulate a failure
+    function simulateFailure(payload) {
+      log(`Simulating LLM failure: ${payload.failureType}`, 'error');
+      
+      systemHealthy = false;
+      statusIndicator.style.backgroundColor = '#e74c3c';
+      
+      // Add error thoughts
+      addThought('ERROR: System malfunction detected');
+      addThought(`Failure type: ${payload.failureType}`);
+      addThought('Attempting self-recovery procedures...');
+      
+      // Disable buttons
+      analyzeBtn.disabled = true;
+      generateBtn.disabled = true;
+      
+      // Set a timeout to recover
+      setTimeout(() => {
+        // Recover
+        addThought('Self-recovery complete');
+        addThought('Resuming normal operations');
+        
+        systemHealthy = true;
+        statusIndicator.style.backgroundColor = '';
+        
+        // Re-enable buttons
+        analyzeBtn.disabled = false;
+        generateBtn.disabled = false;
+        
+        // Send recovery notification
+        window.parent.postMessage({
+          type: 'DISASTER_RECOVERY',
+          module: 'llm',
+          status: 'recovered',
+          success: true,
+          message: 'LLM module recovered from simulated failure',
+          timestamp: Date.now()
+        }, '*');
+        
+        log('Recovered from simulated failure', 'info');
+      }, payload.duration || 5000);
+    }
+    
+    // Handle disaster drill
+    function handleDisasterDrill(payload) {
+      log(`Disaster drill received: ${payload.scenario} (severity: ${payload.severity})`, 'warning');
+      
+      if (payload.target === 'llm') {
+        // This drill targets the LLM
+        addThought('ALERT: Disaster recovery drill initiated');
+        addThought(`Scenario: ${payload.scenario} (Severity: ${payload.severity})`);
+        addThought('Executing recovery protocols...');
+        
+        // Simulate recovery steps
+        startThinking();
+        
+        setTimeout(() => {
+          addThought('Backing up instruction queue and state');
+          
+          setTimeout(() => {
+            addThought('Validating agent connections');
+            
+            setTimeout(() => {
+              addThought('Disaster recovery protocols completed successfully');
+              stopThinking();
+              
+              // Notify parent of success
+              window.parent.postMessage({
+                type: 'DISASTER_RECOVERY',
+                module: 'llm',
+                status: 'completed',
+                success: true,
+                message: 'LLM module completed disaster recovery drill',
+                timestamp: Date.now()
+              }, '*');
+              
+              log('Completed disaster recovery drill', 'success');
+            }, 1000);
+          }, 1000);
+        }, 1000);
+      } else {
+        // This drill targets another module
+        addThought(`Monitoring disaster recovery for ${payload.target} module`);
+        log(`Monitoring disaster recovery for ${payload.target} module`, 'info');
+      }
+    }
+    
+    // Listen for messages from parent window
+    window.addEventListener('message', function(event) {
+      const data = event.data;
+      
+      if (!data || !data.type) return;
+      
+      switch (data.type) {
+        case 'AGENT_RESPONSE':
+          handleAgentResponse(data);
+          break;
+          
+        case 'GLOBAL_PING':
+          log('Received global ping', 'info');
+          addThought('Received global ping from dashboard');
+          sendHeartbeat();
+          break;
+          
+        case 'SIMULATE_FAILURE':
+          simulateFailure(data.payload);
+          break;
+          
+        case 'DISASTER_DRILL':
+          handleDisasterDrill(data.payload);
+          break;
+      }
+    });
+    
+    // Set up event listeners
+    analyzeBtn.addEventListener('click', analyzeSystem);
+    generateBtn.addEventListener('click', generateInstruction);
+    
+    // Initialize on load
+    document.addEventListener('DOMContentLoaded', initialize);
+  </script>
+</body>
+</html>

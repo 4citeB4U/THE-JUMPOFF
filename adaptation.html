@@ -1,0 +1,1288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Agent Lee - Adaptation Module</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f0f6ff;
+      margin: 0;
+      padding: 20px;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+    
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 15px;
+      border-bottom: 1px solid #ccc;
+      margin-bottom: 20px;
+    }
+    
+    h1 {
+      color: #2c3e50;
+      margin: 0;
+      font-size: 1.5rem;
+    }
+    
+    .status-indicator {
+      display: flex;
+      align-items: center;
+      font-size: 0.9rem;
+    }
+    
+    .status-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      margin-right: 8px;
+    }
+    
+    .active {
+      background-color: #2ecc71;
+      box-shadow: 0 0 5px #2ecc71;
+    }
+    
+    .hibernating {
+      background-color: #f39c12;
+      box-shadow: 0 0 5px #f39c12;
+    }
+    
+    .error {
+      background-color: #e74c3c;
+      box-shadow: 0 0 5px #e74c3c;
+    }
+    
+    .content {
+      display: flex;
+      flex: 1;
+      gap: 20px;
+      overflow: hidden;
+    }
+    
+    .left-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    
+    .right-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    
+    .panel {
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      padding: 15px;
+      margin-bottom: 20px;
+      flex: 1;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .panel-title {
+      font-weight: bold;
+      font-size: 1.1rem;
+      color: #3498db;
+      margin: 0;
+    }
+    
+    .learning-section {
+      overflow-y: auto;
+      flex: 1;
+    }
+    
+    .learning-entry {
+      padding: 10px;
+      margin-bottom: 10px;
+      border-left: 3px solid #3498db;
+      background-color: #f8f9fa;
+      border-radius: 0 4px 4px 0;
+    }
+    
+    .entry-header {
+      font-weight: bold;
+      margin-bottom: 5px;
+      display: flex;
+      justify-content: space-between;
+    }
+    
+    .entry-timestamp {
+      font-size: 0.8rem;
+      color: #7f8c8d;
+    }
+    
+    .template-section {
+      overflow-y: auto;
+      flex: 1;
+    }
+    
+    .template-item {
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 4px;
+      background-color: #f8f9fa;
+      border-left: 3px solid #9b59b6;
+    }
+    
+    .template-name {
+      font-weight: bold;
+      color: #9b59b6;
+      margin-bottom: 5px;
+    }
+    
+    .template-description {
+      font-size: 0.9rem;
+      margin-bottom: 8px;
+    }
+    
+    .template-code {
+      font-family: monospace;
+      background-color: #2c3e50;
+      color: #ecf0f1;
+      padding: 10px;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      white-space: pre-wrap;
+      overflow-x: auto;
+    }
+    
+    .helper-list {
+      overflow-y: auto;
+      flex: 1;
+    }
+    
+    .helper-item {
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 4px;
+      background-color: #f8f9fa;
+      border-left: 3px solid #e67e22;
+    }
+    
+    .helper-name {
+      font-weight: bold;
+      color: #e67e22;
+      margin-bottom: 5px;
+    }
+    
+    .helper-description {
+      font-size: 0.9rem;
+    }
+    
+    .helper-status {
+      font-size: 0.8rem;
+      padding: 2px 6px;
+      border-radius: 10px;
+      display: inline-block;
+      margin-left: 5px;
+    }
+    
+    .status-ready {
+      background-color: #2ecc71;
+      color: white;
+    }
+    
+    .status-loading {
+      background-color: #3498db;
+      color: white;
+    }
+    
+    .console-panel {
+      height: 250px;
+      font-family: monospace;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .console-output {
+      flex: 1;
+      background-color: #2c3e50;
+      color: #ecf0f1;
+      padding: 10px;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      overflow-y: auto;
+      margin-bottom: 10px;
+    }
+    
+    .console-line {
+      margin: 3px 0;
+      line-height: 1.4;
+    }
+    
+    .console-time {
+      color: #95a5a6;
+      margin-right: 5px;
+    }
+    
+    .console-input {
+      display: flex;
+    }
+    
+    .console-prompt {
+      background-color: #34495e;
+      color: #2ecc71;
+      padding: 5px 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      border-top-left-radius: 4px;
+      border-bottom-left-radius: 4px;
+    }
+    
+    .console-command {
+      flex: 1;
+      background-color: #34495e;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      font-family: monospace;
+      outline: none;
+      border-top-right-radius: 4px;
+      border-bottom-right-radius: 4px;
+    }
+    
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+      font-size: 0.8rem;
+      color: #7f8c8d;
+    }
+    
+    .btn-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    
+    .btn {
+      padding: 8px 16px;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    
+    .btn:hover {
+      background-color: #2980b9;
+    }
+    
+    .btn-warning {
+      background-color: #f39c12;
+    }
+    
+    .btn-warning:hover {
+      background-color: #e67e22;
+    }
+    
+    .btn-danger {
+      background-color: #e74c3c;
+    }
+    
+    .btn-danger:hover {
+      background-color: #c0392b;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🧠 Agent Lee - Embedded Intelligence</h1>
+    <div class="status-indicator">
+      <div id="status-dot" class="status-dot active"></div>
+      <span id="status-text">Active</span>
+    </div>
+  </div>
+  
+  <div class="content">
+    <div class="left-panel">
+      <div class="panel">
+        <div class="panel-header">
+          <h2 class="panel-title">Learning From Feedback</h2>
+          <button id="clear-learning-btn" class="btn btn-warning">Clear</button>
+        </div>
+        <div id="learning-section" class="learning-section">
+          <!-- Learning entries will be added here -->
+        </div>
+      </div>
+      
+      <div class="panel console-panel">
+        <div class="panel-header">
+          <h2 class="panel-title">Agent Console</h2>
+          <button id="clear-console-btn" class="btn btn-warning">Clear</button>
+        </div>
+        <div id="console-output" class="console-output">
+          <!-- Console output will be added here -->
+        </div>
+        <div class="console-input">
+          <div class="console-prompt">></div>
+          <input id="console-command" class="console-command" type="text" placeholder="Type a command..." />
+        </div>
+      </div>
+    </div>
+    
+    <div class="right-panel">
+      <div class="panel">
+        <div class="panel-header">
+          <h2 class="panel-title">Resilience Templates</h2>
+        </div>
+        <div class="template-section">
+          <div class="template-item">
+            <div class="template-name">Connection Lost Handler</div>
+            <div class="template-description">Initiates hibernation, stores state, and retries connection</div>
+            <div class="template-code">function handleConnectionLost() {
+  log('Connection lost detected');
+  storeCurrentState();
+  enterHibernationMode();
+  
+  // Set up reconnection attempts
+  const reconnectInterval = setInterval(() => {
+    if (attemptReconnection()) {
+      clearInterval(reconnectInterval);
+      restoreFromState();
+      exitHibernationMode();
+    }
+  }, 5000);
+}</div>
+          </div>
+          
+          <div class="template-item">
+            <div class="template-name">Memory Error Recovery</div>
+            <div class="template-description">Attempts to repair corrupted memory or falls back to defaults</div>
+            <div class="template-code">function handleMemoryError(storeName, error) {
+  log(`Memory error in ${storeName}: ${error.message}`);
+  
+  try {
+    // Attempt self-repair
+    const backup = retrieveBackup(storeName);
+    if (backup) {
+      restoreFromBackup(storeName, backup);
+      return true;
+    }
+    
+    // Fall back to defaults if no backup
+    resetToDefaults(storeName);
+    notifyUser(`Memory error detected and fixed. Some data in ${storeName} was reset.`);
+    return true;
+  } catch (e) {
+    notifyUser(`Unable to recover from memory error: ${error.code}`, 'error');
+    return false;
+  }
+}</div>
+          </div>
+          
+          <div class="template-item">
+            <div class="template-name">Disaster Recovery</div>
+            <div class="template-description">Comprehensive disaster response protocol</div>
+            <div class="template-code">function handleDisaster(type, severity) {
+  log(`Disaster detected: ${type} (${severity})`, 'error');
+  
+  // Save logs
+  saveDiagnosticLogs();
+  
+  // Mark incomplete tasks
+  const allTasks = getAllActiveTasks();
+  allTasks.forEach(task => markTaskIncomplete(task.id));
+  
+  // Notify all modules
+  broadcastMessage('DISASTER_RECOVERY', { type, severity });
+  
+  // Initialize recovery monitor
+  startRecoveryMonitoring();
+  
+  return {
+    disasterType: type,
+    recoveryStarted: new Date().toISOString(),
+    affectedTasks: allTasks.length
+  };
+}</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="panel">
+        <div class="panel-header">
+          <h2 class="panel-title">Helper Modules</h2>
+        </div>
+        <div class="helper-list">
+          <div class="helper-item">
+            <div class="helper-name">task_executor <span class="helper-status status-ready">Ready</span></div>
+            <div class="helper-description">Analyzes goals and executes static task flows for routine CRM operations.</div>
+          </div>
+          
+          <div class="helper-item">
+            <div class="helper-name">debugger_helper <span class="helper-status status-ready">Ready</span></div>
+            <div class="helper-description">Detects logical gaps in workflow and adjusts template routes to prevent failures.</div>
+          </div>
+          
+          <div class="helper-item">
+            <div class="helper-name">api_connector <span class="helper-status status-ready">Ready</span></div>
+            <div class="helper-description">Handles offline/online transitions and simulates API processing when disconnected.</div>
+          </div>
+          
+          <div class="helper-item">
+            <div class="helper-name">error_resolver <span class="helper-status status-ready">Ready</span></div>
+            <div class="helper-description">Reroutes responses with fallback definitions when errors occur in the primary flow.</div>
+          </div>
+          
+          <div class="helper-item">
+            <div class="helper-name">disaster_monitor <span class="helper-status status-ready">Ready</span></div>
+            <div class="helper-description">Tracks error counts and initiates failsafe logic when thresholds are exceeded.</div>
+          </div>
+        </div>
+        
+        <div class="btn-row">
+          <button id="test-helper-btn" class="btn">Test Helper</button>
+          <button id="simulate-failure-btn" class="btn btn-danger">Simulate Failure</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="footer">
+    <div>Agent Lee Version 1.0.0</div>
+    <div id="memory-status">Memory: IndexedDB Active</div>
+  </div>
+  
+  <script>
+    // State management
+    const state = {
+      status: 'active',
+      learningEntries: [],
+      consoleHistory: [],
+      errorCount: 0,
+      isHibernating: false,
+      helpers: {
+        task_executor: { ready: true, errorCount: 0 },
+        debugger_helper: { ready: true, errorCount: 0 },
+        api_connector: { ready: true, errorCount: 0 },
+        error_resolver: { ready: true, errorCount: 0 },
+        disaster_monitor: { ready: true, errorCount: 0 }
+      },
+      memory: {
+        initialized: false,
+        db: null
+      }
+    };
+    
+    // DOM Elements
+    const statusDot = document.getElementById('status-dot');
+    const statusText = document.getElementById('status-text');
+    const learningSection = document.getElementById('learning-section');
+    const consoleOutput = document.getElementById('console-output');
+    const consoleCommand = document.getElementById('console-command');
+    const clearLearningBtn = document.getElementById('clear-learning-btn');
+    const clearConsoleBtn = document.getElementById('clear-console-btn');
+    const testHelperBtn = document.getElementById('test-helper-btn');
+    const simulateFailureBtn = document.getElementById('simulate-failure-btn');
+    const memoryStatus = document.getElementById('memory-status');
+    
+    // Initialize the adaptation module
+    function initialize() {
+      log('Initializing Agent Lee adaptation module...');
+      
+      // Initialize IndexedDB for memory
+      initializeMemory()
+        .then(() => {
+          log('Memory systems initialized successfully', 'success');
+          memoryStatus.textContent = 'Memory: IndexedDB Active';
+          state.memory.initialized = true;
+          
+          // Load previous learning entries
+          return loadLearningEntries();
+        })
+        .then(entries => {
+          if (entries && entries.length > 0) {
+            state.learningEntries = entries;
+            entries.forEach(entry => addLearningEntryToDOM(entry));
+            log(`Loaded ${entries.length} previous learning entries`);
+          } else {
+            log('No previous learning entries found');
+          }
+          
+          // Set up event listeners
+          setupEventListeners();
+          
+          // Start heartbeat
+          startHeartbeat();
+          
+          // Initial learning entry
+          addLearningEntry({
+            pattern: 'system_initialization',
+            source: 'system',
+            details: 'Agent Lee system initialized successfully'
+          });
+          
+          log('Adaptation module initialization complete', 'success');
+        })
+        .catch(error => {
+          log(`Initialization error: ${error.message}`, 'error');
+          setStatus('error');
+        });
+    }
+    
+    // Initialize IndexedDB for memory storage
+    function initializeMemory() {
+      return new Promise((resolve, reject) => {
+        const request = indexedDB.open('AgentLeeMemory', 1);
+        
+        request.onupgradeneeded = function(event) {
+          const db = event.target.result;
+          
+          // Create object stores if they don't exist
+          if (!db.objectStoreNames.contains('learning')) {
+            const learningStore = db.createObjectStore('learning', { keyPath: 'id', autoIncrement: true });
+            learningStore.createIndex('timestamp', 'timestamp', { unique: false });
+            learningStore.createIndex('pattern', 'pattern', { unique: false });
+          }
+          
+          if (!db.objectStoreNames.contains('state')) {
+            db.createObjectStore('state', { keyPath: 'id' });
+          }
+        };
+        
+        request.onsuccess = function(event) {
+          state.memory.db = event.target.result;
+          resolve();
+        };
+        
+        request.onerror = function(event) {
+          reject(new Error(`Database error: ${event.target.error}`));
+        };
+      });
+    }
+    
+    // Load learning entries from IndexedDB
+    function loadLearningEntries() {
+      return new Promise((resolve, reject) => {
+        if (!state.memory.initialized) {
+          reject(new Error('Memory not initialized'));
+          return;
+        }
+        
+        const transaction = state.memory.db.transaction(['learning'], 'readonly');
+        const store = transaction.objectStore('learning');
+        const request = store.getAll();
+        
+        request.onsuccess = function() {
+          resolve(request.result);
+        };
+        
+        request.onerror = function() {
+          reject(new Error('Failed to load learning entries'));
+        };
+      });
+    }
+    
+    // Save state to IndexedDB
+    function saveState() {
+      return new Promise((resolve, reject) => {
+        if (!state.memory.initialized) {
+          reject(new Error('Memory not initialized'));
+          return;
+        }
+        
+        const stateToSave = {
+          id: 'current',
+          errorCount: state.errorCount,
+          helpers: state.helpers,
+          timestamp: Date.now()
+        };
+        
+        const transaction = state.memory.db.transaction(['state'], 'readwrite');
+        const store = transaction.objectStore('state');
+        const request = store.put(stateToSave);
+        
+        request.onsuccess = function() {
+          resolve();
+        };
+        
+        request.onerror = function() {
+          reject(new Error('Failed to save state'));
+        };
+      });
+    }
+    
+    // Load state from IndexedDB
+    function loadState() {
+      return new Promise((resolve, reject) => {
+        if (!state.memory.initialized) {
+          reject(new Error('Memory not initialized'));
+          return;
+        }
+        
+        const transaction = state.memory.db.transaction(['state'], 'readonly');
+        const store = transaction.objectStore('state');
+        const request = store.get('current');
+        
+        request.onsuccess = function() {
+          if (request.result) {
+            state.errorCount = request.result.errorCount;
+            state.helpers = request.result.helpers;
+            resolve(true);
+          } else {
+            resolve(false);
+          }
+        };
+        
+        request.onerror = function() {
+          reject(new Error('Failed to load state'));
+        };
+      });
+    }
+    
+    // Add a learning entry
+    function addLearningEntry(entry) {
+      // Create the entry object
+      const learningEntry = {
+        pattern: entry.pattern || 'unknown',
+        source: entry.source || 'user',
+        details: entry.details || '',
+        timestamp: Date.now()
+      };
+      
+      // Add to state
+      state.learningEntries.push(learningEntry);
+      
+      // Add to DOM
+      addLearningEntryToDOM(learningEntry);
+      
+      // Store in IndexedDB
+      if (state.memory.initialized) {
+        const transaction = state.memory.db.transaction(['learning'], 'readwrite');
+        const store = transaction.objectStore('learning');
+        store.add(learningEntry);
+      }
+      
+      // Return the entry
+      return learningEntry;
+    }
+    
+    // Add a learning entry to the DOM
+    function addLearningEntryToDOM(entry) {
+      const entryElement = document.createElement('div');
+      entryElement.className = 'learning-entry';
+      
+      const timestamp = new Date(entry.timestamp).toLocaleTimeString();
+      
+      entryElement.innerHTML = `
+        <div class="entry-header">
+          <span class="entry-pattern">${entry.pattern}</span>
+          <span class="entry-timestamp">${timestamp}</span>
+        </div>
+        <div class="entry-source">Source: ${entry.source}</div>
+        <div class="entry-details">${entry.details}</div>
+      `;
+      
+      learningSection.appendChild(entryElement);
+      learningSection.scrollTop = learningSection.scrollHeight;
+    }
+    
+    // Clear learning entries
+    function clearLearningEntries() {
+      // Clear DOM
+      learningSection.innerHTML = '';
+      
+      // Clear state
+      state.learningEntries = [];
+      
+      // Clear in IndexedDB
+      if (state.memory.initialized) {
+        const transaction = state.memory.db.transaction(['learning'], 'readwrite');
+        const store = transaction.objectStore('learning');
+        store.clear();
+      }
+      
+      log('Learning entries cleared');
+    }
+    
+    // Add a log entry to the console
+    function log(message, level = 'info') {
+      const logEntry = {
+        message,
+        level,
+        timestamp: Date.now()
+      };
+      
+      // Add to state
+      state.consoleHistory.push(logEntry);
+      
+      // Add to DOM
+      const logElement = document.createElement('div');
+      logElement.className = `console-line console-${level}`;
+      
+      const timestamp = new Date(logEntry.timestamp).toLocaleTimeString();
+      
+      logElement.innerHTML = `<span class="console-time">[${timestamp}]</span> ${message}`;
+      
+      consoleOutput.appendChild(logElement);
+      consoleOutput.scrollTop = consoleOutput.scrollHeight;
+      
+      // Send to parent for system-wide logging
+      window.parent.postMessage({
+        type: 'LOG',
+        level: level.toUpperCase(),
+        message: `[Agent Lee] ${message}`,
+        source: 'adaptation',
+        timestamp: logEntry.timestamp
+      }, '*');
+      
+      // If error, increment error count
+      if (level === 'error') {
+        state.errorCount++;
+        checkErrorThreshold();
+      }
+      
+      return logEntry;
+    }
+    
+    // Clear console
+    function clearConsole() {
+      consoleOutput.innerHTML = '';
+      state.consoleHistory = [];
+      log('Console cleared');
+    }
+    
+    // Execute a console command
+    function executeCommand(command) {
+      log(`> ${command}`, 'command');
+      
+      try {
+        // Parse the command
+        const parts = command.trim().split(' ');
+        const cmd = parts[0].toLowerCase();
+        const args = parts.slice(1);
+        
+        // Execute based on command
+        switch (cmd) {
+          case 'help':
+            log('Available commands: help, status, learn, test, clear, hibernate, recover');
+            break;
+            
+          case 'status':
+            log(`System status: ${state.status}`);
+            log(`Helpers: ${Object.keys(state.helpers).filter(h => state.helpers[h].ready).length} active`);
+            log(`Error count: ${state.errorCount}`);
+            log(`Learning entries: ${state.learningEntries.length}`);
+            break;
+            
+          case 'learn':
+            if (args.length < 2) {
+              log('Usage: learn <pattern> <details>', 'error');
+              break;
+            }
+            
+            const pattern = args[0];
+            const details = args.slice(1).join(' ');
+            
+            addLearningEntry({
+              pattern,
+              source: 'console',
+              details
+            });
+            
+            log(`Added learning entry for pattern: ${pattern}`);
+            break;
+            
+          case 'test':
+            if (args.length < 1) {
+              log('Usage: test <helper_name>', 'error');
+              break;
+            }
+            
+            const helperName = args[0];
+            
+            if (!state.helpers[helperName]) {
+              log(`Helper not found: ${helperName}`, 'error');
+              break;
+            }
+            
+            testHelper(helperName);
+            break;
+            
+          case 'clear':
+            clearConsole();
+            break;
+            
+          case 'hibernate':
+            enterHibernationMode();
+            break;
+            
+          case 'recover':
+            exitHibernationMode();
+            break;
+            
+          default:
+            log(`Unknown command: ${cmd}`, 'error');
+        }
+      } catch (error) {
+        log(`Command error: ${error.message}`, 'error');
+      }
+    }
+    
+    // Test a helper module
+    function testHelper(helperName) {
+      log(`Testing helper: ${helperName}`);
+      
+      // Simulate helper execution
+      switch (helperName) {
+        case 'task_executor':
+          log('task_executor: Analyzing task parameters...');
+          setTimeout(() => {
+            log('task_executor: Task flow identified: contact_management');
+            setTimeout(() => {
+              log('task_executor: Executing task sequence...', 'success');
+              addLearningEntry({
+                pattern: 'task_execution',
+                source: 'helper',
+                details: 'Successfully executed contact_management task flow'
+              });
+            }, 1000);
+          }, 1000);
+          break;
+          
+        case 'debugger_helper':
+          log('debugger_helper: Scanning workflow for logical gaps...');
+          setTimeout(() => {
+            log('debugger_helper: Found potential issue in error handling path');
+            setTimeout(() => {
+              log('debugger_helper: Applied template correction', 'success');
+              addLearningEntry({
+                pattern: 'workflow_correction',
+                source: 'helper',
+                details: 'Corrected error handling path in main workflow'
+              });
+            }, 1000);
+          }, 1000);
+          break;
+          
+        case 'api_connector':
+          log('api_connector: Testing connection status...');
+          setTimeout(() => {
+            log('api_connector: Connection available, testing remote API');
+            setTimeout(() => {
+              log('api_connector: API responsive, setting up real connections', 'success');
+            }, 1000);
+          }, 1000);
+          break;
+          
+        case 'error_resolver':
+          log('error_resolver: Analyzing error patterns...');
+          setTimeout(() => {
+            log('error_resolver: 3 potential error paths identified');
+            setTimeout(() => {
+              log('error_resolver: Fallback routes configured for all paths', 'success');
+            }, 1000);
+          }, 1000);
+          break;
+          
+        case 'disaster_monitor':
+          log('disaster_monitor: Checking system health...');
+          setTimeout(() => {
+            log('disaster_monitor: All systems within normal parameters');
+            setTimeout(() => {
+              log('disaster_monitor: Disaster thresholds configured, monitoring active', 'success');
+            }, 1000);
+          }, 1000);
+          break;
+          
+        default:
+          log(`Unknown helper: ${helperName}`, 'error');
+      }
+    }
+    
+    // Check if error threshold has been exceeded
+    function checkErrorThreshold() {
+      if (state.errorCount >= 5) {
+        log('Error threshold exceeded, initiating disaster recovery', 'error');
+        handleDisaster('error_threshold', 'high');
+      }
+    }
+    
+    // Handle a disaster
+    function handleDisaster(type, severity) {
+      log(`Disaster detected: ${type} (${severity})`, 'error');
+      
+      // Save current state
+      saveState()
+        .then(() => {
+          log('Current state saved for recovery');
+          
+          // Broadcast to parent
+          window.parent.postMessage({
+            type: 'DISASTER_RECOVERY',
+            module: 'adaptation',
+            status: 'initiated',
+            disasterType: type,
+            severity: severity,
+            timestamp: Date.now()
+          }, '*');
+          
+          // Start recovery process
+          setTimeout(() => {
+            log('Initiating recovery process...');
+            
+            setTimeout(() => {
+              log('System recovering, resetting error count');
+              state.errorCount = 0;
+              
+              setTimeout(() => {
+                log('Recovery process complete', 'success');
+                setStatus('active');
+                
+                // Broadcast recovery completion
+                window.parent.postMessage({
+                  type: 'DISASTER_RECOVERY',
+                  module: 'adaptation',
+                  status: 'completed',
+                  success: true,
+                  message: 'Adaptation module recovered from disaster',
+                  timestamp: Date.now()
+                }, '*');
+              }, 1000);
+            }, 1000);
+          }, 1000);
+        })
+        .catch(error => {
+          log(`Failed to save state for recovery: ${error.message}`, 'error');
+        });
+    }
+    
+    // Enter hibernation mode
+    function enterHibernationMode() {
+      if (state.isHibernating) {
+        log('Already in hibernation mode');
+        return;
+      }
+      
+      log('Entering hibernation mode...');
+      
+      // Save state
+      saveState()
+        .then(() => {
+          state.isHibernating = true;
+          setStatus('hibernating');
+          
+          log('State saved, hibernation mode active');
+          
+          // Notify parent
+          window.parent.postMessage({
+            type: 'ADAPTATION_HIBERNATING',
+            module: 'adaptation',
+            timestamp: Date.now()
+          }, '*');
+        })
+        .catch(error => {
+          log(`Failed to save state for hibernation: ${error.message}`, 'error');
+        });
+    }
+    
+    // Exit hibernation mode
+    function exitHibernationMode() {
+      if (!state.isHibernating) {
+        log('Not in hibernation mode');
+        return;
+      }
+      
+      log('Exiting hibernation mode...');
+      
+      // Load saved state
+      loadState()
+        .then(success => {
+          if (success) {
+            log('State restored from hibernation');
+          } else {
+            log('No saved state found, using defaults');
+          }
+          
+          state.isHibernating = false;
+          setStatus('active');
+          
+          log('Hibernation mode exited successfully', 'success');
+          
+          // Notify parent
+          window.parent.postMessage({
+            type: 'ADAPTATION_ACTIVE',
+            module: 'adaptation',
+            timestamp: Date.now()
+          }, '*');
+        })
+        .catch(error => {
+          log(`Failed to restore state: ${error.message}`, 'error');
+          
+          // Force exit hibernation anyway
+          state.isHibernating = false;
+          setStatus('error');
+        });
+    }
+    
+    // Set system status
+    function setStatus(status) {
+      state.status = status;
+      statusText.textContent = status.charAt(0).toUpperCase() + status.slice(1);
+      
+      // Update status dot
+      statusDot.className = 'status-dot';
+      statusDot.classList.add(status);
+    }
+    
+    // Handle a connection lost event
+    function handleConnectionLost() {
+      log('Connection lost detected');
+      enterHibernationMode();
+      
+      // Set up reconnection attempts
+      const reconnectInterval = setInterval(() => {
+        log('Attempting to reconnect...');
+        
+        // Simulate reconnection attempt
+        if (Math.random() > 0.3) {
+          clearInterval(reconnectInterval);
+          log('Connection reestablished', 'success');
+          exitHibernationMode();
+        } else {
+          log('Reconnection failed, will retry in 5 seconds', 'error');
+        }
+      }, 5000);
+    }
+    
+    // Simulate a failure for testing
+    function simulateFailure() {
+      const failureTypes = [
+        'connection_lost',
+        'memory_error',
+        'helper_crash',
+        'api_timeout'
+      ];
+      
+      const randomFailure = failureTypes[Math.floor(Math.random() * failureTypes.length)];
+      
+      log(`Simulating failure: ${randomFailure}`, 'error');
+      
+      switch (randomFailure) {
+        case 'connection_lost':
+          handleConnectionLost();
+          break;
+          
+        case 'memory_error':
+          log('Memory error detected in learning store', 'error');
+          
+          // Simulate memory recovery
+          setTimeout(() => {
+            log('Attempting memory repair...');
+            
+            setTimeout(() => {
+              if (Math.random() > 0.3) {
+                log('Memory repair successful', 'success');
+              } else {
+                log('Memory repair failed, resetting to defaults', 'error');
+                clearLearningEntries();
+              }
+            }, 1500);
+          }, 1000);
+          break;
+          
+        case 'helper_crash':
+          const helpers = Object.keys(state.helpers);
+          const randomHelper = helpers[Math.floor(Math.random() * helpers.length)];
+          
+          log(`Helper crashed: ${randomHelper}`, 'error');
+          state.helpers[randomHelper].ready = false;
+          
+          // Update helper status in UI
+          const helperElement = document.querySelector(`.helper-name:contains('${randomHelper}')`);
+          if (helperElement) {
+            const statusElement = helperElement.querySelector('.helper-status');
+            if (statusElement) {
+              statusElement.className = 'helper-status';
+              statusElement.textContent = 'Error';
+            }
+          }
+          
+          // Simulate recovery
+          setTimeout(() => {
+            log(`Restarting helper: ${randomHelper}`);
+            
+            setTimeout(() => {
+              log(`Helper ${randomHelper} restarted successfully`, 'success');
+              state.helpers[randomHelper].ready = true;
+              
+              // Update helper status in UI
+              if (helperElement) {
+                const statusElement = helperElement.querySelector('.helper-status');
+                if (statusElement) {
+                  statusElement.className = 'helper-status status-ready';
+                  statusElement.textContent = 'Ready';
+                }
+              }
+            }, 2000);
+          }, 1000);
+          break;
+          
+        case 'api_timeout':
+          log('API timeout detected', 'error');
+          
+          // Simulate API fallback
+          setTimeout(() => {
+            log('Switching to offline mode...');
+            
+            setTimeout(() => {
+              log('Offline mode active, using cached data', 'success');
+              
+              // Add learning entry
+              addLearningEntry({
+                pattern: 'api_fallback',
+                source: 'system',
+                details: 'Successfully switched to offline mode during API timeout'
+              });
+            }, 1500);
+          }, 1000);
+          break;
+      }
+    }
+    
+    // Start sending heartbeats to parent
+    function startHeartbeat() {
+      // Send initial heartbeat
+      window.parent.postMessage({
+        type: 'HEARTBEAT',
+        module: 'adaptation',
+        status: state.status,
+        timestamp: Date.now()
+      }, '*');
+      
+      // Set interval for regular heartbeats
+      setInterval(() => {
+        if (!state.isHibernating) {
+          window.parent.postMessage({
+            type: 'HEARTBEAT',
+            module: 'adaptation',
+            status: state.status,
+            timestamp: Date.now()
+          }, '*');
+        }
+      }, 5000);
+    }
+    
+    // Set up event listeners
+    function setupEventListeners() {
+      // Console command input
+      consoleCommand.addEventListener('keydown', event => {
+        if (event.key === 'Enter') {
+          const command = consoleCommand.value.trim();
+          if (command) {
+            executeCommand(command);
+            consoleCommand.value = '';
+          }
+        }
+      });
+      
+      // Button event listeners
+      clearLearningBtn.addEventListener('click', clearLearningEntries);
+      clearConsoleBtn.addEventListener('click', clearConsole);
+      testHelperBtn.addEventListener('click', () => {
+        const helpers = Object.keys(state.helpers);
+        const randomHelper = helpers[Math.floor(Math.random() * helpers.length)];
+        testHelper(randomHelper);
+      });
+      simulateFailureBtn.addEventListener('click', simulateFailure);
+      
+      // Listen for messages from parent
+      window.addEventListener('message', event => {
+        const data = event.data;
+        
+        if (!data || !data.type) return;
+        
+        switch (data.type) {
+          case 'GLOBAL_PING':
+            log(`Received global ping: ${data.payload?.info || 'No info'}`);
+            break;
+            
+          case 'ADAPTATION_COMMAND':
+            log(`Received command: ${data.command}`);
+            executeCommand(data.command);
+            break;
+            
+          case 'SIMULATE_FAILURE':
+            simulateFailure();
+            break;
+            
+          case 'DISASTER_DRILL':
+            log(`Disaster drill received: ${data.payload?.scenario || 'unknown'} (${data.payload?.severity || 'unknown'})`, 'warning');
+            
+            if (data.payload?.target === 'adaptation') {
+              handleDisaster(data.payload.scenario || 'drill', data.payload.severity || 'medium');
+            }
+            break;
+            
+          case 'ADD_LEARNING':
+            if (data.pattern && data.details) {
+              addLearningEntry({
+                pattern: data.pattern,
+                source: data.source || 'external',
+                details: data.details
+              });
+              
+              log(`Learning entry added for pattern: ${data.pattern}`);
+            }
+            break;
+        }
+      });
+    }
+    
+    // Initialize when the document is loaded
+    document.addEventListener('DOMContentLoaded', initialize);
+    
+    // Helper for querySelector :contains
+    document.querySelector = (function(_super) {
+      return function(selector) {
+        // Check if selector has :contains
+        if (selector.indexOf(':contains') > -1) {
+          // Get elements matching base selector without :contains
+          const baseSelector = selector.split(':contains')[0] || '*';
+          const elements = Array.from(document.querySelectorAll(baseSelector));
+          
+          // Extract text to search for
+          const match = selector.match(/:contains\('([^']+)'\)/);
+          const searchText = match ? match[1] : '';
+          
+          if (searchText) {
+            // Filter elements containing the text
+            const filtered = elements.filter(el => 
+              el.textContent.indexOf(searchText) > -1);
+            return filtered.length > 0 ? filtered[0] : null;
+          }
+        }
+        
+        // Use native querySelector for normal selectors
+        return _super.call(this, selector);
+      };
+    })(document.querySelector);
+  </script>
+</body>
+</html>

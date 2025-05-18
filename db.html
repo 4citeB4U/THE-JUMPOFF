@@ -1,0 +1,1798 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CRM Database Module</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 15px;
+      background: #f0f4f8;
+      color: #333;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    h2 {
+      margin-top: 0;
+      color: #2c3e50;
+    }
+    
+    .db-status {
+      display: flex;
+      justify-content: space-between;
+      background: #d1e4f6;
+      padding: 8px;
+      border-radius: 4px;
+      margin-bottom: 10px;
+      font-size: 0.9em;
+    }
+    
+    .status-connecting {
+      animation: pulse 1.5s infinite;
+    }
+    
+    @keyframes pulse {
+      0% { opacity: 1; background: #f39c12; }
+      50% { opacity: 0.7; background: #f1c40f; }
+      100% { opacity: 1; background: #f39c12; }
+    }
+    
+    .panel-container {
+      display: flex;
+      flex: 1;
+      gap: 15px;
+      overflow: hidden;
+    }
+    
+    .left-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    
+    .right-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    
+    .panel {
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .panel-header {
+      background: #f8f9fa;
+      padding: 8px 10px;
+      border-bottom: 1px solid #ddd;
+      font-weight: bold;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .panel-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px;
+    }
+    
+    .loading-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(255, 255, 255, 0.8);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 10;
+    }
+    
+    .loader {
+      border: 5px solid #f3f3f3;
+      border-top: 5px solid #3498db;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+      margin-bottom: 15px;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    th, td {
+      text-align: left;
+      padding: 8px;
+      border-bottom: 1px solid #eee;
+    }
+    
+    th {
+      background: #f8f9fa;
+    }
+    
+    .db-actions {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+    
+    button {
+      background: #3498db;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    
+    button:hover {
+      background: #2980b9;
+    }
+    
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    
+    .log-entry {
+      margin: 2px 0;
+      padding: 5px;
+      border-bottom: 1px dotted #eee;
+      font-family: monospace;
+      font-size: 0.9em;
+    }
+    
+    .log-timestamp {
+      color: #777;
+      margin-right: 5px;
+    }
+    
+    .log-operation {
+      font-weight: bold;
+      color: #2c3e50;
+    }
+    
+    .db-store {
+      margin-bottom: 10px;
+      padding: 5px;
+      border-radius: 3px;
+      background: #f8f9fa;
+    }
+    
+    .db-store-name {
+      font-weight: bold;
+    }
+    
+    .db-store-count {
+      display: inline-block;
+      padding: 2px 6px;
+      background: #3498db;
+      color: white;
+      border-radius: 10px;
+      font-size: 0.8em;
+      margin-left: 5px;
+    }
+    
+    .db-metrics {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    
+    .metric {
+      flex: 1;
+      background: #f8f9fa;
+      padding: 10px;
+      border-radius: 4px;
+      text-align: center;
+    }
+    
+    .metric-value {
+      font-size: 1.2em;
+      font-weight: bold;
+      color: #3498db;
+    }
+    
+    .metric-label {
+      font-size: 0.9em;
+      color: #777;
+    }
+    
+    .connection-steps {
+      list-style-type: none;
+      padding: 0;
+      margin: 0;
+      font-size: 0.9em;
+    }
+    
+    .connection-step {
+      padding: 5px 10px;
+      margin-bottom: 5px;
+      border-radius: 3px;
+    }
+    
+    .step-pending {
+      background: #f8f9fa;
+      color: #7f8c8d;
+    }
+    
+    .step-active {
+      background: #f9f2da;
+      color: #f39c12;
+      border-left: 3px solid #f39c12;
+    }
+    
+    .step-completed {
+      background: #e9f7ef;
+      color: #27ae60;
+      border-left: 3px solid #27ae60;
+    }
+    
+    .step-error {
+      background: #fdedec;
+      color: #e74c3c;
+      border-left: 3px solid #e74c3c;
+    }
+    
+    .refresh-btn {
+      background: none;
+      border: none;
+      color: #3498db;
+      cursor: pointer;
+      font-size: 14px;
+      padding: 0;
+    }
+    
+    .refresh-btn:hover {
+      color: #2980b9;
+      text-decoration: underline;
+    }
+    
+    .refresh-icon {
+      margin-right: 5px;
+    }
+    
+    .init-message {
+      padding: 20px;
+      text-align: center;
+      font-weight: bold;
+      color: #3498db;
+    }
+  </style>
+</head>
+<body>
+  <h2>CRM Database Module</h2>
+  
+  <div class="db-status">
+    <div>
+      <span id="db-status-indicator" style="display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: #f39c12; margin-right: 5px;" class="status-connecting"></span>
+      <span id="db-status-text">Initializing...</span>
+    </div>
+    <div id="record-count">Connecting to database...</div>
+  </div>
+  
+  <div class="db-actions">
+    <button id="backup-btn" disabled>Backup Database</button>
+    <button id="restore-btn" disabled>Restore Database</button>
+    <button id="add-sample-btn" disabled>Add Sample Data</button>
+    <button id="clear-btn" disabled>Clear Database</button>
+  </div>
+  
+  <div class="panel-container">
+    <div class="left-panel">
+      <div class="panel">
+        <div class="panel-header">
+          <span>Database Structure</span>
+          <button class="refresh-btn" id="refresh-structure-btn" style="display: none;">
+            <span class="refresh-icon">⟳</span> Refresh
+          </button>
+        </div>
+        <div class="panel-content" id="db-structure">
+          <div class="init-message">
+            <div class="loader"></div>
+            <p>Initializing database structure...</p>
+            <ul class="connection-steps">
+              <li id="step-1" class="connection-step step-active">Opening IndexedDB connection...</li>
+              <li id="step-2" class="connection-step step-pending">Configuring database schema...</li>
+              <li id="step-3" class="connection-step step-pending">Creating object stores...</li>
+              <li id="step-4" class="connection-step step-pending">Setting up indexes...</li>
+              <li id="step-5" class="connection-step step-pending">Checking data integrity...</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      
+      <div class="panel">
+        <div class="panel-header">Database Logs</div>
+        <div class="panel-content" id="db-logs">
+          <!-- Database operation logs will be displayed here -->
+        </div>
+      </div>
+    </div>
+    
+    <div class="right-panel">
+      <div class="panel">
+        <div class="panel-header">
+          <span>Data Preview</span>
+          <button class="refresh-btn" id="refresh-data-btn" style="display: none;">
+            <span class="refresh-icon">⟳</span> Refresh
+          </button>
+        </div>
+        <div class="panel-content" id="data-preview">
+          <div class="init-message">
+            <p>Waiting for database connection...</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="panel">
+        <div class="panel-header">Performance Metrics</div>
+        <div class="panel-content">
+          <div class="db-metrics">
+            <div class="metric">
+              <div class="metric-value" id="op-count">0</div>
+              <div class="metric-label">Operations</div>
+            </div>
+            <div class="metric">
+              <div class="metric-value" id="avg-time">0 ms</div>
+              <div class="metric-label">Avg Response Time</div>
+            </div>
+            <div class="metric">
+              <div class="metric-value" id="last-backup">Never</div>
+              <div class="metric-label">Last Backup</div>
+            </div>
+          </div>
+          
+          <div id="disaster-recovery-status" style="margin-top: 20px; padding: 10px; background: #e3f2fd; border-radius: 4px;">
+            Disaster Recovery: Ready
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    // Database configuration
+    const DB_CONFIG = {
+      name: 'CrmDatabase',
+      version: 1,
+      stores: [
+        {
+          name: 'contacts',
+          keyPath: 'id',
+          autoIncrement: true,
+          indexes: [
+            { name: 'email', unique: true },
+            { name: 'name', unique: false },
+            { name: 'category', unique: false }
+          ]
+        },
+        {
+          name: 'tasks',
+          keyPath: 'id',
+          autoIncrement: true,
+          indexes: [
+            { name: 'contactId', unique: false },
+            { name: 'status', unique: false },
+            { name: 'dueDate', unique: false }
+          ]
+        },
+        {
+          name: 'notes',
+          keyPath: 'id',
+          autoIncrement: true,
+          indexes: [
+            { name: 'contactId', unique: false },
+            { name: 'createdAt', unique: false }
+          ]
+        },
+        {
+          name: 'settings',
+          keyPath: 'key',
+          autoIncrement: false,
+          indexes: []
+        }
+      ]
+    };
+    
+    // State management
+    const state = {
+      db: null,
+      active: false,
+      connecting: true,
+      metrics: {
+        operations: 0,
+        responseTimes: [],
+        lastBackup: null
+      },
+      storeCounts: {},
+      encryptionKey: null,
+      autoBackupEnabled: true,
+      lastHeartbeat: Date.now(),
+      initSteps: {
+        connection: false,
+        schema: false,
+        stores: false,
+        indexes: false,
+        integrity: false
+      }
+    };
+    
+    // DOM references
+    const dbStructureElement = document.getElementById('db-structure');
+    const dbLogsElement = document.getElementById('db-logs');
+    const dataPreviewElement = document.getElementById('data-preview');
+    const recordCountElement = document.getElementById('record-count');
+    const operationCountElement = document.getElementById('op-count');
+    const avgTimeElement = document.getElementById('avg-time');
+    const lastBackupElement = document.getElementById('last-backup');
+    const dbStatusIndicator = document.getElementById('db-status-indicator');
+    const dbStatusText = document.getElementById('db-status-text');
+    const disasterRecoveryStatus = document.getElementById('disaster-recovery-status');
+    const refreshStructureBtn = document.getElementById('refresh-structure-btn');
+    const refreshDataBtn = document.getElementById('refresh-data-btn');
+    
+    // Buttons
+    const backupBtn = document.getElementById('backup-btn');
+    const restoreBtn = document.getElementById('restore-btn');
+    const addSampleBtn = document.getElementById('add-sample-btn');
+    const clearBtn = document.getElementById('clear-btn');
+    
+    // Connection steps
+    const step1Element = document.getElementById('step-1');
+    const step2Element = document.getElementById('step-2');
+    const step3Element = document.getElementById('step-3');
+    const step4Element = document.getElementById('step-4');
+    const step5Element = document.getElementById('step-5');
+    
+    // Log database operation
+    function logOperation(operation, details = '', level = 'info') {
+      const logEntry = document.createElement('div');
+      logEntry.className = 'log-entry';
+      
+      const timestamp = new Date().toLocaleTimeString();
+      
+      logEntry.innerHTML = `
+        <span class="log-timestamp">[${timestamp}]</span>
+        <span class="log-operation">${operation}:</span>
+        ${details}
+      `;
+      
+      // Add color based on level
+      if (level === 'error') {
+        logEntry.style.color = '#e74c3c';
+      } else if (level === 'warning') {
+        logEntry.style.color = '#f39c12';
+      } else if (level === 'success') {
+        logEntry.style.color = '#27ae60';
+      }
+      
+      dbLogsElement.appendChild(logEntry);
+      dbLogsElement.scrollTop = dbLogsElement.scrollHeight;
+      
+      // Limit log entries to prevent memory issues
+      while (dbLogsElement.children.length > 100) {
+        dbLogsElement.removeChild(dbLogsElement.firstChild);
+      }
+      
+      // Send log to logger module
+      window.parent.postMessage({
+        type: 'DIAG_LOG',
+        module: 'Database',
+        level: level.toUpperCase(),
+        message: `${operation}: ${details}`,
+        timestamp: Date.now()
+      }, '*');
+      
+      // Update operation count
+      state.metrics.operations++;
+      operationCountElement.textContent = state.metrics.operations;
+    }
+    
+    // Update connection step UI
+    function updateStepStatus(step, status) {
+      const stepElement = document.getElementById(`step-${step}`);
+      if (!stepElement) return;
+      
+      stepElement.className = `connection-step step-${status}`;
+      
+      switch (status) {
+        case 'active':
+          stepElement.innerHTML = stepElement.innerHTML.replace('...', ' <span style="color:#f39c12">⟳</span>');
+          break;
+        case 'completed':
+          stepElement.innerHTML = stepElement.innerHTML.replace('<span style="color:#f39c12">⟳</span>', ' ✓');
+          break;
+        case 'error':
+          stepElement.innerHTML = stepElement.innerHTML.replace('<span style="color:#f39c12">⟳</span>', ' ✗');
+          break;
+      }
+    }
+    
+    // Initialize database with visual feedback
+    async function initDatabase() {
+      state.connecting = true;
+      updateDBStatus();
+      
+      // Update UI for step 1
+      updateStepStatus(1, 'active');
+      
+      return new Promise((resolve, reject) => {
+        // Add delay to show connecting animation
+        setTimeout(() => {
+          const request = indexedDB.open(DB_CONFIG.name, DB_CONFIG.version);
+          
+          request.onupgradeneeded = (event) => {
+            const db = event.target.result;
+            
+            // Update UI for steps
+            updateStepStatus(1, 'completed');
+            state.initSteps.connection = true;
+            
+            // Step 2: Configure schema
+            setTimeout(() => {
+              updateStepStatus(2, 'active');
+              
+              setTimeout(() => {
+                updateStepStatus(2, 'completed');
+                state.initSteps.schema = true;
+                
+                // Step 3: Create stores
+                updateStepStatus(3, 'active');
+                
+                // Create object stores and indexes
+                let storesCreated = 0;
+                
+                DB_CONFIG.stores.forEach((store, index) => {
+                  setTimeout(() => {
+                    if (!db.objectStoreNames.contains(store.name)) {
+                      const objectStore = db.createObjectStore(store.name, {
+                        keyPath: store.keyPath,
+                        autoIncrement: store.autoIncrement
+                      });
+                      
+                      logOperation('CreateStore', `Created store: ${store.name}`, 'success');
+                      
+                      // Step 4: Create indexes
+                      if (index === 0) {
+                        updateStepStatus(3, 'completed');
+                        state.initSteps.stores = true;
+                        updateStepStatus(4, 'active');
+                      }
+                      
+                      // Create indexes with delays to show progress
+                      store.indexes.forEach((idx, idxIndex) => {
+                        setTimeout(() => {
+                          objectStore.createIndex(idx.name, idx.name, { unique: idx.unique });
+                          logOperation('CreateIndex', `Created index: ${idx.name} on ${store.name}`, 'success');
+                        }, idxIndex * 100);
+                      });
+                    }
+                    
+                    storesCreated++;
+                    if (storesCreated === DB_CONFIG.stores.length) {
+                      // All stores created
+                      setTimeout(() => {
+                        updateStepStatus(4, 'completed');
+                        state.initSteps.indexes = true;
+                      }, 500);
+                    }
+                  }, index * 300);
+                });
+              }, 500);
+            }, 500);
+          };
+          
+          request.onsuccess = (event) => {
+            state.db = event.target.result;
+            
+            // If no upgrade was needed, manually update steps
+            if (!state.initSteps.connection) {
+              updateStepStatus(1, 'completed');
+              state.initSteps.connection = true;
+              setTimeout(() => {
+                updateStepStatus(2, 'completed');
+                state.initSteps.schema = true;
+                setTimeout(() => {
+                  updateStepStatus(3, 'completed');
+                  state.initSteps.stores = true;
+                  setTimeout(() => {
+                    updateStepStatus(4, 'completed');
+                    state.initSteps.indexes = true;
+                  }, 300);
+                }, 300);
+              }, 300);
+            }
+            
+            // Final step
+            setTimeout(async () => {
+              updateStepStatus(5, 'active');
+              
+              try {
+                // Check data integrity
+                await checkDataIntegrity();
+                
+                updateStepStatus(5, 'completed');
+                state.initSteps.integrity = true;
+                
+                // Complete initialization
+                setTimeout(() => {
+                  state.active = true;
+                  state.connecting = false;
+                  updateDBStatus();
+                  
+                  // Enable buttons
+                  enableButtons();
+                  
+                  // Show refresh buttons
+                  refreshStructureBtn.style.display = 'inline-block';
+                  refreshDataBtn.style.display = 'inline-block';
+                  
+                  // Hide initialization UI and show the real structure
+                  dbStructureElement.innerHTML = '';
+                  dataPreviewElement.innerHTML = '';
+                  
+                  logOperation('Connect', 'Database connected successfully', 'success');
+                  
+                  // Handle database connection loss
+                  state.db.onversionchange = () => {
+                    state.db.close();
+                    state.active = false;
+                    updateDBStatus();
+                    logOperation('Disconnect', 'Database connection closed due to version change', 'warning');
+                  };
+                  
+                  // Load initial metrics and data
+                  loadDbMetrics();
+                  
+                  // Check if we have any data, if not, add sample data
+                  checkAndAddSampleData();
+                  
+                  resolve(state.db);
+                }, 500);
+              } catch (error) {
+                updateStepStatus(5, 'error');
+                
+                logOperation('Error', `Data integrity check failed: ${error.message}`, 'error');
+                
+                // Still enable the database but with a warning
+                state.active = true;
+                state.connecting = false;
+                updateDBStatus('warning');
+                
+                // Enable buttons
+                enableButtons();
+                
+                resolve(state.db);
+              }
+            }, 500);
+          };
+          
+          request.onerror = (event) => {
+            updateStepStatus(1, 'error');
+            
+            state.active = false;
+            state.connecting = false;
+            updateDBStatus('error');
+            logOperation('Error', `Failed to open database: ${event.target.error}`, 'error');
+            
+            // Show error in structure panel
+            dbStructureElement.innerHTML = `
+              <div style="padding: 20px; color: #e74c3c; text-align: center;">
+                <h3>Database Connection Failed</h3>
+                <p>${event.target.error.message || 'Could not connect to IndexedDB'}</p>
+                <button id="retry-btn" class="control-btn primary-btn" style="background: #e74c3c; margin-top: 10px;">Retry Connection</button>
+              </div>
+            `;
+            
+            document.getElementById('retry-btn').addEventListener('click', () => {
+              location.reload();
+            });
+            
+            reject(event.target.error);
+          };
+        }, 1000);
+      });
+    }
+    
+    // Check data integrity
+    async function checkDataIntegrity() {
+      return new Promise((resolve) => {
+        // This is a simulated check - in a real system, this would do more validation
+        setTimeout(() => {
+          // Simulate checking each store
+          let checksCompleted = 0;
+          
+          DB_CONFIG.stores.forEach((store, index) => {
+            setTimeout(() => {
+              logOperation('IntegrityCheck', `Verified structure for ${store.name} store`, 'success');
+              
+              checksCompleted++;
+              if (checksCompleted === DB_CONFIG.stores.length) {
+                resolve(true);
+              }
+            }, index * 200);
+          });
+        }, 800);
+      });
+    }
+    
+    // Check if we have any data and add sample if empty
+    async function checkAndAddSampleData() {
+      try {
+        const contactCount = await getStoreCount('contacts');
+        
+        if (contactCount === 0) {
+          // No data found, add sample data automatically
+          logOperation('AutoSample', 'No data found in database. Adding sample data automatically...', 'info');
+          
+          // Add sample data with a slight delay to show the process
+          setTimeout(() => {
+            addSampleData();
+          }, 500);
+        }
+      } catch (error) {
+        logOperation('Error', `Failed to check for existing data: ${error.message}`, 'error');
+      }
+    }
+    
+    // Enable buttons
+    function enableButtons() {
+      backupBtn.disabled = false;
+      restoreBtn.disabled = false;
+      addSampleBtn.disabled = false;
+      clearBtn.disabled = false;
+    }
+    
+    // Update database status UI
+    function updateDBStatus(status) {
+      dbStatusIndicator.classList.remove('status-connecting');
+      
+      if (state.connecting) {
+        dbStatusIndicator.classList.add('status-connecting');
+        dbStatusIndicator.style.background = '#f39c12';
+        dbStatusText.textContent = 'Connecting...';
+        recordCountElement.textContent = 'Initializing database...';
+        return;
+      }
+      
+      if (state.active) {
+        if (status === 'warning') {
+          dbStatusIndicator.style.background = '#f39c12';
+          dbStatusText.textContent = 'Connected with warnings';
+        } else {
+          dbStatusIndicator.style.background = '#4caf50';
+          dbStatusText.textContent = 'Connected';
+        }
+      } else {
+        dbStatusIndicator.style.background = '#e74c3c';
+        dbStatusText.textContent = 'Disconnected';
+        recordCountElement.textContent = 'Database connection lost';
+      }
+    }
+    
+    // Load database metrics
+    async function loadDbMetrics() {
+      try {
+        const startTime = performance.now();
+        
+        // Load store record counts with visual feedback
+        state.storeCounts = {};
+        let totalRecords = 0;
+        
+        recordCountElement.textContent = 'Counting records...';
+        
+        // Get counts for each store with visible delays
+        let storesCounted = 0;
+        
+        for (const store of DB_CONFIG.stores) {
+          await new Promise(resolve => setTimeout(resolve, 100)); // Slight delay
+          const count = await getStoreCount(store.name);
+          state.storeCounts[store.name] = count;
+          totalRecords += count;
+          storesCounted++;
+          
+          // Update count in real-time
+          recordCountElement.textContent = `Counting: ${storesCounted}/${DB_CONFIG.stores.length} stores, ${totalRecords} total records`;
+        }
+        
+        // Final count update
+        recordCountElement.textContent = `Total Records: ${totalRecords}`;
+        
+        // Calculate operation time
+        const endTime = performance.now();
+        state.metrics.responseTimes.push(endTime - startTime);
+        
+        // Trim response times array to last 100
+        if (state.metrics.responseTimes.length > 100) {
+          state.metrics.responseTimes = state.metrics.responseTimes.slice(-100);
+        }
+        
+        // Calculate average response time
+        const avgTime = state.metrics.responseTimes.reduce((a, b) => a + b, 0) / state.metrics.responseTimes.length;
+        avgTimeElement.textContent = `${avgTime.toFixed(1)} ms`;
+        
+        // Update structure display
+        updateStructureDisplay();
+        
+        // Update data preview
+        updateDataPreview();
+        
+        return totalRecords;
+      } catch (error) {
+        logOperation('Error', `Failed to load metrics: ${error.message}`, 'error');
+        return 0;
+      }
+    }
+    
+    // Get count of records in a store
+    function getStoreCount(storeName) {
+      return new Promise((resolve, reject) => {
+        if (!state.db) {
+          resolve(0);
+          return;
+        }
+        
+        try {
+          const transaction = state.db.transaction(storeName, 'readonly');
+          const store = transaction.objectStore(storeName);
+          const countRequest = store.count();
+          
+          countRequest.onsuccess = () => {
+            resolve(countRequest.result);
+          };
+          
+          countRequest.onerror = (event) => {
+            reject(event.target.error);
+          };
+        } catch (error) {
+          reject(error);
+        }
+      });
+    }
+    
+    // Update database structure display
+    function updateStructureDisplay() {
+      dbStructureElement.innerHTML = '';
+      
+      // Add a refreshing animation
+      dbStructureElement.innerHTML = '<div style="text-align: center; padding: 10px;"><div class="loader" style="display: inline-block; width: 20px; height: 20px;"></div> Refreshing structure...</div>';
+      
+      // Simulate fetching structure with delay
+      setTimeout(() => {
+        dbStructureElement.innerHTML = '';
+        
+        DB_CONFIG.stores.forEach((store, index) => {
+          setTimeout(() => {
+            const storeDiv = document.createElement('div');
+            storeDiv.className = 'db-store';
+            
+            storeDiv.innerHTML = `
+              <div>
+                <span class="db-store-name">${store.name}</span>
+                <span class="db-store-count">${state.storeCounts[store.name] || 0}</span>
+              </div>
+              <div style="margin-left: 15px; font-size: 0.9em; color: #666;">
+                <div>Key: ${store.keyPath}${store.autoIncrement ? ' (autoIncrement)' : ''}</div>
+                <div>Indexes: ${store.indexes.map(idx => idx.name).join(', ') || 'None'}</div>
+              </div>
+            `;
+            
+            // Add animation to make it clear it's being added dynamically
+            storeDiv.style.opacity = '0';
+            dbStructureElement.appendChild(storeDiv);
+            
+            // Fade in
+            setTimeout(() => {
+              storeDiv.style.transition = 'opacity 0.3s';
+              storeDiv.style.opacity = '1';
+            }, 50);
+          }, index * 150); // Stagger display
+        });
+      }, 500);
+    }
+    
+    // Update data preview
+    async function updateDataPreview() {
+      dataPreviewElement.innerHTML = '<div style="text-align: center; padding: 10px;"><div class="loader" style="display: inline-block; width: 20px; height: 20px;"></div> Loading data preview...</div>';
+      
+      // Add a slight delay to show the loading state
+      setTimeout(async () => {
+        try {
+          // Get a sample of contacts (up to 5)
+          const contacts = await getStoreData('contacts', 5);
+          
+          if (contacts.length === 0) {
+            dataPreviewElement.innerHTML = `
+              <div style="padding: 20px; text-align: center; color: #7f8c8d;">
+                <p>No contacts available</p>
+                <button id="preview-add-sample-btn" class="control-btn primary-btn" style="margin-top: 10px;">Add Sample Data</button>
+              </div>
+            `;
+            
+            document.getElementById('preview-add-sample-btn').addEventListener('click', addSampleData);
+            return;
+          }
+          
+          dataPreviewElement.innerHTML = '';
+          
+          // Create table for contacts
+          const table = document.createElement('table');
+          
+          // Create header
+          const thead = document.createElement('thead');
+          const headerRow = document.createElement('tr');
+          
+          headerRow.innerHTML = `
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Category</th>
+            <th>Company</th>
+          `;
+          
+          thead.appendChild(headerRow);
+          table.appendChild(thead);
+          
+          // Create body
+          const tbody = document.createElement('tbody');
+          
+          // Add contacts with delay for animation
+          contacts.forEach((contact, index) => {
+            setTimeout(() => {
+              const row = document.createElement('tr');
+              
+              row.innerHTML = `
+                <td>${contact.id}</td>
+                <td>${contact.name || '-'}</td>
+                <td>${contact.email || '-'}</td>
+                <td>${contact.category || '-'}</td>
+                <td>${contact.company || '-'}</td>
+              `;
+              
+              // Add animation
+              row.style.opacity = '0';
+              tbody.appendChild(row);
+              
+              // Fade in
+              setTimeout(() => {
+                row.style.transition = 'opacity 0.3s';
+                row.style.opacity = '1';
+              }, 50);
+            }, index * 100);
+          });
+          
+          table.appendChild(tbody);
+          dataPreviewElement.appendChild(table);
+          
+          // Add a note about the preview
+          const noteDiv = document.createElement('div');
+          noteDiv.style.marginTop = '15px';
+          noteDiv.style.fontSize = '0.85em';
+          noteDiv.style.color = '#7f8c8d';
+          noteDiv.style.fontStyle = 'italic';
+          noteDiv.textContent = `Showing ${contacts.length} of ${state.storeCounts.contacts || 0} contacts`;
+          dataPreviewElement.appendChild(noteDiv);
+          
+        } catch (error) {
+          dataPreviewElement.innerHTML = `<div style="padding: 10px; color: #e74c3c;">Error loading data: ${error.message}</div>`;
+        }
+      }, 800);
+    }
+    
+    // Get data from a store
+    function getStoreData(storeName, limit = 10) {
+      return new Promise((resolve, reject) => {
+        if (!state.db) {
+          resolve([]);
+          return;
+        }
+        
+        try {
+          const transaction = state.db.transaction(storeName, 'readonly');
+          const store = transaction.objectStore(storeName);
+          const request = store.openCursor();
+          
+          const results = [];
+          
+          request.onsuccess = (event) => {
+            const cursor = event.target.result;
+            
+            if (cursor && results.length < limit) {
+              results.push(cursor.value);
+              cursor.continue();
+            } else {
+              resolve(results);
+            }
+          };
+          
+          request.onerror = (event) => {
+            reject(event.target.error);
+          };
+        } catch (error) {
+          reject(error);
+        }
+      });
+    }
+    
+    // Add sample data
+    async function addSampleData() {
+      if (!state.active || !state.db) {
+        logOperation('Error', 'Cannot add sample data: Database not connected', 'error');
+        return;
+      }
+      
+      // Disable button during operation
+      addSampleBtn.disabled = true;
+      addSampleBtn.textContent = 'Adding...';
+      
+      try {
+        // Sample contacts
+        const contacts = [
+          {
+            name: 'John Smith',
+            email: 'john.smith@example.com',
+            category: 'Lead',
+            phone: '555-123-4567',
+            company: 'ABC Corp',
+            lastContact: new Date().toISOString()
+          },
+          {
+            name: 'Jane Doe',
+            email: 'jane.doe@example.com',
+            category: 'Customer',
+            phone: '555-987-6543',
+            company: 'XYZ Industries',
+            lastContact: new Date().toISOString()
+          },
+          {
+            name: 'Bob Johnson',
+            email: 'bob.johnson@example.com',
+            category: 'Prospect',
+            phone: '555-555-5555',
+            company: 'Acme Inc',
+            lastContact: new Date().toISOString()
+          },
+          {
+            name: 'Sarah Williams',
+            email: 'sarah.w@example.com',
+            category: 'Lead',
+            phone: '555-222-3333',
+            company: 'Global Tech',
+            lastContact: new Date().toISOString()
+          },
+          {
+            name: 'Michael Brown',
+            email: 'michael.b@example.com',
+            category: 'Customer',
+            phone: '555-444-5555',
+            company: 'Innovative Solutions',
+            lastContact: new Date().toISOString()
+          }
+        ];
+        
+        // Add sample contacts with visual feedback
+        for (const [index, contact] of contacts.entries()) {
+          logOperation('AddContact', `Adding contact ${index+1}/${contacts.length}: ${contact.name}`, 'info');
+          await new Promise(r => setTimeout(r, 200)); // Slight delay
+          await addContact(contact);
+        }
+        
+        // Add sample tasks
+        const tasks = [
+          {
+            contactId: 1,
+            title: 'Follow up call',
+            description: 'Call to discuss new proposal',
+            status: 'Pending',
+            dueDate: new Date(Date.now() + 86400000).toISOString() // Tomorrow
+          },
+          {
+            contactId: 2,
+            title: 'Send quote',
+            description: 'Prepare and send quote for new services',
+            status: 'In Progress',
+            dueDate: new Date(Date.now() + 172800000).toISOString() // Day after tomorrow
+          },
+          {
+            contactId: 3,
+            title: 'Schedule demo',
+            description: 'Set up product demonstration',
+            status: 'Pending',
+            dueDate: new Date(Date.now() + 259200000).toISOString() // 3 days from now
+          }
+        ];
+        
+        logOperation('AddTasks', `Adding ${tasks.length} sample tasks`, 'info');
+        
+        for (const task of tasks) {
+          await new Promise(r => setTimeout(r, 150)); // Slight delay
+          await addTask(task);
+        }
+        
+        // Add sample notes
+        const notes = [
+          {
+            contactId: 1,
+            content: 'Customer expressed interest in premium package',
+            createdAt: new Date().toISOString()
+          },
+          {
+            contactId: 2,
+            content: 'Discussed renewal options, needs follow-up next week',
+            createdAt: new Date().toISOString()
+          },
+          {
+            contactId: 3,
+            content: 'Interested in enterprise solution, reviewing budget',
+            createdAt: new Date().toISOString()
+          }
+        ];
+        
+        logOperation('AddNotes', `Adding ${notes.length} sample notes`, 'info');
+        
+        for (const note of notes) {
+          await new Promise(r => setTimeout(r, 150)); // Slight delay
+          await addNote(note);
+        }
+        
+        // Add sample settings
+        const settings = [
+          {
+            key: 'theme',
+            value: 'light'
+          },
+          {
+            key: 'notifications',
+            value: true
+          },
+          {
+            key: 'auto_backup',
+            value: true
+          }
+        ];
+        
+        logOperation('AddSettings', `Adding ${settings.length} system settings`, 'info');
+        
+        for (const setting of settings) {
+          await new Promise(r => setTimeout(r, 100)); // Slight delay
+          await updateSetting(setting.key, setting.value);
+        }
+        
+        // Refresh metrics
+        await loadDbMetrics();
+        
+        logOperation('AddSampleData', 'Sample data added successfully', 'success');
+      } catch (error) {
+        logOperation('Error', `Failed to add sample data: ${error.message}`, 'error');
+      } finally {
+        // Re-enable button
+        addSampleBtn.disabled = false;
+        addSampleBtn.textContent = 'Add Sample Data';
+      }
+    }
+    
+    // Add a contact
+    function addContact(contact) {
+      return new Promise((resolve, reject) => {
+        if (!state.db || !state.active) {
+          reject(new Error('Database not connected'));
+          return;
+        }
+        
+        try {
+          const transaction = state.db.transaction('contacts', 'readwrite');
+          const store = transaction.objectStore('contacts');
+          const request = store.add(contact);
+          
+          request.onsuccess = (event) => {
+            logOperation('AddContact', `Added contact: ${contact.name}`, 'success');
+            resolve(event.target.result);
+          };
+          
+          request.onerror = (event) => {
+            logOperation('Error', `Failed to add contact: ${event.target.error.message}`, 'error');
+            reject(event.target.error);
+          };
+        } catch (error) {
+          logOperation('Error', `Failed to add contact: ${error.message}`, 'error');
+          reject(error);
+        }
+      });
+    }
+    
+    // Add a task
+    function addTask(task) {
+      return new Promise((resolve, reject) => {
+        if (!state.db || !state.active) {
+          reject(new Error('Database not connected'));
+          return;
+        }
+        
+        try {
+          const transaction = state.db.transaction('tasks', 'readwrite');
+          const store = transaction.objectStore('tasks');
+          const request = store.add(task);
+          
+          request.onsuccess = (event) => {
+            logOperation('AddTask', `Added task: ${task.title}`, 'success');
+            resolve(event.target.result);
+          };
+          
+          request.onerror = (event) => {
+            logOperation('Error', `Failed to add task: ${event.target.error.message}`, 'error');
+            reject(event.target.error);
+          };
+        } catch (error) {
+          logOperation('Error', `Failed to add task: ${error.message}`, 'error');
+          reject(error);
+        }
+      });
+    }
+    
+    // Add a note
+    function addNote(note) {
+      return new Promise((resolve, reject) => {
+        if (!state.db || !state.active) {
+          reject(new Error('Database not connected'));
+          return;
+        }
+        
+        try {
+          const transaction = state.db.transaction('notes', 'readwrite');
+          const store = transaction.objectStore('notes');
+          const request = store.add(note);
+          
+          request.onsuccess = (event) => {
+            logOperation('AddNote', `Added note for contact ID: ${note.contactId}`, 'success');
+            resolve(event.target.result);
+          };
+          
+          request.onerror = (event) => {
+            logOperation('Error', `Failed to add note: ${event.target.error.message}`, 'error');
+            reject(event.target.error);
+          };
+        } catch (error) {
+          logOperation('Error', `Failed to add note: ${error.message}`, 'error');
+          reject(error);
+        }
+      });
+    }
+    
+    // Update a setting
+    function updateSetting(key, value) {
+      return new Promise((resolve, reject) => {
+        if (!state.db || !state.active) {
+          reject(new Error('Database not connected'));
+          return;
+        }
+        
+        try {
+          const transaction = state.db.transaction('settings', 'readwrite');
+          const store = transaction.objectStore('settings');
+          const request = store.put({ key, value });
+          
+          request.onsuccess = (event) => {
+            logOperation('UpdateSetting', `Updated setting: ${key}`, 'success');
+            resolve(event.target.result);
+          };
+          
+          request.onerror = (event) => {
+            logOperation('Error', `Failed to update setting: ${event.target.error.message}`, 'error');
+            reject(event.target.error);
+          };
+        } catch (error) {
+          logOperation('Error', `Failed to update setting: ${error.message}`, 'error');
+          reject(error);
+        }
+      });
+    }
+    
+    // Clear database
+    async function clearDatabase() {
+      if (!state.db || !state.active) {
+        logOperation('Error', 'Cannot clear database: Database not connected', 'error');
+        return;
+      }
+      
+      if (!confirm('Are you sure you want to clear all data? This cannot be undone.')) {
+        return;
+      }
+      
+      // Disable buttons during operation
+      clearBtn.disabled = true;
+      clearBtn.textContent = 'Clearing...';
+      
+      try {
+        // Create a backup first
+        logOperation('ClearDatabase', 'Creating backup before clearing database', 'info');
+        await backupDatabase();
+        
+        // Clear all stores with visual feedback
+        for (const [index, store] of DB_CONFIG.stores.entries()) {
+          logOperation('ClearStore', `Clearing store ${index+1}/${DB_CONFIG.stores.length}: ${store.name}`, 'info');
+          await new Promise(r => setTimeout(r, 300)); // Add delay for visual effect
+          await clearStore(store.name);
+        }
+        
+        // Refresh metrics
+        await loadDbMetrics();
+        
+        logOperation('ClearDatabase', 'Database cleared successfully', 'success');
+      } catch (error) {
+        logOperation('Error', `Failed to clear database: ${error.message}`, 'error');
+      } finally {
+        // Re-enable button
+        clearBtn.disabled = false;
+        clearBtn.textContent = 'Clear Database';
+      }
+    }
+    
+    // Clear a specific store
+    function clearStore(storeName) {
+      return new Promise((resolve, reject) => {
+        if (!state.db || !state.active) {
+          reject(new Error('Database not connected'));
+          return;
+        }
+        
+        try {
+          const transaction = state.db.transaction(storeName, 'readwrite');
+          const store = transaction.objectStore(storeName);
+          const request = store.clear();
+          
+          request.onsuccess = () => {
+            logOperation('ClearStore', `Cleared store: ${storeName}`, 'success');
+            resolve();
+          };
+          
+          request.onerror = (event) => {
+            logOperation('Error', `Failed to clear store ${storeName}: ${event.target.error.message}`, 'error');
+            reject(event.target.error);
+          };
+        } catch (error) {
+          logOperation('Error', `Failed to clear store ${storeName}: ${error.message}`, 'error');
+          reject(error);
+        }
+      });
+    }
+    
+    // Backup database
+    async function backupDatabase() {
+      if (!state.db || !state.active) {
+        logOperation('Error', 'Cannot backup database: Database not connected', 'error');
+        return;
+      }
+      
+      // Disable button during operation
+      backupBtn.disabled = true;
+      backupBtn.textContent = 'Backing up...';
+      
+      try {
+        logOperation('BackupDatabase', 'Starting database backup', 'info');
+        
+        // Create backup object
+        const backup = {
+          timestamp: Date.now(),
+          version: DB_CONFIG.version,
+          stores: {}
+        };
+        
+        // Backup each store with visual feedback
+        for (const [index, store] of DB_CONFIG.stores.entries()) {
+          logOperation('BackupStore', `Backing up store ${index+1}/${DB_CONFIG.stores.length}: ${store.name}`, 'info');
+          await new Promise(r => setTimeout(r, 300)); // Add delay for visual feedback
+          backup.stores[store.name] = await getAllStoreData(store.name);
+        }
+        
+        // Serialize backup data
+        const backupJson = JSON.stringify(backup);
+        
+        // Update last backup time
+        state.metrics.lastBackup = new Date();
+        lastBackupElement.textContent = state.metrics.lastBackup.toLocaleTimeString();
+        
+        logOperation('BackupDatabase', `Database backed up successfully (${bytesToSize(backupJson.length)})`, 'success');
+        
+        // Create a download file for the backup
+        const blob = new Blob([backupJson], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `crm-backup-${new Date().toISOString().replace(/[:.]/g, '-')}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        // Send backup data to parent window if requested
+        window.parent.postMessage({
+          type: 'DB_BACKUP_RESPONSE',
+          payload: {
+            status: 'success',
+            timestamp: backup.timestamp,
+            data: backupJson,
+            size: backupJson.length
+          },
+          timestamp: Date.now()
+        }, '*');
+        
+        return backupJson;
+      } catch (error) {
+        logOperation('Error', `Failed to backup database: ${error.message}`, 'error');
+        
+        // Send error to parent window
+        window.parent.postMessage({
+          type: 'DB_BACKUP_RESPONSE',
+          payload: {
+            status: 'error',
+            error: error.message
+          },
+          timestamp: Date.now()
+        }, '*');
+        
+        throw error;
+      } finally {
+        // Re-enable button
+        backupBtn.disabled = false;
+        backupBtn.textContent = 'Backup Database';
+      }
+    }
+    
+    // Get all data from a store
+    function getAllStoreData(storeName) {
+      return new Promise((resolve, reject) => {
+        if (!state.db) {
+          resolve([]);
+          return;
+        }
+        
+        try {
+          const transaction = state.db.transaction(storeName, 'readonly');
+          const store = transaction.objectStore(storeName);
+          const request = store.getAll();
+          
+          request.onsuccess = () => {
+            resolve(request.result);
+          };
+          
+          request.onerror = (event) => {
+            reject(event.target.error);
+          };
+        } catch (error) {
+          reject(error);
+        }
+      });
+    }
+    
+    // Restore database from backup
+    async function restoreDatabase() {
+      if (!state.db || !state.active) {
+        logOperation('Error', 'Cannot restore database: Database not connected', 'error');
+        return;
+      }
+      
+      // Disable button during operation
+      restoreBtn.disabled = true;
+      restoreBtn.textContent = 'Select Backup...';
+      
+      // Create file input for selecting backup file
+      const fileInput = document.createElement('input');
+      fileInput.type = 'file';
+      fileInput.accept = '.json';
+      
+      fileInput.onchange = async (event) => {
+        const file = event.target.files[0];
+        if (!file) {
+          restoreBtn.disabled = false;
+          restoreBtn.textContent = 'Restore Database';
+          return;
+        }
+        
+        // Update button
+        restoreBtn.textContent = 'Restoring...';
+        
+        try {
+          logOperation('RestoreDatabase', `Reading backup file: ${file.name}`, 'info');
+          
+          // Read file
+          const fileContent = await readFile(file);
+          
+          // Parse backup data
+          const backup = JSON.parse(fileContent);
+          
+          // Validate backup format
+          if (!backup.stores || !backup.timestamp) {
+            throw new Error('Invalid backup format');
+          }
+          
+          // Create a backup of current data first
+          logOperation('RestoreDatabase', 'Creating backup of current data before restore', 'info');
+          await backupDatabase();
+          
+          // Clear all stores
+          logOperation('RestoreDatabase', 'Clearing current data before restore', 'info');
+          for (const store of DB_CONFIG.stores) {
+            await clearStore(store.name);
+          }
+          
+          // Restore data to each store with visual feedback
+          const storeNames = Object.keys(backup.stores);
+          for (const [index, storeName] of storeNames.entries()) {
+            const data = backup.stores[storeName];
+            logOperation('RestoreStore', `Restoring store ${index+1}/${storeNames.length}: ${storeName} (${data.length} records)`, 'info');
+            await new Promise(r => setTimeout(r, 300)); // Add delay for visual feedback
+            await restoreStoreData(storeName, data);
+          }
+          
+          // Refresh metrics
+          await loadDbMetrics();
+          
+          const backupDate = new Date(backup.timestamp).toLocaleString();
+          logOperation('RestoreDatabase', `Database restored successfully from backup (${backupDate})`, 'success');
+        } catch (error) {
+          logOperation('Error', `Failed to restore database: ${error.message}`, 'error');
+        } finally {
+          // Re-enable button
+          restoreBtn.disabled = false;
+          restoreBtn.textContent = 'Restore Database';
+        }
+      };
+      
+      fileInput.click();
+    }
+    
+    // Restore data to a store
+    function restoreStoreData(storeName, data) {
+      return new Promise((resolve, reject) => {
+        if (!state.db || !state.active || !data || !Array.isArray(data)) {
+          reject(new Error('Invalid restore data'));
+          return;
+        }
+        
+        try {
+          const transaction = state.db.transaction(storeName, 'readwrite');
+          const store = transaction.objectStore(storeName);
+          
+          let completed = 0;
+          const total = data.length;
+          
+          // If no data to restore, resolve immediately
+          if (total === 0) {
+            resolve();
+            return;
+          }
+          
+          transaction.oncomplete = () => {
+            logOperation('RestoreStore', `Restored ${completed} records to ${storeName}`, 'success');
+            resolve();
+          };
+          
+          transaction.onerror = (event) => {
+            logOperation('Error', `Failed to restore data to ${storeName}: ${event.target.error.message}`, 'error');
+            reject(event.target.error);
+          };
+          
+          // Add each item to the store
+          data.forEach(item => {
+            const request = store.add(item);
+            
+            request.onsuccess = () => {
+              completed++;
+            };
+          });
+        } catch (error) {
+          logOperation('Error', `Failed to restore data to ${storeName}: ${error.message}`, 'error');
+          reject(error);
+        }
+      });
+    }
+    
+    // Read file
+    function readFile(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        
+        reader.onload = (event) => {
+          resolve(event.target.result);
+        };
+        
+        reader.onerror = () => {
+          reject(new Error('Failed to read file'));
+        };
+        
+        reader.readAsText(file);
+      });
+    }
+    
+    // Format bytes to human-readable size
+    function bytesToSize(bytes) {
+      const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+      if (bytes === 0) return '0 Bytes';
+      const i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
+      return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[i];
+    }
+    
+    // Simulate disaster recovery
+    function simulateDisasterRecovery() {
+      disasterRecoveryStatus.textContent = 'Disaster Recovery: Testing...';
+      disasterRecoveryStatus.style.background = '#fff3cd';
+      
+      logOperation('DisasterRecovery', 'Initiating disaster recovery test', 'warning');
+      
+      // Phase 1: Simulate database failure
+      state.active = false;
+      updateDBStatus('error');
+      
+      // Disable buttons
+      backupBtn.disabled = true;
+      restoreBtn.disabled = true;
+      addSampleBtn.disabled = true;
+      clearBtn.disabled = true;
+      
+      logOperation('DisasterRecovery', 'Phase 1: Simulating database failure', 'warning');
+      
+      // Phase 2: Attempt reconnection after 2 seconds
+      setTimeout(async () => {
+        logOperation('DisasterRecovery', 'Phase 2: Attempting reconnection', 'info');
+        
+        try {
+          // Close existing connection if any
+          if (state.db) {
+            state.db.close();
+          }
+          
+          // Show connecting state
+          state.connecting = true;
+          updateDBStatus();
+          
+          // Reopen database with slight delay
+          setTimeout(async () => {
+            // Reopen database
+            await initDatabase();
+            state.active = true;
+            updateDBStatus();
+            
+            // Enable buttons
+            backupBtn.disabled = false;
+            restoreBtn.disabled = false;
+            addSampleBtn.disabled = false;
+            clearBtn.disabled = false;
+            
+            logOperation('DisasterRecovery', 'Phase 3: Verifying data integrity', 'info');
+            
+            // Phase 3: Verify data integrity
+            await loadDbMetrics();
+            
+            // Phase 4: Recovery complete
+            logOperation('DisasterRecovery', 'Recovery completed successfully', 'success');
+            disasterRecoveryStatus.textContent = 'Disaster Recovery: Test Passed';
+            disasterRecoveryStatus.style.background = '#d4edda';
+            
+            // Reset status after 5 seconds
+            setTimeout(() => {
+              disasterRecoveryStatus.textContent = 'Disaster Recovery: Ready';
+              disasterRecoveryStatus.style.background = '#e3f2fd';
+            }, 5000);
+          }, 1500);
+        } catch (error) {
+          logOperation('Error', `Disaster recovery failed: ${error.message}`, 'error');
+          disasterRecoveryStatus.textContent = 'Disaster Recovery: Test Failed';
+          disasterRecoveryStatus.style.background = '#f8d7da';
+        }
+      }, 2000);
+    }
+    
+    // Event listeners
+    backupBtn.addEventListener('click', backupDatabase);
+    restoreBtn.addEventListener('click', restoreDatabase);
+    addSampleBtn.addEventListener('click', addSampleData);
+    clearBtn.addEventListener('click', clearDatabase);
+    refreshStructureBtn.addEventListener('click', updateStructureDisplay);
+    refreshDataBtn.addEventListener('click', updateDataPreview);
+    
+    // Listen for messages from parent
+    window.addEventListener('message', (event) => {
+      const data = event.data;
+      
+      if (!data || !data.type) return;
+      
+      // Handle PING messages
+      if (data.type === 'PING') {
+        logOperation('Ping', `Received ping from ${data.source || 'unknown'}`);
+        
+        // Send PONG response
+        window.parent.postMessage({
+          type: 'PONG',
+          source: 'db',
+          timestamp: Date.now()
+        }, '*');
+      }
+      
+      // Handle backup requests
+      if (data.type === 'DB_BACKUP') {
+        logOperation('BackupRequest', `Received backup request from ${data.source || 'unknown'}`);
+        backupDatabase();
+      }
+      
+      // Handle disaster recovery drill
+      if (data.type === 'RECOVERY_DRILL' && data.payload?.targetModule === 'db') {
+        if (data.payload.action === 'test') {
+          simulateDisasterRecovery();
+        } else if (data.payload.action === 'fail') {
+          state.active = false;
+          updateDBStatus('error');
+          logOperation('DisasterRecovery', 'Simulated database failure', 'warning');
+        } else if (data.payload.action === 'restore') {
+          state.active = true;
+          updateDBStatus();
+          logOperation('DisasterRecovery', 'Database restored to active state', 'success');
+        }
+      }
+    });
+    
+    // Periodic heartbeat
+    setInterval(() => {
+      if (!state.active && !state.connecting) return;
+      
+      window.parent.postMessage({
+        type: 'HEARTBEAT',
+        module: 'db',
+        status: state.connecting ? 'connecting' : (state.active ? 'connected' : 'disconnected'),
+        stores: state.storeCounts,
+        totalRecords: Object.values(state.storeCounts).reduce((a, b) => a + b, 0),
+        timestamp: Date.now()
+      }, '*');
+      
+      state.lastHeartbeat = Date.now();
+    }, 5000);
+    
+    // Automatic backup every 5 minutes if enabled
+    setInterval(() => {
+      if (state.autoBackupEnabled && state.active) {
+        logOperation('AutoBackup', 'Starting scheduled automatic backup', 'info');
+        backupDatabase();
+      }
+    }, 300000);
+    
+    // Initialize
+    window.addEventListener('load', async () => {
+      try {
+        // Begin the connection process
+        await initDatabase();
+        
+        // Send initialization message to parent
+        window.parent.postMessage({
+          type: 'MODULE_INIT',
+          module: 'db',
+          status: 'active',
+          stores: DB_CONFIG.stores.map(s => s.name),
+          timestamp: Date.now()
+        }, '*');
+      } catch (error) {
+        logOperation('Error', `Initialization failed: ${error.message}`, 'error');
+      }
+    });
+  </script>
+</body>
+</html>

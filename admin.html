@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Artist Admin Dashboard</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Admin Dashboard Styles -->
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-logo">
+                <span class="logo-accent">Your</span>Music.YourRules
+            </div>
+            
+            <div class="site-status">
+                <span class="status-indicator"></span>
+                <span>Site Live</span>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-title">Main</div>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <span class="nav-icon"><i class="fas fa-chart-line"></i></span>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link active">
+                            <span class="nav-icon"><i class="fas fa-edit"></i></span>
+                            Edit Site
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <span class="nav-icon"><i class="fas fa-photo-video"></i></span>
+                            Media Library
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-title">Analytics</div>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <span class="nav-icon"><i class="fas fa-users"></i></span>
+                            Visitors
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <span class="nav-icon"><i class="fas fa-dollar-sign"></i></span>
+                            Revenue
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <span class="nav-icon"><i class="fas fa-music"></i></span>
+                            Streams
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-title">Content</div>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <span class="nav-icon"><i class="fas fa-shopping-cart"></i></span>
+                            Merch Store
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <span class="nav-icon"><i class="fas fa-calendar-alt"></i></span>
+                            Tour Dates
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <span class="nav-icon"><i class="fas fa-newspaper"></i></span>
+                            Blog Posts
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <span class="nav-icon"><i class="fas fa-comments"></i></span>
+                            Fan Community
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-title">Settings</div>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <span class="nav-icon"><i class="fas fa-search"></i></span>
+                            SEO
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <span class="nav-icon"><i class="fas fa-user-circle"></i></span>
+                            Profile
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <span class="nav-icon"><i class="fas fa-cog"></i></span>
+                            Settings
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="sidebar-footer">
+                <a href="#" style="color: var(--text-secondary); text-decoration: none;">
+                    <span class="nav-icon"><i class="fas fa-sign-out-alt"></i></span>
+                    Logout
+                </a>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="page-header">
+                <h1 class="page-title">Edit Site</h1>
+                <div class="user-menu">
+                    <div class="user-avatar">A</div>
+                    <span class="user-name">ArtistName</span>
+                </div>
+            </div>
+            
+            <div class="site-preview-container">
+                <div class="preview-header">
+                    <div class="device-selector">
+                        <button class="device-button active" data-device="desktop"><i class="fas fa-desktop"></i> Desktop</button>
+                        <button class="device-button" data-device="tablet"><i class="fas fa-tablet-alt"></i> Tablet</button>
+                        <button class="device-button" data-device="mobile"><i class="fas fa-mobile-alt"></i> Mobile</button>
+                    </div>
+                    <div class="preview-actions">
+                        <button class="preview-button">
+                            <i class="fas fa-eye"></i> Preview
+                        </button>
+                        <button class="publish-button">Publish Changes</button>
+                    </div>
+                </div>
+                <div class="iframe-container desktop">
+                    <iframe src="index.html" class="site-iframe" id="sitePreview"></iframe>
+                </div>
+            </div>
+            
+            <!-- Edit button and overlay (these will be dynamically positioned) -->
+            <div class="element-overlay" id="elementOverlay"></div>
+            <button class="edit-button" id="editButton">
+                <i class="fas fa-pen"></i>
+            </button>
+            <button class="delete-indicator" id="deleteButton">
+                <i class="fas fa-trash"></i>
+            </button>
+            <div class="drag-indicator" id="dragIndicator">
+                <i class="fas fa-grip-lines"></i>
+            </div>
+            
+            <!-- Add Component Button -->
+            <button class="add-component-button" id="addComponentButton">+</button>
+            <div class="component-palette" id="componentPalette">
+                <div class="palette-title">Add a new component</div>
+                <div class="component-list">
+                    <div class="component-option" data-type="hero_section">
+                        <div class="component-icon"><i class="fas fa-home"></i></div>
+                        <div class="component-name">Hero Section</div>
+                    </div>
+                    <div class="component-option" data-type="video_player">
+                        <div class="component-icon"><i class="fas fa-video"></i></div>
+                        <div class="component-name">Video Player</div>
+                    </div>
+                    <div class="component-option" data-type="merch_store">
+                        <div class="component-icon"><i class="fas fa-tshirt"></i></div>
+                        <div class="component-name">Merch Cards</div>
+                    </div>
+                    <div class="component-option" data-type="tour_dates">
+                        <div class="component-icon"><i class="fas fa-calendar"></i></div>
+                        <div class="component-name">Tour Dates</div>
+                    </div>
+                    <div class="component-option" data-type="fan_club">
+                        <div class="component-icon"><i class="fas fa-users"></i></div>
+                        <div class="component-name">Fan Club</div>
+                    </div>
+                    <div class="component-option" data-type="testimonials">
+                        <div class="component-icon"><i class="fas fa-star"></i></div>
+                        <div class="component-name">Testimonials</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Edit Modal for Hero Section -->
+        <div class="edit-modal" id="editModal">
+            <div class="modal-header">
+                <h2 class="modal-title">Edit Hero Section</h2>
+                <button class="close-modal" id="closeModal"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Title</label>
+                    <input type="text" class="form-input" value="Your Music. Your Rules." id="heroTitle">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Subtitle</label>
+                    <textarea class="form-input" id="heroSubtitle">Independent artist connecting directly with fans. No middleman.</textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Background Image</label>
+                    <div class="upload-container" id="uploadContainer">
+                        <div class="upload-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+                        <div class="upload-text">Drag & drop an image or click to browse</div>
+                        <div class="upload-subtext">Recommended size: 1920x1080px (16:9 ratio)</div>
+                    </div>
+                    <div class="selected-file">
+                        <div class="file-preview">
+                            <i class="fas fa-image"></i>
+                        </div>
+                        <div class="file-name">hero-banner.jpg</div>
+                        <button class="file-remove"><i class="fas fa-times"></i></button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Call-to-Action Buttons</label>
+                    <div class="button-editor">
+                        <div class="button-item">
+                            <input type="text" class="form-input" value="Stream Now" placeholder="Button Text">
+                            <input type="text" class="form-input" value="#videos" placeholder="Link URL">
+                        </div>
+                        <div class="button-item">
+                            <input type="text" class="form-input" value="Buy Merch" placeholder="Button Text">
+                            <input type="text" class="form-input" value="#merch" placeholder="Link URL">
+                        </div>
+                        <div class="button-item">
+                            <input type="text" class="form-input" value="Join the Fan Club" placeholder="Button Text">
+                            <input type="text" class="form-input" value="#community" placeholder="Link URL">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="cancel-button" id="cancelEdit">Cancel</button>
+                <button class="save-button" id="saveEdit">Save Changes</button>
+            </div>
+        </div>
+        
+        <!-- Video Editor Modal (Hidden by default) -->
+        <div class="edit-modal" id="videoModal" style="transform: translateX(100%);">
+            <div class="modal-header">
+                <h2 class="modal-title">Edit Video Player</h2>
+                <button class="close-modal"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Section Title</label>
+                    <input type="text" class="form-input" value="Latest Music">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Video URL (YouTube)</label>
+                    <input type="text" class="form-input" value="https://www.youtube.com/embed/dQw4w9WgXcQ" placeholder="https://www.youtube.com/...">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Show Streaming Platform Links</label>
+                    <div class="toggle-switch">
+                        <input type="checkbox" id="showStreamLinks" checked>
+                        <label for="showStreamLinks"></label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Streaming Platforms</label>
+                    <div class="platform-editor">
+                        <div class="platform-item">
+                            <select class="form-input">
+                                <option value="spotify">Spotify</option>
+                                <option value="apple">Apple Music</option>
+                                <option value="youtube">YouTube</option>
+                                <option value="bandcamp">Bandcamp</option>
+                            </select>
+                            <input type="text" class="form-input" placeholder="Link URL">
+                        </div>
+                    </div>
+                    <button class="add-platform-button">+ Add Platform</button>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="cancel-button">Cancel</button>
+                <button class="save-button">Save Changes</button>
+            </div>
+        </div>
+        
+        <!-- Backdrop overlay -->
+        <div class="backdrop" id="backdrop"></div>
+    </div>
+    
+    <!-- JavaScript -->
+    <script src="js/admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+{
+  "name": "Music Artist - Your Music. Your Rules.",
+  "short_name": "Music Artist",
+  "description": "Independent music artist website with direct fan support, music, merch, and tour dates.",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#121212",
+  "theme_color": "#8e44ad",
+  "icons": [
+    {
+      "src": "/images/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/images/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

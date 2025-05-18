@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Web Worker Dashboard</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #e8f5e9;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    header {
+      background-color: #4a6fa5;
+      color: white;
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    h1, h2, h3 {
+      margin: 0;
+    }
+    
+    h1 {
+      font-size: 1.5rem;
+    }
+    
+    .status-badge {
+      font-size: 0.8rem;
+      background-color: #45b69c;
+      color: white;
+      padding: 3px 8px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+    }
+    
+    .status-badge:before {
+      content: "";
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: white;
+      margin-right: 5px;
+    }
+    
+    .main-container {
+      display: flex;
+      flex-direction: column;
+      padding: 15px;
+      gap: 15px;
+      flex: 1;
+      overflow: hidden;
+    }
+    
+    .panel-row {
+      display: flex;
+      gap: 15px;
+      flex: 1;
+    }
+    
+    .panel {
+      background-color: white;
+      border-radius: 8px;
+      padding: 15px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 10px;
+    }
+    
+    .metrics-panel {
+      flex: 1;
+    }
+    
+    .task-panel {
+      flex: 2;
+      overflow: hidden;
+    }
+    
+    .control-panel {
+      flex: 0 0 auto;
+    }
+    
+    .worker-console-panel {
+      min-height: 200px;
+    }
+    
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+    
+    .metric-card {
+      background-color: #f9f9f9;
+      padding: 12px;
+      border-radius: 6px;
+      text-align: center;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    }
+    
+    .metric-value {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #4a6fa5;
+      margin-bottom: 5px;
+    }
+    
+    .metric-label {
+      font-size: 0.8rem;
+      color: #666;
+    }
+    
+    .task-list {
+      overflow-y: auto;
+      flex: 1;
+    }
+    
+    .task-item {
+      padding: 10px;
+      margin-bottom: 10px;
+      border-left: 4px solid #4a6fa5;
+      background-color: #f9f9f9;
+      border-radius: 0 5px 5px 0;
+    }
+    
+    .task-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 5px;
+    }
+    
+    .task-id {
+      font-size: 0.8rem;
+      color: #666;
+    }
+    
+    .task-status {
+      font-size: 0.8rem;
+      color: white;
+      padding: 2px 6px;
+      border-radius: 10px;
+      background-color: #999;
+    }
+    
+    .status-pending {
+      background-color: #f39c12;
+    }
+    
+    .status-processing {
+      background-color: #3498db;
+    }
+    
+    .status-completed {
+      background-color: #2ecc71;
+    }
+    
+    .status-failed {
+      background-color: #e74c3c;
+    }
+    
+    .task-content {
+      margin: 5px 0;
+    }
+    
+    .task-time {
+      font-size: 0.8rem;
+      color: #666;
+      text-align: right;
+    }
+    
+    .worker-console {
+      background-color: #1b2938;
+      color: #a5d6a7;
+      font-family: monospace;
+      padding: 10px;
+      border-radius: 5px;
+      height: 150px;
+      overflow-y: auto;
+      flex: 1;
+    }
+    
+    .console-line {
+      margin: 2px 0;
+      word-break: break-word;
+    }
+    
+    .console-time {
+      color: #95a5a6;
+      margin-right: 5px;
+    }
+    
+    .console-info {
+      color: #a5d6a7;
+    }
+    
+    .console-error {
+      color: #ff6b6b;
+    }
+    
+    .console-warning {
+      color: #feca57;
+    }
+    
+    .console-success {
+      color: #1dd1a1;
+    }
+    
+    .control-buttons {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    
+    button {
+      padding: 10px 15px;
+      border: none;
+      border-radius: 5px;
+      background-color: #4a6fa5;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.2s, transform 0.1s;
+      font-weight: 500;
+    }
+    
+    button:hover {
+      background-color: #3d5d8a;
+    }
+    
+    button:active {
+      transform: translateY(1px);
+    }
+    
+    button:disabled {
+      background-color: #95a5a6;
+      cursor: not-allowed;
+    }
+    
+    button.danger-btn {
+      background-color: #e74c3c;
+    }
+    
+    button.danger-btn:hover {
+      background-color: #c0392b;
+    }
+    
+    button.warning-btn {
+      background-color: #f39c12;
+    }
+    
+    button.warning-btn:hover {
+      background-color: #d35400;
+    }
+    
+    button.success-btn {
+      background-color: #2ecc71;
+    }
+    
+    button.success-btn:hover {
+      background-color: #27ae60;
+    }
+    
+    .task-input-group {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+    
+    input, select {
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      flex: 1;
+    }
+    
+    select {
+      background-color: white;
+    }
+    
+    .encryption-toggle {
+      display: flex;
+      align-items: center;
+      margin: 10px 0;
+    }
+    
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 24px;
+      margin-right: 10px;
+    }
+    
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: .4s;
+      border-radius: 24px;
+    }
+    
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 16px;
+      width: 16px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+    
+    input:checked + .slider {
+      background-color: #2ecc71;
+    }
+    
+    input:focus + .slider {
+      box-shadow: 0 0 1px #2ecc71;
+    }
+    
+    input:checked + .slider:before {
+      transform: translateX(26px);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Web Worker Dashboard</h1>
+    <div id="worker-status" class="status-badge">Inactive</div>
+  </header>
+  
+  <div class="main-container">
+    <div class="panel-row">
+      <div class="panel metrics-panel">
+        <div class="panel-header">
+          <h3>Worker Metrics</h3>
+        </div>
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <div id="queue-length" class="metric-value">0</div>
+            <div class="metric-label">Queue Length</div>
+          </div>
+          <div class="metric-card">
+            <div id="tasks-completed" class="metric-value">0</div>
+            <div class="metric-label">Tasks Completed</div>
+          </div>
+          <div class="metric-card">
+            <div id="tasks-processing" class="metric-value">0</div>
+            <div class="metric-label">Tasks Processing</div>
+          </div>
+          <div class="metric-card">
+            <div id="tasks-failed" class="metric-value">0</div>
+            <div class="metric-label">Tasks Failed</div>
+          </div>
+          <div class="metric-card">
+            <div id="avg-time" class="metric-value">0ms</div>
+            <div class="metric-label">Avg. Processing Time</div>
+          </div>
+          <div class="metric-card">
+            <div id="encryption-status" class="metric-value">Off</div>
+            <div class="metric-label">Encryption</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="panel task-panel">
+        <div class="panel-header">
+          <h3>Task Queue</h3>
+        </div>
+        <div id="task-list" class="task-list">
+          <!-- Tasks will appear here -->
+        </div>
+      </div>
+    </div>
+    
+    <div class="panel control-panel">
+      <div class="panel-header">
+        <h3>Task Controls</h3>
+      </div>
+      <div class="task-input-group">
+        <input type="text" id="task-description" placeholder="Enter task description">
+        <select id="task-priority">
+          <option value="high">High Priority</option>
+          <option value="normal" selected>Normal Priority</option>
+          <option value="low">Low Priority</option>
+        </select>
+        <button id="add-task-btn" class="success-btn" disabled>Add Task</button>
+      </div>
+      
+      <div class="encryption-toggle">
+        <label class="toggle-switch">
+          <input type="checkbox" id="encryption-toggle">
+          <span class="slider"></span>
+        </label>
+        <span>Enable Encryption</span>
+      </div>
+      
+      <div class="control-buttons">
+        <button id="start-worker-btn">Start Worker</button>
+        <button id="stop-worker-btn" class="danger-btn" disabled>Stop Worker</button>
+        <button id="spawn-worker-btn" disabled>Spawn Child Worker</button>
+        <button id="stress-test-btn" class="warning-btn" disabled>Run Stress Test</button>
+        <button id="disaster-drill-btn" class="warning-btn" disabled>Disaster Recovery Drill</button>
+      </div>
+    </div>
+    
+    <div class="panel worker-console-panel">
+      <div class="panel-header">
+        <h3>Worker Console</h3>
+      </div>
+      <div id="worker-console" class="worker-console">
+        <div class="console-line console-info">
+          <span class="console-time">[System]</span> Web Worker Dashboard initialized. Click "Start Worker" to begin.
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    // DOM elements
+    const workerStatusElement = document.getElementById('worker-status');
+    const queueLengthElement = document.getElementById('queue-length');
+    const tasksCompletedElement = document.getElementById('tasks-completed');
+    const tasksProcessingElement = document.getElementById('tasks-processing');
+    const tasksFailedElement = document.getElementById('tasks-failed');
+    const avgTimeElement = document.getElementById('avg-time');
+    const encryptionStatusElement = document.getElementById('encryption-status');
+    const taskListElement = document.getElementById('task-list');
+    const workerConsoleElement = document.getElementById('worker-console');
+    
+    // Control elements
+    const startWorkerBtn = document.getElementById('start-worker-btn');
+    const stopWorkerBtn = document.getElementById('stop-worker-btn');
+    const spawnWorkerBtn = document.getElementById('spawn-worker-btn');
+    const stressTestBtn = document.getElementById('stress-test-btn');
+    const disasterDrillBtn = document.getElementById('disaster-drill-btn');
+    const addTaskBtn = document.getElementById('add-task-btn');
+    const taskDescriptionInput = document.getElementById('task-description');
+    const taskPrioritySelect = document.getElementById('task-priority');
+    const encryptionToggle = document.getElementById('encryption-toggle');
+    
+    // App state
+    const state = {
+      worker: null,
+      childWorkers: [],
+      tasks: [],
+      encryptionEnabled: false,
+      encryptionKey: null,
+      workerId: 'primary-worker-' + Date.now()
+    };
+    
+    // Add a log entry to the console
+    function logToConsole(message, level = 'info') {
+      const logEntry = document.createElement('div');
+      logEntry.className = `console-line console-${level}`;
+      
+      const timestamp = new Date().toLocaleTimeString();
+      const timeSpan = document.createElement('span');
+      timeSpan.className = 'console-time';
+      timeSpan.textContent = `[${timestamp}]`;
+      
+      logEntry.appendChild(timeSpan);
+      logEntry.appendChild(document.createTextNode(' ' + message));
+      
+      workerConsoleElement.appendChild(logEntry);
+      workerConsoleElement.scrollTop = workerConsoleElement.scrollHeight;
+    }
+    
+    // Update worker status
+    function updateWorkerStatus(status) {
+      workerStatusElement.textContent = status;
+      
+      // Set appropriate background color
+      switch (status.toLowerCase()) {
+        case 'active':
+          workerStatusElement.style.backgroundColor = '#2ecc71';
+          break;
+        case 'busy':
+          workerStatusElement.style.backgroundColor = '#f39c12';
+          break;
+        case 'error':
+          workerStatusElement.style.backgroundColor = '#e74c3c';
+          break;
+        case 'inactive':
+        default:
+          workerStatusElement.style.backgroundColor = '#95a5a6';
+          break;
+      }
+    }
+    
+    // Generate random encryption key
+    function generateEncryptionKey() {
+      const array = new Uint8Array(32);
+      window.crypto.getRandomValues(array);
+      return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
+    }
+    
+    // Toggle encryption
+    function toggleEncryption() {
+      state.encryptionEnabled = encryptionToggle.checked;
+      
+      if (state.encryptionEnabled) {
+        state.encryptionKey = generateEncryptionKey();
+        encryptionStatusElement.textContent = 'On';
+        logToConsole(`Encryption enabled with key: ${state.encryptionKey.substring(0, 8)}...`, 'success');
+      } else {
+        state.encryptionKey = null;
+        encryptionStatusElement.textContent = 'Off';
+        logToConsole('Encryption disabled', 'info');
+      }
+    }
+    
+    // Encrypt data
+    function encryptData(data) {
+      if (!state.encryptionEnabled || !state.encryptionKey) {
+        return data;
+      }
+      
+      // Simple encryption for demo purposes
+      try {
+        return btoa(JSON.stringify(data));
+      } catch (error) {
+        logToConsole(`Encryption error: ${error.message}`, 'error');
+        return data;
+      }
+    }
+    
+    // Decrypt data
+    function decryptData(encryptedData) {
+      if (!state.encryptionEnabled || !state.encryptionKey) {
+        return encryptedData;
+      }
+      
+      try {
+        return JSON.parse(atob(encryptedData));
+      } catch (error) {
+        logToConsole(`Decryption error: ${error.message}`, 'error');
+        return encryptedData;
+      }
+    }
+    
+    // Start the worker
+    function startWorker() {
+      if (state.worker) {
+        logToConsole('Worker is already running', 'warning');
+        return;
+      }
+      
+      try {
+        // Create web worker
+        state.worker = new Worker('web-worker.js');
+        
+        // Initialize worker
+        state.worker.postMessage({
+          type: 'INIT',
+          id: state.workerId,
+          name: 'dashboard-primary-worker'
+        });
+        
+        // Set up message handler
+        state.worker.onmessage = handleWorkerMessage;
+        
+        // Set up error handler
+        state.worker.onerror = function(error) {
+          logToConsole(`Worker error: ${error.message}`, 'error');
+          updateWorkerStatus('Error');
+        };
+        
+        // Update UI
+        startWorkerBtn.disabled = true;
+        stopWorkerBtn.disabled = false;
+        spawnWorkerBtn.disabled = false;
+        stressTestBtn.disabled = false;
+        disasterDrillBtn.disabled = false;
+        addTaskBtn.disabled = false;
+        
+        // Update status
+        updateWorkerStatus('Active');
+        
+        logToConsole('Worker started successfully', 'success');
+      } catch (error) {
+        logToConsole(`Failed to start worker: ${error.message}`, 'error');
+      }
+    }
+    
+    // Stop the worker
+    function stopWorker() {
+      if (!state.worker) {
+        logToConsole('No worker is running', 'warning');
+        return;
+      }
+      
+      // Terminate worker
+      state.worker.postMessage({
+        type: 'TERMINATE'
+      });
+      
+      state.worker.terminate();
+      state.worker = null;
+      
+      // Reset child workers too
+      state.childWorkers.forEach(childWorker => {
+        if (childWorker.instance) {
+          childWorker.instance.terminate();
+        }
+      });
+      state.childWorkers = [];
+      
+      // Update UI
+      startWorkerBtn.disabled = false;
+      stopWorkerBtn.disabled = true;
+      spawnWorkerBtn.disabled = true;
+      stressTestBtn.disabled = true;
+      disasterDrillBtn.disabled = true;
+      addTaskBtn.disabled = true;
+      
+      // Update status
+      updateWorkerStatus('Inactive');
+      
+      logToConsole('Worker stopped', 'info');
+    }
+    
+    // Handle messages from the worker
+    function handleWorkerMessage(event) {
+      const data = event.data;
+      
+      if (!data || !data.type) return;
+      
+      switch (data.type) {
+        case 'LOG':
+          logToConsole(data.message, data.level);
+          break;
+          
+        case 'HEARTBEAT':
+          updateMetrics(data.metrics);
+          break;
+          
+        case 'TASK_COMPLETED':
+          logToConsole(`Task completed: ${data.taskId}`, 'success');
+          updateTaskStatus(data.taskId, 'completed', data.result);
+          break;
+          
+        case 'TASK_FAILED':
+          logToConsole(`Task failed: ${data.taskId} - ${data.error}`, 'error');
+          updateTaskStatus(data.taskId, 'failed', null, data.error);
+          break;
+      }
+    }
+    
+    // Update the metrics display
+    function updateMetrics(metrics) {
+      if (!metrics) return;
+      
+      queueLengthElement.textContent = metrics.queueLength || 0;
+      tasksCompletedElement.textContent = metrics.tasksCompleted || 0;
+      tasksProcessingElement.textContent = metrics.tasksProcessing || 0;
+      tasksFailedElement.textContent = metrics.tasksFailed || 0;
+      
+      // Format average processing time
+      const avgTime = metrics.averageProcessingTime || 0;
+      avgTimeElement.textContent = `${Math.round(avgTime)}ms`;
+      
+      // Update worker status if busy
+      if (metrics.tasksProcessing > 0) {
+        updateWorkerStatus('Busy');
+      } else if (workerStatusElement.textContent !== 'Error') {
+        updateWorkerStatus('Active');
+      }
+    }
+    
+    // Add a task
+    function addTask() {
+      if (!state.worker) {
+        logToConsole('Worker is not running', 'warning');
+        return;
+      }
+      
+      const description = taskDescriptionInput.value.trim();
+      if (!description) {
+        logToConsole('Task description is required', 'warning');
+        return;
+      }
+      
+      const priority = taskPrioritySelect.value;
+      
+      // Generate task ID
+      const taskId = `task-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+      
+      // Create task data
+      const taskData = {
+        id: taskId,
+        description: description,
+        priority: priority,
+        createdAt: Date.now()
+      };
+      
+      // Add to local task list
+      state.tasks.push({
+        ...taskData,
+        status: 'pending'
+      });
+      
+      // Create UI element
+      createTaskElement(taskId, description, 'pending');
+      
+      // Encrypt data if needed
+      const dataToSend = state.encryptionEnabled ? encryptData(taskData) : taskData;
+      
+      // Send to worker
+      state.worker.postMessage({
+        type: 'PROCESS_TASK',
+        task: {
+          ...taskData,
+          data: dataToSend,
+          encrypted: state.encryptionEnabled
+        }
+      });
+      
+      // Clear input
+      taskDescriptionInput.value = '';
+      
+      logToConsole(`Added task: ${description}`, 'info');
+    }
+    
+    // Create a new task element in the UI
+    function createTaskElement(id, description, status) {
+      const taskElement = document.createElement('div');
+      taskElement.className = 'task-item';
+      taskElement.id = `task-${id}`;
+      
+      const encryptedFlag = state.encryptionEnabled ? ' 🔒' : '';
+      
+      taskElement.innerHTML = `
+        <div class="task-header">
+          <span class="task-id">${id}${encryptedFlag}</span>
+          <span class="task-status status-${status}">${capitalizeFirstLetter(status)}</span>
+        </div>
+        <div class="task-content">${description}</div>
+        <div class="task-time">Created: ${new Date().toLocaleTimeString()}</div>
+      `;
+      
+      taskListElement.prepend(taskElement);
+    }
+    
+    // Update a task's status in the UI
+    function updateTaskStatus(id, status, result = null, error = null) {
+      const taskElement = document.getElementById(`task-${id}`);
+      if (!taskElement) return;
+      
+      // Update the status badge
+      const statusBadge = taskElement.querySelector('.task-status');
+      statusBadge.className = `task-status status-${status}`;
+      statusBadge.textContent = capitalizeFirstLetter(status);
+      
+      // Update the time info
+      const timeElement = taskElement.querySelector('.task-time');
+      timeElement.textContent = `${capitalizeFirstLetter(status)}: ${new Date().toLocaleTimeString()}`;
+      
+      // Update content for completed or failed tasks
+      const contentElement = taskElement.querySelector('.task-content');
+      if (status === 'completed' && result) {
+        contentElement.textContent += ` (Result: ${result.output || JSON.stringify(result)})`;
+      } else if (status === 'failed' && error) {
+        contentElement.innerHTML += ` <span class="console-error">(Error: ${error})</span>`;
+      }
+    }
+    
+    // Spawn a child worker
+    function spawnChildWorker() {
+      if (!state.worker) {
+        logToConsole('Main worker must be running to spawn children', 'warning');
+        return;
+      }
+      
+      logToConsole('Spawning child worker...', 'info');
+      
+      // Create a unique ID for the child worker
+      const childId = `child-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+      
+      // Create a web worker
+      try {
+        const childWorker = new Worker('web-worker.js');
+        
+        // Initialize worker
+        childWorker.postMessage({
+          type: 'INIT',
+          id: childId,
+          name: `child-worker-${childId}`
+        });
+        
+        // Set up message handler
+        childWorker.onmessage = function(event) {
+          const data = event.data;
+          
+          if (!data || !data.type) return;
+          
+          switch (data.type) {
+            case 'LOG':
+              logToConsole(`[Child ${childId}] ${data.message}`, data.level);
+              break;
+              
+            case 'TASK_COMPLETED':
+              logToConsole(`[Child ${childId}] Task completed: ${data.taskId}`, 'success');
+              updateTaskStatus(data.taskId, 'completed', data.result);
+              break;
+              
+            case 'TASK_FAILED':
+              logToConsole(`[Child ${childId}] Task failed: ${data.taskId} - ${data.error}`, 'error');
+              updateTaskStatus(data.taskId, 'failed', null, data.error);
+              break;
+          }
+        };
+        
+        // Set up error handler
+        childWorker.onerror = function(error) {
+          logToConsole(`Child worker error: ${error.message}`, 'error');
+        };
+        
+        // Add to child workers list
+        state.childWorkers.push({
+          id: childId,
+          instance: childWorker,
+          status: 'active',
+          createdAt: Date.now()
+        });
+        
+        logToConsole(`Child worker ${childId} spawned successfully`, 'success');
+      } catch (error) {
+        logToConsole(`Failed to spawn child worker: ${error.message}`, 'error');
+      }
+    }
+    
+    // Run a stress test
+    function runStressTest() {
+      if (!state.worker) {
+        logToConsole('Worker must be running to perform stress test', 'warning');
+        return;
+      }
+      
+      // Ask for task count
+      const count = prompt('Enter number of tasks for stress test:', '10');
+      if (!count) return;
+      
+      const taskCount = parseInt(count, 10);
+      if (isNaN(taskCount) || taskCount <= 0) {
+        logToConsole('Invalid task count', 'error');
+        return;
+      }
+      
+      logToConsole(`Starting stress test with ${taskCount} tasks`, 'warning');
+      
+      // Send to worker
+      state.worker.postMessage({
+        type: 'STRESS_TEST',
+        count: taskCount
+      });
+    }
+    
+    // Run a disaster recovery drill
+    function runDisasterDrill() {
+      if (!state.worker) {
+        logToConsole('Worker must be running to perform disaster recovery drill', 'warning');
+        return;
+      }
+      
+      if (!confirm('This will simulate a disaster recovery scenario. Continue?')) {
+        return;
+      }
+      
+      logToConsole('Starting disaster recovery drill', 'warning');
+      updateWorkerStatus('Error');
+      
+      // Send to worker
+      state.worker.postMessage({
+        type: 'DISASTER_DRILL'
+      });
+    }
+    
+    // Capitalize first letter of a string
+    function capitalizeFirstLetter(string) {
+      return string.charAt(0).toUpperCase() + string.slice(1);
+    }
+    
+    // Event listeners
+    startWorkerBtn.addEventListener('click', startWorker);
+    stopWorkerBtn.addEventListener('click', stopWorker);
+    spawnWorkerBtn.addEventListener('click', spawnChildWorker);
+    stressTestBtn.addEventListener('click', runStressTest);
+    disasterDrillBtn.addEventListener('click', runDisasterDrill);
+    addTaskBtn.addEventListener('click', addTask);
+    encryptionToggle.addEventListener('change', toggleEncryption);
+    
+    // Allow adding tasks with Enter key
+    taskDescriptionInput.addEventListener('keyup', function(e) {
+      if (e.key === 'Enter' && !addTaskBtn.disabled) {
+        addTask();
+      }
+    });
+    
+    // Initialize
+    logToConsole('Web Worker Dashboard initialized', 'info');
+  </script>
+</body>
+</html>
